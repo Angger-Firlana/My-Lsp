@@ -49,7 +49,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation("com.squareup.retrofit2:retrofit:3.1.0-SNAPSHOT")
     implementation ("androidx.camera:camera-camera2:1.3.0")
     implementation ("androidx.camera:camera-lifecycle:1.3.0")
     implementation ("androidx.camera:camera-view:1.3.0")
@@ -58,6 +57,8 @@ dependencies {
 
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("androidx.navigation:navigation-compose:2.7.7")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
