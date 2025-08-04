@@ -30,9 +30,11 @@ import androidx.navigation.NavController
 import com.example.mylsp.R
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun RegisterScreen(modifier: Modifier = Modifier, navController: NavController) {
     var username by remember { mutableStateOf("") }
+    var nik by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var email by remember{ mutableStateOf("") }
     Box(modifier = Modifier){
         Image(
             painter = painterResource(R.drawable.img,),
@@ -76,6 +78,33 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
                 shape = RoundedCornerShape(16.dp)
             )
 
+            Text(
+                "NIK",
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = nik,
+                onValueChange = {
+                    nik = it
+                },
+                placeholder = { Text("password") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            )
+
+            Text(
+                "Email",
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = email,
+                onValueChange = {
+                    email = it
+                },
+                placeholder = { Text("email") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            )
             Button(
                 onClick = {
 
@@ -84,7 +113,7 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
                 modifier = Modifier
             ) {
                 Text(
-                    "Login"
+                    "Register"
                 )
             }
 
@@ -93,12 +122,12 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    "Tidak punya akun? "
+                    "Sudah memiliki akun? "
                 )
                 Text(
                     "klik disini!",
                     modifier = Modifier.clickable {
-                        navController.navigate("register")
+                        navController.navigate("login")
                     }
                 )
             }
