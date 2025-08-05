@@ -1,0 +1,595 @@
+{
+  "skema_sertifikasi": {
+    "id_skema": 1,
+    "judul_skema": "Pemrogram Junior (Junior Coder)",
+    "nomor_skema": "SKM.RPL.PJ/LSPSMK24/2023",
+    "jenis_skema": "KKNI",
+    "deskripsi": "Sertifikasi kompetensi pemrograman tingkat junior sesuai SKKNI",
+    "tanggal_berlaku": "2023-01-01",
+    "status": "Aktif"
+  },
+  "form_apl01": {
+    "id_apl01": 101,
+    "id_asesmen": 5001,
+    "nama_lengkap": "Budi Santoso",
+    "no_ktp": "3174XXXXXXXXXXXX",
+    "tempat_lahir": "Jakarta",
+    "tanggal_lahir": "2005-08-10",
+    "jenis_kelamin": "Laki-laki",
+    "kebangsaan": "Indonesia",
+    "alamat": "Jl. Mawar No. 12, Jakarta",
+    "kode_pos": "13750",
+    "no_rumah": "021123456",
+    "no_kantor": "021987654",
+    "no_hp": "081234567890",
+    "email": "budi@example.com",
+    "kualifikasi_pendidikan": "SMK Rekayasa Perangkat Lunak",
+    "institusi": "SMKN 24 Jakarta",
+    "jabatan": "Siswa",
+    "alamat_kantor": "Jl. Pendidikan No. 5, Jakarta",
+    "kode_pos_kantor": "13750",
+    "telp_kantor": "021998877",
+    "fax_kantor": "021998878",
+    "email_kantor": "info@smkn24jakarta.sch.id",
+    "created_at": "2025-08-05T10:00:00Z"
+  },
+  "form_apl02": [
+    {
+      "id_apl02": 201,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.004.02",
+      "judul_unit": "Menggunakan Struktur Data",
+      "elemen": null,
+      "kuk": null,
+      "status": "K",
+      "bukti": "Bukti latihan dan proyek sekolah",
+      "created_at": "2025-08-05T10:30:00Z"
+    },
+    {
+      "id_apl02": 202,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.009.01",
+      "judul_unit": "Menggunakan Spesifikasi Program",
+      "elemen": null,
+      "kuk": null,
+      "status": "K",
+      "bukti": "Bukti latihan dan proyek sekolah",
+      "created_at": "2025-08-05T10:30:00Z"
+    },
+    {
+      "id_apl02": 203,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.010.01",
+      "judul_unit": "Menerapkan Perintah Eksekusi Bahasa Pemrograman Berbasis Teks, Grafik, dan Multimedia",
+      "elemen": null,
+      "kuk": null,
+      "status": "K",
+      "bukti": "Bukti latihan dan proyek sekolah",
+      "created_at": "2025-08-05T10:30:00Z"
+    },
+    {
+      "id_apl02": 204,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.016.01",
+      "judul_unit": "Menulis Kode Dengan Prinsip Sesuai Guidelines dan Best Practices",
+      "elemen": null,
+      "kuk": null,
+      "status": "K",
+      "bukti": "Bukti latihan dan proyek sekolah",
+      "created_at": "2025-08-05T10:30:00Z"
+    },
+    {
+      "id_apl02": 205,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.017.02",
+      "judul_unit": "Mengimplementasikan Pemrograman Terstruktur",
+      "elemen": null,
+      "kuk": null,
+      "status": "K",
+      "bukti": "Bukti latihan dan proyek sekolah",
+      "created_at": "2025-08-05T10:30:00Z"
+    },
+    {
+      "id_apl02": 206,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.023.02",
+      "judul_unit": "Membuat Dokumen Kode Program",
+      "elemen": null,
+      "kuk": null,
+      "status": "K",
+      "bukti": "Bukti latihan dan proyek sekolah",
+      "created_at": "2025-08-05T10:30:00Z"
+    },
+    {
+      "id_apl02": 207,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.025.02",
+      "judul_unit": "Melakukan Debugging",
+      "elemen": null,
+      "kuk": null,
+      "status": "K",
+      "bukti": "Bukti latihan dan proyek sekolah",
+      "created_at": "2025-08-05T10:30:00Z"
+    },
+    {
+      "id_apl02": 208,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.033.02",
+      "judul_unit": "Melaksanakan Pengujian Unit Program",
+      "elemen": null,
+      "kuk": null,
+      "status": "K",
+      "bukti": "Bukti latihan dan proyek sekolah",
+      "created_at": "2025-08-05T10:30:00Z"
+    }
+  ],
+  "unit_kompetensi_detail": [
+    {
+      "id_detail": 301,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.004.02",
+      "elemen": "Mengidentifikasi konsep data dan struktur data",
+      "kuk": "Mengidentifikasi konsep data dan struktur data sesuai dengan konteks",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 302,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.004.02",
+      "elemen": "Menerapkan struktur data dan akses terhadap struktur data tersebut",
+      "kuk": "Mengimplementasikan struktur data sesuai bahasa pemrograman",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 303,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.009.01",
+      "elemen": "Menggunakan metode pengembangan program",
+      "kuk": "Mendefinisikan metode pengembangan aplikasi",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 304,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.009.01",
+      "elemen": "Menggunakan diagram program dan deskripsi program",
+      "kuk": "Mendefinisikan diagram program sesuai metodologi",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 305,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.009.01",
+      "elemen": "Menerapkan hasil pemodelan ke dalam pengembangan program",
+      "kuk": "Memilih hasil pemodelan sesuai spesifikasi",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 306,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.010.01",
+      "elemen": "Mengidentifikasi mekanisme running atau eksekusi source code",
+      "kuk": "Mengidentifikasi cara dan tools eksekusi",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 307,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.010.01",
+      "elemen": "Mengeksekusi source code",
+      "kuk": "Mengeksekusi source code sesuai mekanisme",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 308,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.010.01",
+      "elemen": "Mengidentifikasi hasil eksekusi",
+      "kuk": "Mengidentifikasi sumber masalah eksekusi",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 309,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.016.01",
+      "elemen": "Menerapkan coding guidelines dan best practices",
+      "kuk": "Menuliskan kode sesuai pedoman",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 310,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.016.01",
+      "elemen": "Menggunakan ukuran performansi",
+      "kuk": "Menghitung efisiensi penggunaan resources",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 311,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.017.02",
+      "elemen": "Menggunakan tipe data dan control program",
+      "kuk": "Menentukan tipe data sesuai standar",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 312,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.017.02",
+      "elemen": "Membuat program sederhana",
+      "kuk": "Membuat program baca tulis",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 313,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.017.02",
+      "elemen": "Membuat program menggunakan prosedur dan fungsi",
+      "kuk": "Membuat program dengan prosedur dan fungsi",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 314,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.017.02",
+      "elemen": "Membuat program menggunakan array",
+      "kuk": "Menggunakan array",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 315,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.017.02",
+      "elemen": "Membuat program untuk akses file",
+      "kuk": "Membaca dan menulis file",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 316,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.017.02",
+      "elemen": "Mengkompilasi program",
+      "kuk": "Mengkoreksi kesalahan program",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 317,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.023.02",
+      "elemen": "Melakukan identifikasi kode program",
+      "kuk": "Mengidentifikasi modul program",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 318,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.023.02",
+      "elemen": "Membuat dokumentasi modul program",
+      "kuk": "Membuat dokumentasi modul",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 319,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.023.02",
+      "elemen": "Membuat dokumentasi fungsi/prosedur",
+      "kuk": "Menjelaskan kemungkinan eksepsi",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 320,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.023.02",
+      "elemen": "Men-generate dokumentasi",
+      "kuk": "Menggunakan tools dokumentasi",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 321,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.025.02",
+      "elemen": "Mempersiapkan kode program",
+      "kuk": "Menyiapkan kode program sesuai spesifikasi",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 322,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.025.02",
+      "elemen": "Melakukan debugging",
+      "kuk": "Menggunakan debugger",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 323,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.025.02",
+      "elemen": "Memperbaiki program",
+      "kuk": "Melakukan perbaikan bug",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 324,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.033.02",
+      "elemen": "Menentukan kebutuhan uji coba",
+      "kuk": "Menentukan prosedur dan tools uji coba",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 325,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.033.02",
+      "elemen": "Mempersiapkan dokumentasi uji coba",
+      "kuk": "Membuat skenario uji coba",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 326,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.033.02",
+      "elemen": "Mempersiapkan data uji",
+      "kuk": "Membuat data uji unit tes",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 327,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.033.02",
+      "elemen": "Melaksanakan prosedur uji coba",
+      "kuk": "Melaksanakan uji coba",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    },
+    {
+      "id_detail": 328,
+      "id_asesmen": 5001,
+      "kode_unit": "J.620100.033.02",
+      "elemen": "Mengevaluasi hasil uji coba",
+      "kuk": "Menganalisis hasil uji coba",
+      "status": "K",
+      "bukti": "Hasil tugas dan dokumentasi",
+      "metode_asesmen": "Observasi",
+      "komentar": "Baik",
+      "created_at": "2025-08-05T10:45:00Z"
+    }
+  ],
+  "dokumen_asesmen": [
+    {
+      "id_dokumen": 401,
+      "id_asesmen": 5001,
+      "jenis_dokumen": "Copy Raport SMK",
+      "nama_dokumen": "Raport Semester 1-5",
+      "file_path": "/files/raport_budi.pdf",
+      "tanggal_upload": "2025-08-01"
+    },
+    {
+      "id_dokumen": 402,
+      "id_asesmen": 5001,
+      "jenis_dokumen": "Copy Sertifikat PKL",
+      "nama_dokumen": "Sertifikat PKL Software Development",
+      "file_path": "/files/pkl_budi.pdf",
+      "tanggal_upload": "2025-08-01"
+    }
+  ],
+  "tanda_tangan": [
+    {
+      "id_ttd": 1,
+      "id_asesmen": 5001,
+      "peran": "Asesi",
+      "nama": "Budi Santoso",
+      "image_path": "/files/ttd_asesi.png",
+      "qr_code_path": null,
+      "signed_at": "2025-08-05T11:00:00Z"
+    },
+    {
+      "id_ttd": 2,
+      "id_asesmen": 5001,
+      "peran": "Asesor",
+      "nama": "Ahmad Saputra",
+      "image_path": "/files/ttd_asesor.png",
+      "qr_code_path": null,
+      "signed_at": "2025-08-05T11:00:00Z"
+    }
+  ],
+  "jawaban_pilihan_ganda": [
+    {
+      "nomor": 1,
+      "jawaban": "A",
+      "pencapaian": "Ya"
+    },
+    {
+      "nomor": 2,
+      "jawaban": "A",
+      "pencapaian": "Ya"
+    },
+    {
+      "nomor": 3,
+      "jawaban": "A",
+      "pencapaian": "Ya"
+    },
+    {
+      "nomor": 4,
+      "jawaban": "A",
+      "pencapaian": "Ya"
+    },
+    {
+      "nomor": 5,
+      "jawaban": "A",
+      "pencapaian": "Ya"
+    },
+    {
+      "nomor": 6,
+      "jawaban": "A",
+      "pencapaian": "Ya"
+    },
+    {
+      "nomor": 7,
+      "jawaban": "A",
+      "pencapaian": "Ya"
+    },
+    {
+      "nomor": 8,
+      "jawaban": "A",
+      "pencapaian": "Ya"
+    },
+    {
+      "nomor": 9,
+      "jawaban": "A",
+      "pencapaian": "Ya"
+    },
+    {
+      "nomor": 10,
+      "jawaban": "A",
+      "pencapaian": "Ya"
+    }
+  ],
+  "hasil_rekomendasi_asesor": {
+    "id_asesmen": 5001,
+    "kompeten": true,
+    "catatan": "Asesi telah memenuhi seluruh kriteria unjuk kerja.",
+    "asesor": {
+      "nama": "Ahmad Saputra",
+      "no_reg": "AS-001"
+    },
+    "tanggal": "2025-08-05"
+  },
+  "umpan_balik_asesi": {
+    "id_asesmen": 5001,
+    "hasil": {
+      "penjelasan_proses": true,
+      "kesempatan_menilai_diri": true,
+      "diskusi_metoda_asesmen": true,
+      "menggali_bukti": true,
+      "demonstrasi_kompetensi": true,
+      "penjelasan_keputusan": true,
+      "umpan_balik_asesor": true,
+      "menandatangani_dokumen": true,
+      "kerahasiaan_hasil": true,
+      "komunikasi_efektif": true
+    },
+    "komentar": "Proses asesmen berjalan dengan baik dan lancar."
+  },
+  "banding_asesmen": {
+    "id_asesmen": 5001,
+    "alasan": "Tidak ada banding, semua hasil sesuai.",
+    "diajukan": false,
+    "nama_asesi": "Budi Santoso",
+    "nama_asesor": "Ahmad Saputra"
+  },
+  "persetujuan_asesmen": {
+    "id_asesmen": 5001,
+    "disetujui": true,
+    "tuk": "Tempat Kerja",
+    "tanggal": "2025-08-05",
+    "asesor": "Ahmad Saputra",
+    "asesi": "Budi Santoso"
+  }
+}

@@ -107,7 +107,7 @@ fun RegisterScreen(modifier: Modifier = Modifier, navController: NavController) 
             )
             Button(
                 onClick = {
-
+                    navController.navigate("login")
                 },
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
