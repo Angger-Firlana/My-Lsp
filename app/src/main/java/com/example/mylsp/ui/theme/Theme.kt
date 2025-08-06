@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val LightColorScheme = lightColorScheme(
-<<<<<<< HEAD
     primary = Color(0xFF16B5C7), // Turquoise
     secondary = Color(0xFF339CFF), // Sky Blue
     tertiary = Color(0xFFFF7A00), // Orange
@@ -36,32 +35,8 @@ private val DarkColorScheme = darkColorScheme(
     onSecondary = Color.White,
     onTertiary = Color.White,
     onBackground = Color(0xFFFFFFFF), // White
-    onSurface = Color(0xFFFFFFFF) // White
-=======
-    primary = CoralRed,
-    secondary = Lavender,
-    tertiary = BrightBlue,
-    background = SoftWhite,
-    surface = GrayLight,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onTertiary = Color.White,
-    onBackground = DarkGray,
-    onSurface = DarkGray,
-)
+    onSurface = Color(0xFFFFFFFF), // White
 
-private val DarkColorScheme = darkColorScheme(
-    primary = CoralRed,
-    secondary = DeepPurple,
-    tertiary = DarkCyan,
-    background = DarkGray,
-    surface = GrayLight,
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = SoftWhite,
-    onSurface = SoftWhite,
->>>>>>> origin/master
 )
 
 
