@@ -64,6 +64,9 @@ dependencies {
     // ZXing Android Embedded (buat scan & generate QR)
     implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation(libs.firebase.crashlytics.buildtools)
+    implementation ("androidx.compose.material:material-icons-core:1.6.8")
+    // Material Icons Extended (semua varian)
+    implementation ("androidx.compose.material:material-icons-extended:1.6.8")
 
 
     testImplementation(libs.junit)

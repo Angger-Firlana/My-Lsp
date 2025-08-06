@@ -1,5 +1,7 @@
 package com.example.mylsp.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -11,10 +13,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mylsp.screen.asesor.KelengkapanDataAsesor
 import com.example.mylsp.screen.asesor.SignatureScreen
+import com.example.mylsp.screen.asesor.SkemaListScreen
 import com.example.mylsp.screen.auth.LoginScreen
 import com.example.mylsp.screen.auth.RegisterScreen
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavigation() {
     val context = LocalContext.current
@@ -38,7 +42,10 @@ fun AppNavigation() {
 
             }
             composable("tanda_tangan_asesor"){
-                SignatureScreen(context)
+                SignatureScreen(context, navController)
+            }
+            composable("skemaList"){
+                SkemaListScreen(modifier = Modifier,navController = navController)
             }
         }
     }
