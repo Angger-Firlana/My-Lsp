@@ -1,10 +1,7 @@
 package com.example.mylsp.navigation
 
-<<<<<<< HEAD
 import android.os.Build
 import androidx.annotation.RequiresApi
-=======
->>>>>>> origin/master
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -14,21 +11,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-<<<<<<< HEAD
 import com.example.mylsp.screen.asesor.KelengkapanDataAsesor
 import com.example.mylsp.screen.asesor.SignatureScreen
 import com.example.mylsp.screen.asesor.SkemaListScreen
-=======
-import com.example.mylsp.screen.asesor.SignatureScreen
->>>>>>> origin/master
 import com.example.mylsp.screen.auth.LoginScreen
 import com.example.mylsp.screen.auth.RegisterScreen
 
-
-<<<<<<< HEAD
 @RequiresApi(Build.VERSION_CODES.O)
-=======
->>>>>>> origin/master
 @Composable
 fun AppNavigation() {
     val context = LocalContext.current
@@ -47,7 +36,6 @@ fun AppNavigation() {
             composable("register") {
                 RegisterScreen(navController = navController)
             }
-<<<<<<< HEAD
             composable("kelengkapanDataAsesor"){
                 KelengkapanDataAsesor(navController = navController)
 
@@ -55,12 +43,8 @@ fun AppNavigation() {
             composable("tanda_tangan_asesor"){
                 SignatureScreen(context, navController)
             }
-            composable("skemaList"){
-                SkemaListScreen(modifier = Modifier,navController = navController)
-=======
-            composable("tanda_tangan_asesor"){
-                SignatureScreen(context)
->>>>>>> origin/master
+            composable("skemaList") {
+                SkemaListScreen(modifier = Modifier, navController = navController)
             }
         }
     }

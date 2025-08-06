@@ -9,10 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-<<<<<<< HEAD
 import androidx.compose.material3.Button
-=======
->>>>>>> origin/master
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -76,7 +73,6 @@ fun KelengkapanDataAsesor(modifier: Modifier = Modifier, navController: NavContr
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp)
             )
-<<<<<<< HEAD
 
             Button(
                 onClick = {
@@ -85,8 +81,6 @@ fun KelengkapanDataAsesor(modifier: Modifier = Modifier, navController: NavContr
             ) {
                 Text("Kirim Data")
             }
-=======
->>>>>>> origin/master
         }
     }
 }

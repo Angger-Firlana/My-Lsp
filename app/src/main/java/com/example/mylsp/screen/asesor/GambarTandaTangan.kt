@@ -11,13 +11,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
-<<<<<<< HEAD
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-=======
-import androidx.compose.foundation.shape.RoundedCornerShape
->>>>>>> origin/master
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
@@ -34,10 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-<<<<<<< HEAD
 import androidx.navigation.NavController
-=======
->>>>>>> origin/master
 import com.example.mylsp.util.CaptureBox
 import com.example.mylsp.util.generateQRCode
 import com.example.mylsp.util.generateSecureIdFromUri
@@ -46,198 +39,50 @@ import com.example.mylsp.util.saveBitmapToUri
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-<<<<<<< HEAD
 fun SignatureScreen(context: Context, navController: NavController) {
-=======
-fun SignatureScreen(context: Context) {
->>>>>>> origin/master
-    var paths by remember { mutableStateOf(listOf<List<Pair<Float, Float>>>()) }
-    var currentPath by remember { mutableStateOf(listOf<Pair<Float, Float>>()) }
-    var bitmapToSave by remember { mutableStateOf<Bitmap?>(null) }
-    var qrSignature by remember { mutableStateOf<Bitmap?>(null) }
-    var secureId by remember { mutableStateOf("") }
-    var showBarcode by remember { mutableStateOf(false) }
 
-    val captureController = rememberCaptureController()
-    val pilihFolder = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("image/png"),
-        onResult = { uri ->
-            if (uri != null && bitmapToSave != null) {
-                secureId = generateSecureIdFromUri(uri.toString())
-                saveBitmapToUri(context, uri, bitmapToSave!!)
-                qrSignature = generateQRCode(secureId)
-                showBarcode = true
-            }
-        }
-    )
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xFF667eea),
-                        Color(0xFF764ba2)
-                    )
-                )
-            )
-<<<<<<< HEAD
-            .verticalScroll(rememberScrollState())
-=======
->>>>>>> origin/master
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            // Main Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 20.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(30.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Header
-                    Text(
-                        text = "Generate Your Digital Sign",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF2d3748),
-                        textAlign = TextAlign.Center
-                    )
+        var paths by remember { mutableStateOf(listOf<List<Pair<Float, Float>>>()) }
+        var currentPath by remember { mutableStateOf(listOf<Pair<Float, Float>>()) }
+        var bitmapToSave by remember { mutableStateOf<Bitmap?>(null) }
+        var qrSignature by remember { mutableStateOf<Bitmap?>(null) }
+        var secureId by remember { mutableStateOf("") }
+        var showBarcode by remember { mutableStateOf(false) }
 
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "Gambarkan tanda tangan anda dibawah ini",
-                        fontSize = 14.sp,
-                        color = Color(0xFF718096),
-                        textAlign = TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(25.dp))
-
-                    // Signature Canvas
-                    CaptureBox(captureController) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(Color(0xFFFAFAFA))
-                                .border(
-                                    2.dp,
-                                    Color(0xFFE2E8F0),
-                                    RoundedCornerShape(12.dp)
-                                )
-                                .pointerInput(Unit) {
-                                    detectDragGestures(
-                                        onDragStart = { offset ->
-                                            currentPath = listOf(offset.x to offset.y)
-                                        },
-                                        onDrag = { change, _ ->
-                                            currentPath = currentPath + (change.position.x to change.position.y)
-                                        },
-                                        onDragEnd = {
-                                            paths = paths + listOf(currentPath)
-                                            currentPath = emptyList()
-                                        }
-                                    )
-                                }
-                        ) {
-                            SignaturePad(
-                                modifier = Modifier.fillMaxSize(),
-                                paths = paths,
-                                currentPath = currentPath
-                            )
-
-                            // Refresh icon in top right corner
-                            IconButton(
-                                onClick = {
-                                    currentPath = emptyList()
-                                    paths = emptyList()
-                                    showBarcode = false
-                                    qrSignature = null
-                                },
-                                modifier = Modifier.align(Alignment.TopEnd)
-                            ) {
-                                Icon(
-                                    Icons.Default.Refresh,
-                                    contentDescription = "Clear",
-                                    tint = Color(0xFF718096)
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    // Action Buttons
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        // Delete Button
-                        Button(
-                            onClick = {
-                                currentPath = emptyList()
-                                paths = emptyList()
-                                showBarcode = false
-                                qrSignature = null
-                            },
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFFFF6B6B)
-                            ),
-                            shape = RoundedCornerShape(25.dp)
-                        ) {
-                            Text(
-                                "Delete",
-                                color = Color.White,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-
-                        // Generate Button
-                        Button(
-                            onClick = {
-                                captureController.capture { bmp ->
-                                    bitmapToSave = bmp
-                                    pilihFolder.launch("signature_${System.currentTimeMillis()}.png")
-                                }
-                            },
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF4A5568)
-                            ),
-                            shape = RoundedCornerShape(25.dp)
-                        ) {
-                            Text(
-                                "Generate",
-                                color = Color.White,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    }
+        val captureController = rememberCaptureController()
+        val pilihFolder = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.CreateDocument("image/png"),
+            onResult = { uri ->
+                if (uri != null && bitmapToSave != null) {
+                    secureId = generateSecureIdFromUri(uri.toString())
+                    saveBitmapToUri(context, uri, bitmapToSave!!)
+                    qrSignature = generateQRCode(secureId)
+                    showBarcode = true
                 }
             }
+        )
 
-            // Barcode Section
-            if (showBarcode && qrSignature != null) {
-                Spacer(modifier = Modifier.height(20.dp))
-
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFF667eea),
+                            Color(0xFF764ba2)
+                        )
+                    )
+                )
+                .verticalScroll(rememberScrollState())
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                // Main Card
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -252,94 +97,235 @@ fun SignatureScreen(context: Context) {
                             .padding(30.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        // Header
                         Text(
-                            text = "Barcode berhasil dibuat!",
-                            fontSize = 18.sp,
+                            text = "Generate Your Digital Sign",
+                            fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF2d3748),
                             textAlign = TextAlign.Center
                         )
 
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        // QR Code Display
-                        Box(
-                            modifier = Modifier
-                                .size(200.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(Color.White)
-                                .border(
-                                    1.dp,
-                                    Color(0xFFE2E8F0),
-                                    RoundedCornerShape(12.dp)
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                bitmap = qrSignature!!.asImageBitmap(),
-                                contentDescription = "QR Code",
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(20.dp)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = "Barcode ini dapat berdasarkan tanda tangan anda.\nJangan lupa simpan barcode anda dan gunakan\ndengan bijak.",
-                            fontSize = 12.sp,
+                            text = "Gambarkan tanda tangan anda dibawah ini",
+                            fontSize = 14.sp,
                             color = Color(0xFF718096),
-                            textAlign = TextAlign.Center,
-                            lineHeight = 16.sp
+                            textAlign = TextAlign.Center
                         )
+
+                        Spacer(modifier = Modifier.height(25.dp))
+
+                        // Signature Canvas
+                        CaptureBox(captureController) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color(0xFFFAFAFA))
+                                    .border(
+                                        2.dp,
+                                        Color(0xFFE2E8F0),
+                                        RoundedCornerShape(12.dp)
+                                    )
+                                    .pointerInput(Unit) {
+                                        detectDragGestures(
+                                            onDragStart = { offset ->
+                                                currentPath = listOf(offset.x to offset.y)
+                                            },
+                                            onDrag = { change, _ ->
+                                                currentPath =
+                                                    currentPath + (change.position.x to change.position.y)
+                                            },
+                                            onDragEnd = {
+                                                paths = paths + listOf(currentPath)
+                                                currentPath = emptyList()
+                                            }
+                                        )
+                                    }
+                            ) {
+                                SignaturePad(
+                                    modifier = Modifier.fillMaxSize(),
+                                    paths = paths,
+                                    currentPath = currentPath
+                                )
+
+                                // Refresh icon in top right corner
+                                IconButton(
+                                    onClick = {
+                                        currentPath = emptyList()
+                                        paths = emptyList()
+                                        showBarcode = false
+                                        qrSignature = null
+                                    },
+                                    modifier = Modifier.align(Alignment.TopEnd)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Refresh,
+                                        contentDescription = "Clear",
+                                        tint = Color(0xFF718096)
+                                    )
+                                }
+                            }
+                        }
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        Button(
-                            onClick = { /* Handle save barcode */ },
+                        // Action Buttons
+                        Row(
                             modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF4A5568)
-                            ),
-                            shape = RoundedCornerShape(25.dp)
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Text(
-                                "📷 Simpan gambar",
-                                color = Color.White,
-                                fontWeight = FontWeight.Medium
-                            )
+                            // Delete Button
+                            Button(
+                                onClick = {
+                                    currentPath = emptyList()
+                                    paths = emptyList()
+                                    showBarcode = false
+                                    qrSignature = null
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFFFF6B6B)
+                                ),
+                                shape = RoundedCornerShape(25.dp)
+                            ) {
+                                Text(
+                                    "Delete",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+
+                            // Generate Button
+                            Button(
+                                onClick = {
+                                    captureController.capture { bmp ->
+                                        bitmapToSave = bmp
+                                        pilihFolder.launch("signature_${System.currentTimeMillis()}.png")
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF4A5568)
+                                ),
+                                shape = RoundedCornerShape(25.dp)
+                            ) {
+                                Text(
+                                    "Generate",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
                     }
                 }
-            }
 
-            // Bottom Button
-            Spacer(modifier = Modifier.height(20.dp))
+                // Barcode Section
+                if (showBarcode && qrSignature != null) {
+                    Spacer(modifier = Modifier.height(20.dp))
 
-            Button(
-<<<<<<< HEAD
-                onClick = { navController.navigate("skemaList") },
-=======
-                onClick = { /* Handle selanjutnya */ },
->>>>>>> origin/master
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF00BCD4)
-                ),
-                shape = RoundedCornerShape(25.dp)
-            ) {
-                Text(
-                    "selanjutnya",
-                    color = Color.White,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 16.sp
-                )
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 20.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(30.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "Barcode berhasil dibuat!",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF2d3748),
+                                textAlign = TextAlign.Center
+                            )
+
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            // QR Code Display
+                            Box(
+                                modifier = Modifier
+                                    .size(200.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color.White)
+                                    .border(
+                                        1.dp,
+                                        Color(0xFFE2E8F0),
+                                        RoundedCornerShape(12.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    bitmap = qrSignature!!.asImageBitmap(),
+                                    contentDescription = "QR Code",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(20.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Text(
+                                text = "Barcode ini dapat berdasarkan tanda tangan anda.\nJangan lupa simpan barcode anda dan gunakan\ndengan bijak.",
+                                fontSize = 12.sp,
+                                color = Color(0xFF718096),
+                                textAlign = TextAlign.Center,
+                                lineHeight = 16.sp
+                            )
+
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            Button(
+                                onClick = { /* Handle save barcode */ },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF4A5568)
+                                ),
+                                shape = RoundedCornerShape(25.dp)
+                            ) {
+                                Text(
+                                    "📷 Simpan gambar",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Bottom Button
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Button(
+                    onClick = { navController.navigate("skemaList") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF00BCD4)
+                    ),
+                    shape = RoundedCornerShape(25.dp)
+                ) {
+                    Text(
+                        "selanjutnya",
+                        color = Color.White,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp
+                    )
+                }
             }
         }
-    }
+
 }
 
 @Composable
@@ -349,10 +335,6 @@ fun SignaturePad(
     currentPath: List<Pair<Float, Float>>
 ) {
     Canvas(modifier = modifier) {
-<<<<<<< HEAD
-=======
-        // gambar semua path yang sudah selesai
->>>>>>> origin/master
         paths.forEach { path ->
             for (i in 0 until path.size - 1) {
                 drawLine(
@@ -363,10 +345,6 @@ fun SignaturePad(
                 )
             }
         }
-<<<<<<< HEAD
-=======
-        // gambar path yang sedang digambar
->>>>>>> origin/master
         for (i in 0 until currentPath.size - 1) {
             drawLine(
                 color = Color.Black,
