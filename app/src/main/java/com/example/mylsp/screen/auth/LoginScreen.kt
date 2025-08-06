@@ -107,7 +107,7 @@ fun LoginScreen(
             // Tombol Login
             Button(
                 onClick = {
-                    navController.navigate("tanda_tangan_asesor")
+                    navController.navigate("kelengkapanDataAsesor")
                 },
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
