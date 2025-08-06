@@ -1,6 +1,7 @@
 package com.example.mylsp.viewmodel
 
 import androidx.lifecycle.ViewModel
+<<<<<<< HEAD
 import androidx.lifecycle.viewModelScope
 import com.example.lsp24.models.SkemaSertifikasi
 import com.example.mylsp.api.APIClient
@@ -17,4 +18,9 @@ class MukViewModel:ViewModel() {
             _skemas.value = APIClient.api.getSkemaSertifikasi()
         }
     }
+=======
+
+class MukViewModel:ViewModel() {
+
+>>>>>>> origin/master
 }

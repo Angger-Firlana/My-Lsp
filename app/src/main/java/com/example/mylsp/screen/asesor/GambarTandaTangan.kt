@@ -11,9 +11,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
+<<<<<<< HEAD
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+=======
+import androidx.compose.foundation.shape.RoundedCornerShape
+>>>>>>> origin/master
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
@@ -30,7 +34,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+<<<<<<< HEAD
 import androidx.navigation.NavController
+=======
+>>>>>>> origin/master
 import com.example.mylsp.util.CaptureBox
 import com.example.mylsp.util.generateQRCode
 import com.example.mylsp.util.generateSecureIdFromUri
@@ -39,7 +46,11 @@ import com.example.mylsp.util.saveBitmapToUri
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+<<<<<<< HEAD
 fun SignatureScreen(context: Context, navController: NavController) {
+=======
+fun SignatureScreen(context: Context) {
+>>>>>>> origin/master
     var paths by remember { mutableStateOf(listOf<List<Pair<Float, Float>>>()) }
     var currentPath by remember { mutableStateOf(listOf<Pair<Float, Float>>()) }
     var bitmapToSave by remember { mutableStateOf<Bitmap?>(null) }
@@ -71,7 +82,10 @@ fun SignatureScreen(context: Context, navController: NavController) {
                     )
                 )
             )
+<<<<<<< HEAD
             .verticalScroll(rememberScrollState())
+=======
+>>>>>>> origin/master
     ) {
         Column(
             modifier = Modifier
@@ -304,7 +318,11 @@ fun SignatureScreen(context: Context, navController: NavController) {
             Spacer(modifier = Modifier.height(20.dp))
 
             Button(
+<<<<<<< HEAD
                 onClick = { navController.navigate("skemaList") },
+=======
+                onClick = { /* Handle selanjutnya */ },
+>>>>>>> origin/master
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -331,6 +349,10 @@ fun SignaturePad(
     currentPath: List<Pair<Float, Float>>
 ) {
     Canvas(modifier = modifier) {
+<<<<<<< HEAD
+=======
+        // gambar semua path yang sudah selesai
+>>>>>>> origin/master
         paths.forEach { path ->
             for (i in 0 until path.size - 1) {
                 drawLine(
@@ -341,6 +363,10 @@ fun SignaturePad(
                 )
             }
         }
+<<<<<<< HEAD
+=======
+        // gambar path yang sedang digambar
+>>>>>>> origin/master
         for (i in 0 until currentPath.size - 1) {
             drawLine(
                 color = Color.Black,
