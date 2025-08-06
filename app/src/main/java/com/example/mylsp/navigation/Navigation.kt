@@ -4,16 +4,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.mylsp.screen.asesor.SignatureScreen
 import com.example.mylsp.screen.auth.LoginScreen
 import com.example.mylsp.screen.auth.RegisterScreen
 
 
 @Composable
 fun AppNavigation() {
+    val context = LocalContext.current
     val navController = rememberNavController()
 
 
@@ -28,6 +31,9 @@ fun AppNavigation() {
             }
             composable("register") {
                 RegisterScreen(navController = navController)
+            }
+            composable("tanda_tangan_asesor"){
+                SignatureScreen(context)
             }
         }
     }

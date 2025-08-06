@@ -78,7 +78,7 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController) {
 
             Button(
                 onClick = {
-
+                    navController.navigate("tanda_tangan_asesor")
                 },
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier

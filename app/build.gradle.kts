@@ -59,6 +59,12 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("androidx.navigation:navigation-compose:2.7.7")
 
+    implementation ("com.google.zxing:core:3.5.3")
+
+    // ZXing Android Embedded (buat scan & generate QR)
+    implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation(libs.firebase.crashlytics.buildtools)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
