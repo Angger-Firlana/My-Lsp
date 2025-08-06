@@ -47,7 +47,7 @@ fun AppNavigation() {
             composable("skemaList") {
                 SkemaListScreen(modifier = Modifier, navController = navController)
             }
-            composable(("detailusk")){
+            composable("detailusk"){
                 DetailUSK(navController = navController)
             }
         }

@@ -2,8 +2,9 @@ package com.example.mylsp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.lsp24.models.User
 import com.example.mylsp.api.APIClient
-import com.example.mylsp.model.User
+import com.example.mylsp.util.Util
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -15,14 +16,35 @@ class UserViewModel:ViewModel() {
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+
+
     fun fetchUsers() {
         viewModelScope.launch {
             try {
                 val result = APIClient.api.getUsers()
-                _users.value = result
             } catch (e: Exception) {
                 _error.value = e.message
             }
         }
+    }
+
+    fun getUserById(id:Int):User?{
+        val userById = Util.dummyUsers.find {
+            it.idUser == id
+        }
+        return userById;
+    }
+
+    fun login(username: String, password: String): Boolean{
+        val userLog = Util.dummyUsers.find {
+            it.username == username
+                    &&
+            it.passwordHash == password
+        }
+        val checkUser = userLog != null
+        if(checkUser){
+            Util.logUser = userLog?.idUser?: 0
+        }
+        return checkUser;
     }
 }

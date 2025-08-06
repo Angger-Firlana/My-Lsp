@@ -1,6 +1,7 @@
 package com.example.mylsp.screen.asesor
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -62,7 +63,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.lsp24.models.SkemaSertifikasi
 import com.example.mylsp.util.AppFont
+import com.example.mylsp.util.Util
 import com.example.mylsp.viewmodel.MukViewModel
+import com.example.mylsp.viewmodel.UserViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -74,8 +77,11 @@ fun SkemaListScreen(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
+    val userViewModel: UserViewModel = viewModel()
     val viewModel: MukViewModel = viewModel()
     val skemaList by viewModel.skemas.collectAsState()
+
+    val user = userViewModel.getUserById(Util.logUser)
 
     var search by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
@@ -84,6 +90,7 @@ fun SkemaListScreen(
     val filterOptions = listOf("Semua Event", "Event Hari Ini", "Event Minggu Ini", "Event Bulan Ini")
 
     LaunchedEffect(Unit) {
+        Log.d("User", user.toString())
         viewModel.getSkemas()
     }
 
@@ -215,8 +222,11 @@ fun SkemaListScreen(
                     SkemaCard(
                         skema = skema,
                         onCardClick = {
-                            // Handle navigation here
-                            // navController.navigate("detail/${skema.id}")
+                            if (user?.role == "asesi"){
+                                navController.navigate("detailusk")
+                            }else if (user?.role == "asesor"){
+
+                            }
                         }
                     )
                 }
@@ -228,7 +238,7 @@ fun SkemaListScreen(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SkemaCard(
-    skema:SkemaSertifikasi, // Replace with your actual Skema data class
+    skema:SkemaSertifikasi,
     onCardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
