@@ -1,6 +1,5 @@
 package com.example.mylsp.util
 
-<<<<<<< HEAD
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import com.example.mylsp.R
@@ -8,5 +7,3 @@ import com.example.mylsp.R
 object Font{
     val mainfFont = FontFamily(Font(R.font.poppins_regular))
 }
-=======
->>>>>>> origin/master
