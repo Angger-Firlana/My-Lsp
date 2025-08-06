@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.mylsp.screen.asesi.DetailUSK
 import com.example.mylsp.screen.asesor.KelengkapanDataAsesor
 import com.example.mylsp.screen.asesor.SignatureScreen
 import com.example.mylsp.screen.asesor.SkemaListScreen
@@ -45,6 +46,9 @@ fun AppNavigation() {
             }
             composable("skemaList") {
                 SkemaListScreen(modifier = Modifier, navController = navController)
+            }
+            composable(("detailusk")){
+                DetailUSK(navController = navController)
             }
         }
     }
