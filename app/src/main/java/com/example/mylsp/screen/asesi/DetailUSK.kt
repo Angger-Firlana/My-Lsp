@@ -216,7 +216,9 @@ fun DetailUSK(modifier: Modifier = Modifier, navController: NavController) {
 
                     // Tombol Kerjakan
                     Button(
-                        onClick = { /* TODO: Handle click */ },
+                        onClick = {
+
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),

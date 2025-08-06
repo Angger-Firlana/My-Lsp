@@ -11,6 +11,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.mylsp.screen.asesi.APL01
+import com.example.mylsp.screen.asesi.APL02
 import com.example.mylsp.screen.asesi.DetailUSK
 import com.example.mylsp.screen.asesor.KelengkapanDataAsesor
 import com.example.mylsp.screen.asesor.SignatureScreen
@@ -49,6 +51,12 @@ fun AppNavigation() {
             }
             composable("detailusk"){
                 DetailUSK(navController = navController)
+            }
+            composable("apl_01") {
+                APL01(navController = navController)
+            }
+            composable("apl_02") {
+                APL02(navController = navController)
             }
         }
     }

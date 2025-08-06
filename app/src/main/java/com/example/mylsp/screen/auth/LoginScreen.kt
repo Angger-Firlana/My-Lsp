@@ -114,7 +114,6 @@ fun LoginScreen(
 
             Button(
                 onClick = {
-
                     if (viewModel.login(username, password)){
                         val userLog = viewModel.getUserById(Util.logUser)
                         userLog?.let {
