@@ -327,7 +327,6 @@ fun SignaturePad(
     currentPath: List<Pair<Float, Float>>
 ) {
     Canvas(modifier = modifier) {
-        // gambar semua path yang sudah selesai
         paths.forEach { path ->
             for (i in 0 until path.size - 1) {
                 drawLine(
@@ -338,7 +337,6 @@ fun SignaturePad(
                 )
             }
         }
-        // gambar path yang sedang digambar
         for (i in 0 until currentPath.size - 1) {
             drawLine(
                 color = Color.Black,

@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.mylsp.screen.asesor.KelengkapanDataAsesor
 import com.example.mylsp.screen.asesor.SignatureScreen
 import com.example.mylsp.screen.auth.LoginScreen
 import com.example.mylsp.screen.auth.RegisterScreen
@@ -31,6 +32,10 @@ fun AppNavigation() {
             }
             composable("register") {
                 RegisterScreen(navController = navController)
+            }
+            composable("kelengkapanDataAsesor"){
+                KelengkapanDataAsesor(navController = navController)
+
             }
             composable("tanda_tangan_asesor"){
                 SignatureScreen(context)
