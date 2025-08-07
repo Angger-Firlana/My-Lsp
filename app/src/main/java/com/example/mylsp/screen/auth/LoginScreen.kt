@@ -117,10 +117,19 @@ fun LoginScreen(
                     if (viewModel.login(username, password)){
                         val userLog = viewModel.getUserById(Util.logUser)
                         userLog?.let {
-                            if (it.role == "Asesor")
-                                navController.navigate("kelengkapanDataAsesor")
-                            else
+                            if (it.role == "Asesor"){
                                 navController.navigate("skemaList")
+                            }
+                            else{
+                                if(viewModel.cekApl01(userLog.idUser)) {
+                                    navController.navigate("main"){
+                                        popUpTo("login"){inclusive = true}
+                                    }
+                                }
+                                else {
+                                    navController.navigate("waiting_approval")
+                                }
+                            }
                         }
 
                     }else {

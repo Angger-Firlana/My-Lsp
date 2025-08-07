@@ -47,4 +47,24 @@ class UserViewModel:ViewModel() {
         }
         return checkUser;
     }
+
+    fun cekApl01(idUser: Int):Boolean{
+        val asesi = Util.dummyAsesiList.find {
+            it.idUser == idUser
+        }
+        if (asesi != null){
+            val assesmen = Util.dummyAsesmenList.find {
+                it.idAsesi == asesi.idAsesi
+            }
+            if (assesmen != null){
+                val apl01 = Util.dummyFormApl01List.find {
+                    it.idAsesmen == assesmen.idAsesmen
+                }
+                if (apl01 != null){
+                    return true
+                }
+            }
+        }
+        return false
+    }
 }

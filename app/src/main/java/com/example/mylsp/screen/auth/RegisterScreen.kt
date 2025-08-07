@@ -54,7 +54,6 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(200.dp))
 
-            // Username
             Text(
                 text = "Username",
                 fontFamily = AppFont.Poppins,
@@ -70,7 +69,6 @@ fun RegisterScreen(
                 shape = RoundedCornerShape(16.dp)
             )
 
-            // Password
             Text(
                 text = "Password",
                 fontFamily = AppFont.Poppins,
@@ -85,24 +83,6 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp)
             )
-
-            // NIK
-            Text(
-                text = "NIK",
-                fontFamily = AppFont.Poppins,
-                fontWeight = FontWeight.Medium,
-                fontSize = 14.sp,
-                modifier = Modifier.fillMaxWidth()
-            )
-            OutlinedTextField(
-                value = nik,
-                onValueChange = { nik = it },
-                placeholder = { Text("nik", fontFamily = AppFont.Poppins) },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp)
-            )
-
-            // Email
             Text(
                 text = "Email",
                 fontFamily = AppFont.Poppins,
@@ -120,9 +100,8 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Register Button
             Button(
-                onClick = { navController.navigate("login") },
+                onClick = { navController.navigate("apl_01") },
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -135,7 +114,6 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Already have account
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
