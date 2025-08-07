@@ -48,9 +48,9 @@ class UserViewModel:ViewModel() {
         return checkUser;
     }
 
-    fun cekApl01(idUser: Int):Boolean{
+    fun cekApl01():Boolean{
         val asesi = Util.dummyAsesiList.find {
-            it.idUser == idUser
+            it.idUser == Util.logUser
         }
         if (asesi != null){
             val assesmen = Util.dummyAsesmenList.find {

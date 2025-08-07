@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ViewList
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.SupervisedUserCircle
@@ -68,7 +70,7 @@ fun AppNavigation() {
     val bottomNavItems = listOf(
         ItemBar(Icons.Default.Dashboard, "Dashboard", "main"),
         ItemBar(Icons.AutoMirrored.Filled.ViewList, "List Skema", "skemaList"),
-        ItemBar(Icons.Default.SupervisedUserCircle, "Peserta Assesmen", "main")
+        ItemBar(Icons.Default.AccountCircle, "Profil", "main")
     )
 
     val routesWithNavigation = listOf("main", "skemaList")
@@ -92,7 +94,7 @@ fun AppNavigation() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "login",
+            startDestination = "main",
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("login") {
@@ -134,8 +136,9 @@ private fun TopAppBar() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(64.dp)
+            .height(84.dp)
             .background(MaterialTheme.colorScheme.tertiary)
+            .statusBarsPadding()
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

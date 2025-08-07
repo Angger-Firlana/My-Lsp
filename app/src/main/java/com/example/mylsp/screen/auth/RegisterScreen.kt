@@ -101,7 +101,9 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             Button(
-                onClick = { navController.navigate("apl_01") },
+                onClick = {
+                    navController.navigate("apl_01")
+                },
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {

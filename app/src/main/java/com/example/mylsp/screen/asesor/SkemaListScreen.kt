@@ -52,9 +52,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -62,6 +64,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.lsp24.models.SkemaSertifikasi
+import com.example.mylsp.screen.main.WaitingApprovalScreen
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.Util
 import com.example.mylsp.viewmodel.MukViewModel
@@ -89,10 +92,13 @@ fun SkemaListScreen(
 
     val filterOptions = listOf("Semua Event", "Event Hari Ini", "Event Minggu Ini", "Event Bulan Ini")
 
-    LaunchedEffect(Unit) {
-        Log.d("User", user.toString())
-        viewModel.getSkemas()
+    if (userViewModel.cekApl01()){
+        LaunchedEffect(Unit) {
+            Log.d("User", user.toString())
+            viewModel.getSkemas()
+        }
     }
+
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -100,6 +106,7 @@ fun SkemaListScreen(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             // Header Background
+            if (userViewModel.cekApl01()){
             Card(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
@@ -107,7 +114,7 @@ fun SkemaListScreen(
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.tertiary
                 ),
                 elevation = CardDefaults.cardElevation(8.dp)
             ) {
@@ -208,29 +215,34 @@ fun SkemaListScreen(
             }
 
             // Content
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 20.dp),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                    top = 240.dp,
-                    bottom = 20.dp
-                ),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(skemaList) { skema ->
-                    SkemaCard(
-                        skema = skema,
-                        onCardClick = {
-                            if (user?.role == "asesi"){
-                                navController.navigate("detailusk")
-                            }else if (user?.role == "asesor"){
 
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                        top = 240.dp,
+                        bottom = 20.dp
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(skemaList) { skema ->
+                        SkemaCard(
+                            skema = skema,
+                            onCardClick = {
+                                if (user?.role == "asesi"){
+                                    navController.navigate("detailusk")
+                                }else if (user?.role == "asesor"){
+
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
+            }else{
+                WaitingApprovalScreen(modifier, navController)
             }
+
         }
     }
 }

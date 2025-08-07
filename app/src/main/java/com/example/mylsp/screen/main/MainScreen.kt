@@ -14,20 +14,24 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.SupervisedUserCircle
 import androidx.compose.material.icons.filled.ViewList
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +49,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -60,36 +65,80 @@ data class ItemBar(
     val route: String
 )
 
+data class ItemBanner(
+    val image: Int,
+    val description: String,
+)
+
 @Composable
-fun MainScreen(modifier: Modifier, navController: NavController) {
+fun MainScreen(modifier: Modifier = Modifier, navController: NavController) {
     val viewModel: UserViewModel = viewModel()
     val idUser = Util.logUser
-    val user = viewModel.getUserById(idUser)
-    val asesi = Util.dummyAsesiList.find { it.idUser == idUser }
-    val pagerState = rememberPagerState { 2 }
+
+    val banners = listOf(
+        ItemBanner(R.drawable.banner1, "Selamat Datang Di MyLsp"),
+        ItemBanner(R.drawable.banner2, "Deskripsi Banner 2")
+    )
+    val pagerState = rememberPagerState { banners.size }
+    var currentBanner by remember { mutableStateOf(0) }
 
     Box(modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 32.dp, end = 16.dp, top = 16.dp, bottom = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            HorizontalPager(
-                pagerState,
+            Card(
+                modifier = Modifier.fillMaxWidth().height(200.dp).padding(vertical = 8.dp),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                HorizontalPager(state = pagerState) { page ->
+                    currentBanner = page
+                    val item = banners[page]
+                    Box(Modifier.fillMaxSize()){
+                        Image(
+                            painter = painterResource(id = item.image),
+                            contentDescription = item.description,
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            contentScale = ContentScale.Crop
+                        )
+                        Column(
+                            modifier = Modifier.fillMaxSize().background(color = MaterialTheme.colorScheme.onBackground.copy(0.5f))
+                        ) {
 
-            ) { }
-            Text(
-                "Selamat Datang Di MyLsp",
-                fontFamily = AppFont.Poppins,
-                fontWeight = FontWeight.Medium,
-                fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.onBackground
-            )
+                        }
+                        Text(
+                            text = item.description,
+                            fontFamily = AppFont.Poppins,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.background,
+                            modifier = Modifier.align(Alignment.Center)
+
+                        )
+                    }
+                }
+            }
+
+
+            LazyRow {
+                items(banners.size){
+                    val checkCurrent = it == currentBanner
+                   Card(
+                       modifier = Modifier.height(10.dp).width(if(checkCurrent) 40.dp else 20.dp).padding(horizontal = 4.dp),
+                       colors = CardDefaults.cardColors(
+                           containerColor = if (checkCurrent) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onBackground.copy(0.3f)
+                       )
+                   ) {
+
+                   }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
-
-
     }
 }
+
 

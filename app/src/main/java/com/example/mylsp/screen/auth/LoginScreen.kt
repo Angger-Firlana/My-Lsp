@@ -121,7 +121,7 @@ fun LoginScreen(
                                 navController.navigate("skemaList")
                             }
                             else{
-                                if(viewModel.cekApl01(userLog.idUser)) {
+                                if(viewModel.cekApl01()) {
                                     navController.navigate("main"){
                                         popUpTo("login"){inclusive = true}
                                     }
