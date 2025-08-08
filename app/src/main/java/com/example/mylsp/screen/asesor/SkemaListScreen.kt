@@ -63,7 +63,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.lsp24.models.SkemaSertifikasi
 import com.example.mylsp.screen.main.WaitingApprovalScreen
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.Util
@@ -84,7 +83,6 @@ fun SkemaListScreen(
     val viewModel: MukViewModel = viewModel()
     val skemaList by viewModel.skemas.collectAsState()
 
-    val user = userViewModel.getUserById(Util.logUser)
 
     var search by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
@@ -92,10 +90,9 @@ fun SkemaListScreen(
 
     val filterOptions = listOf("Semua Event", "Event Hari Ini", "Event Minggu Ini", "Event Bulan Ini")
 
-    if (userViewModel.cekApl01()){
+    if (true){
         LaunchedEffect(Unit) {
-            Log.d("User", user.toString())
-            viewModel.getSkemas()
+            Log.d("User", "")
         }
     }
 
@@ -106,7 +103,7 @@ fun SkemaListScreen(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             // Header Background
-            if (userViewModel.cekApl01()){
+            if (true){
             Card(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
@@ -226,18 +223,6 @@ fun SkemaListScreen(
                     ),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(skemaList) { skema ->
-                        SkemaCard(
-                            skema = skema,
-                            onCardClick = {
-                                if (user?.role == "asesi"){
-                                    navController.navigate("detailusk")
-                                }else if (user?.role == "asesor"){
-
-                                }
-                            }
-                        )
-                    }
                 }
             }else{
                 WaitingApprovalScreen(modifier, navController)
@@ -250,13 +235,12 @@ fun SkemaListScreen(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SkemaCard(
-    skema:SkemaSertifikasi,
     onCardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Extract data from skema - adjust these according to your actual data structure
-    val judulSkema = skema.judulSkema // skema.judulSkema
-    val tanggalBerlaku = skema.tanggalBerlaku // skema.tanggalBerlaku
+    val judulSkema = "" // skema.judulSkema
+    val tanggalBerlaku = ""
 
     val dateSkema = LocalDate.parse(tanggalBerlaku)
     val tanggalSkema = dateSkema.format(

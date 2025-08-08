@@ -40,7 +40,6 @@ import com.example.mylsp.util.AppFont
 
 @Composable
 fun APL01(modifier: Modifier = Modifier, navController: NavController) {
-    // State teks
     var namaLengkap by remember { mutableStateOf("") }
     var tanggalLahir by remember { mutableStateOf("") }
     var kelas by remember { mutableStateOf("") }
@@ -52,13 +51,11 @@ fun APL01(modifier: Modifier = Modifier, navController: NavController) {
     var nomorSkema by remember { mutableStateOf("") }
     var tujuanAssesment by remember { mutableStateOf("") }
 
-    // State file (pakai Uri biar bisa diakses langsung)
     var fotoKartu by remember { mutableStateOf<Uri?>(null) }
     var fotoDiri by remember { mutableStateOf<Uri?>(null) }
     var fotoRapot by remember { mutableStateOf<List<Uri>>(emptyList()) }
     var suratPKL by remember { mutableStateOf<Uri?>(null) }
 
-    // Launchers
     val kartuPicker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         fotoKartu = uri
     }

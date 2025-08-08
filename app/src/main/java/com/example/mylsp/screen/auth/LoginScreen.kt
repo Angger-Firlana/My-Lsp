@@ -1,5 +1,6 @@
 package com.example.mylsp.screen.auth
 
+import android.app.Application
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -17,23 +18,47 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mylsp.R
+import com.example.mylsp.component.LoadingScreen
+import com.example.mylsp.model.api.LoginRequest
+import com.example.mylsp.repository.AuthRepository
 import com.example.mylsp.util.AppFont
-import com.example.mylsp.util.Util
-import com.example.mylsp.viewmodel.UserViewModel
+import com.example.mylsp.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
-    val context = LocalContext.current
-    val viewModel : UserViewModel = viewModel()
+    val context = LocalContext.current.applicationContext
+    val viewModel: AuthViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(LocalContext.current.applicationContext as Application)
+    )
 
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val stateLogin by viewModel.state.collectAsState()
+    val message by viewModel.message.collectAsState()
+
+    var isLoading by remember { mutableStateOf(false) }
+
+    LaunchedEffect(stateLogin) {
+        stateLogin?.let { success ->
+            isLoading = false
+            if (success) {
+                navController.navigate("main"){
+                    popUpTo(navController.graph.startDestinationId){inclusive = true}
+                }
+            }
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            viewModel.resetState()
+        }
+    }
+
 
     Box(
         modifier = modifier.fillMaxSize()
@@ -114,27 +139,13 @@ fun LoginScreen(
 
             Button(
                 onClick = {
-                    if (viewModel.login(username, password)){
-                        val userLog = viewModel.getUserById(Util.logUser)
-                        userLog?.let {
-                            if (it.role == "Asesor"){
-                                navController.navigate("skemaList")
-                            }
-                            else{
-                                if(viewModel.cekApl01()) {
-                                    navController.navigate("main"){
-                                        popUpTo("login"){inclusive = true}
-                                    }
-                                }
-                                else {
-                                    navController.navigate("waiting_approval")
-                                }
-                            }
-                        }
+                    isLoading = true
+                    viewModel.login(
+                        LoginRequest(
+                            input = username,
+                            password = password
+                    ))
 
-                    }else {
-                        Toast.makeText(context, "User Tidak Ditemukan", Toast.LENGTH_SHORT).show()
-                    }
                 },
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
@@ -167,5 +178,10 @@ fun LoginScreen(
                 )
             }
         }
+
+        if(isLoading){
+            LoadingScreen()
+        }
     }
 }
+

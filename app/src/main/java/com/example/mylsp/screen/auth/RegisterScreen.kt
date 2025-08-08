@@ -1,5 +1,7 @@
 package com.example.mylsp.screen.auth
 
+import android.app.Application
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,23 +13,51 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mylsp.R
+import com.example.mylsp.model.api.RegisterRequest
+import com.example.mylsp.repository.AuthRepository
 import com.example.mylsp.util.AppFont
+import com.example.mylsp.viewmodel.AuthViewModel
 
 @Composable
 fun RegisterScreen(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
+    val context = LocalContext.current
+    val viewModel: AuthViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(LocalContext.current.applicationContext as Application)
+    )
+
     var username by remember { mutableStateOf("") }
     var nik by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    val message by viewModel.message.collectAsState()
+
+    val stateRegister by viewModel.state.collectAsState()
+
+    var isLoading by remember { mutableStateOf(false) }
+
+    LaunchedEffect(stateRegister) {
+        stateRegister?.let { success->
+            if (success){
+                navController.navigate("apl_01")
+            }else{
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+        }
+        isLoading = false
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -102,7 +132,12 @@ fun RegisterScreen(
 
             Button(
                 onClick = {
-                    navController.navigate("apl_01")
+                    isLoading = true
+                    viewModel.register(
+                        RegisterRequest(
+                            email, username, password
+                        )
+                    )
                 },
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()

@@ -1,70 +1,54 @@
 package com.example.mylsp.viewmodel
 
+import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.lsp24.models.User
-import com.example.mylsp.api.APIClient
-import com.example.mylsp.util.Util
+import com.example.mylsp.model.api.User
+import com.example.mylsp.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class UserViewModel:ViewModel() {
-    private val _users =  MutableStateFlow<List<User>>(emptyList())
-    val users:StateFlow<List<User>> = _users
+class UserViewModel(private val userRepository: UserRepository):ViewModel(){
+
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+    private val _state = MutableStateFlow<Boolean?>(null)
+    val state = _state.asStateFlow()
+
+    private val _message = MutableStateFlow<String?>(null)
+    val message = _message.asStateFlow()
+
+    private val _user = MutableStateFlow<User?>(null)
+    val user = _user.asStateFlow()
 
 
-    fun fetchUsers() {
+
+    fun getUserByToken(){
         viewModelScope.launch {
-            try {
-                val result = APIClient.api.getUsers()
-            } catch (e: Exception) {
-                _error.value = e.message
-            }
-        }
-    }
-
-    fun getUserById(id:Int):User?{
-        val userById = Util.dummyUsers.find {
-            it.idUser == id
-        }
-        return userById;
-    }
-
-    fun login(username: String, password: String): Boolean{
-        val userLog = Util.dummyUsers.find {
-            it.username == username
-                    &&
-            it.passwordHash == password
-        }
-        val checkUser = userLog != null
-        if(checkUser){
-            Util.logUser = userLog?.idUser?: 0
-        }
-        return checkUser;
-    }
-
-    fun cekApl01():Boolean{
-        val asesi = Util.dummyAsesiList.find {
-            it.idUser == Util.logUser
-        }
-        if (asesi != null){
-            val assesmen = Util.dummyAsesmenList.find {
-                it.idAsesi == asesi.idAsesi
-            }
-            if (assesmen != null){
-                val apl01 = Util.dummyFormApl01List.find {
-                    it.idAsesmen == assesmen.idAsesmen
+            val result = userRepository.getUserByToken()
+            result.fold(
+                onSuccess = { body->
+                    _user.value = body
+                    _message.value = "Berhasil di get"
+                    Log.d("body", body.toString())
+                },
+                onFailure = { error->
+                    _message.value = error.message?: "Gagal Di ambil"
+                    Log.e("body", error.toString())
                 }
-                if (apl01 != null){
-                    return true
-                }
-            }
+            )
+
         }
-        return false
+    }
+
+
+    fun resetState(){
+        _state.value = null
+        _message.value = null
     }
 }
