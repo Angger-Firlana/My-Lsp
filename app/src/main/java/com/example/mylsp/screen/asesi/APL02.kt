@@ -95,7 +95,7 @@ fun APL02(modifier: Modifier = Modifier, navController: NavController) {
                 modifier = Modifier
                     .padding(top = 10.dp ,start = 20.dp, end = 20.dp)
                     .fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(15.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
                 ),
