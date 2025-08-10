@@ -36,6 +36,4 @@ object APIClient {
             .build()
             .create(APIService::class.java)
     }
-
-
 }

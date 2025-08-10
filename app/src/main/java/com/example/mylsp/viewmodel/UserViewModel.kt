@@ -13,10 +13,6 @@ import kotlinx.coroutines.launch
 
 class UserViewModel(private val userRepository: UserRepository):ViewModel(){
 
-
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error
-
     private val _state = MutableStateFlow<Boolean?>(null)
     val state = _state.asStateFlow()
 
@@ -35,11 +31,9 @@ class UserViewModel(private val userRepository: UserRepository):ViewModel(){
                 onSuccess = { body->
                     _user.value = body
                     _message.value = "Berhasil di get"
-                    Log.d("body", body.toString())
                 },
                 onFailure = { error->
                     _message.value = error.message?: "Gagal Di ambil"
-                    Log.e("body", error.toString())
                 }
             )
 

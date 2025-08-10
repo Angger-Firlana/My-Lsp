@@ -1,11 +1,11 @@
 package com.example.mylsp.model.api
 
 data class User(
-    val user : userDetail,
+    val user : UserDetail,
     val message:String?
 )
 
-data class userDetail(
+data class UserDetail(
     val id:Int,
     val username:String,
     val email:String,

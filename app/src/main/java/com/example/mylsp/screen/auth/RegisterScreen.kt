@@ -7,6 +7,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -27,7 +31,9 @@ import com.example.mylsp.model.api.RegisterRequest
 import com.example.mylsp.repository.AuthRepository
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.viewmodel.AuthViewModel
+import com.example.mylsp.viewmodel.JurusanViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     modifier: Modifier = Modifier,
@@ -37,11 +43,19 @@ fun RegisterScreen(
     val viewModel: AuthViewModel = viewModel(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(LocalContext.current.applicationContext as Application)
     )
+    val jurusanViewModel: JurusanViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(LocalContext.current.applicationContext as Application)
+    )
 
     var username by remember { mutableStateOf("") }
     var nik by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var jurusanTitle by remember { mutableStateOf("") }
+    var jurusanId by remember { mutableStateOf(0) }
+    var dropJurusans by remember { mutableStateOf(false) }
+
+    val jurusans by jurusanViewModel.jurusans.collectAsState()
     val message by viewModel.message.collectAsState()
 
     val stateRegister by viewModel.state.collectAsState()
@@ -57,6 +71,10 @@ fun RegisterScreen(
             }
         }
         isLoading = false
+    }
+
+    LaunchedEffect(Unit){
+        jurusanViewModel.getJurusans()
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -100,20 +118,6 @@ fun RegisterScreen(
             )
 
             Text(
-                text = "Password",
-                fontFamily = AppFont.Poppins,
-                fontWeight = FontWeight.Medium,
-                fontSize = 14.sp,
-                modifier = Modifier.fillMaxWidth()
-            )
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                placeholder = { Text("password", fontFamily = AppFont.Poppins) },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp)
-            )
-            Text(
                 text = "Email",
                 fontFamily = AppFont.Poppins,
                 fontWeight = FontWeight.Medium,
@@ -127,6 +131,59 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp)
             )
+
+
+            Text(
+                text = "Password",
+                fontFamily = AppFont.Poppins,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp,
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                placeholder = { Text("password", fontFamily = AppFont.Poppins) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            )
+            ExposedDropdownMenuBox(
+                dropJurusans,
+                onExpandedChange = {
+                    dropJurusans = !dropJurusans
+                }
+            ) {
+
+                OutlinedTextField(
+                    value = jurusanTitle,
+                    onValueChange = {
+
+                    },
+                    readOnly = true,
+                    enabled = false,
+                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                )
+                ExposedDropdownMenu(
+                    dropJurusans,
+                    onDismissRequest = {
+                        dropJurusans = false
+                    }
+                ) {
+                    jurusans.forEach { jurusan ->
+                        DropdownMenuItem(
+                            text = {
+                                jurusan.nama_jurusan
+                            },
+                            onClick = {
+                                jurusanTitle = jurusan.nama_jurusan
+                                jurusanId = jurusan.id
+                                dropJurusans = false
+                            }
+                        )
+                    }
+                }
+            }
+
 
             Spacer(modifier = Modifier.height(20.dp))
 

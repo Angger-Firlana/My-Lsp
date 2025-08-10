@@ -73,7 +73,7 @@ fun AppNavigation() {
         ItemBar(Icons.Default.AccountCircle, "Profil", "main")
     )
 
-    val routesWithNavigation = listOf("main", "skemaList")
+    val routesWithNavigation = listOf("main", "skemaList", "profil")
     val showNavigation = currentRoute in routesWithNavigation
 
     Scaffold(

@@ -18,7 +18,7 @@ class AuthRepository(context: Context) {
                 if (body != null){
                     Result.success(body)
                 }else{
-                    Result.failure(Exception("response body kosong"))
+                    Result.failure(Exception("."))
                 }
             }else{
                 val errorBody = response.errorBody()?.string() ?: "Unknown error"

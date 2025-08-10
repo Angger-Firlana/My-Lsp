@@ -32,7 +32,7 @@ class AuthViewModel(
                 onSuccess = { body ->
                     _state.value = true
                     _message.value = body.message
-                    tokenManager.saveToken(body.token) // simpan token
+                    tokenManager.saveToken(body.token)
                 },
                 onFailure = { error ->
                     _state.value = false
