@@ -1,5 +1,6 @@
 package com.example.mylsp.navigation
 
+import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -41,14 +42,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mylsp.R
-import com.example.mylsp.screen.asesi.APL01
 import com.example.mylsp.screen.asesi.APL02
+import com.example.mylsp.screen.asesi.AsesiFormScreen
 import com.example.mylsp.screen.asesi.DetailUSK
 import com.example.mylsp.screen.asesor.KelengkapanDataAsesor
 import com.example.mylsp.screen.asesor.SignatureScreen
@@ -58,6 +61,7 @@ import com.example.mylsp.screen.auth.RegisterScreen
 import com.example.mylsp.screen.main.ItemBar
 import com.example.mylsp.screen.main.MainScreen
 import com.example.mylsp.screen.main.WaitingApprovalScreen
+import com.example.mylsp.viewmodel.AsesiViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -70,7 +74,11 @@ fun AppNavigation() {
     val bottomNavItems = listOf(
         ItemBar(Icons.Default.Dashboard, "Dashboard", "main"),
         ItemBar(Icons.AutoMirrored.Filled.ViewList, "List Skema", "skemaList"),
-        ItemBar(Icons.Default.AccountCircle, "Profil", "main")
+        ItemBar(Icons.Default.AccountCircle, "Profil", "apl_01")
+    )
+
+    val asesiViewModel: AsesiViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(LocalContext.current.applicationContext as Application)
     )
 
     val routesWithNavigation = listOf("main", "skemaList", "profil")
@@ -116,7 +124,7 @@ fun AppNavigation() {
                 DetailUSK(navController = navController)
             }
             composable("apl_01") {
-                APL01(navController = navController)
+                AsesiFormScreen(asesiViewModel,navController = navController)
             }
             composable("apl_02") {
                 APL02(navController = navController)

@@ -48,7 +48,8 @@ class AuthViewModel(
             result.fold(
                 onSuccess = { body ->
                     _state.value = true
-                    _message.value = body.message?: "Register Berhasil"
+                    _message.value = body.message
+                    tokenManager.saveToken(body.token)
                 },
                 onFailure = { error ->
                     _state.value = false
