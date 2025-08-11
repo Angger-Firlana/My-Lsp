@@ -77,7 +77,8 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavController) {
 
     val banners = listOf(
         ItemBanner(R.drawable.banner1, "Selamat Datang Di MyLsp"),
-        ItemBanner(R.drawable.banner2, "Deskripsi Banner 2")
+        ItemBanner(R.drawable.banner2, "Deskripsi Banner 2"),
+        ItemBanner(R.drawable.senaaska, "Ganteng Bat Jir")
     )
     val pagerState = rememberPagerState { banners.size }
     var currentBanner by remember { mutableStateOf(0) }

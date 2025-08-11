@@ -39,8 +39,8 @@ fun LoginScreen(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(LocalContext.current.applicationContext as Application)
     )
 
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("anjai") }
+    var password by remember { mutableStateOf("123456") }
 
     val stateLogin by viewModel.state.collectAsState()
     val message by viewModel.message.collectAsState()

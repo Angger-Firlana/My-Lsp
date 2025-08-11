@@ -50,7 +50,6 @@ data class FileUpload(
     var fileName: String? = null
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SectionHeader(title: String) {
     Text(
@@ -71,24 +70,26 @@ fun AsesiFormScreen(
     val state by viewModel.state.collectAsState()
     val message by viewModel.message.collectAsState()
 
-    var namaLengkap by remember { mutableStateOf("") }
-    var nik by remember { mutableStateOf("") }
-    var tanggalLahir by remember { mutableStateOf("") }
-    var tempatLahir by remember { mutableStateOf("") }
+    var namaLengkap by remember { mutableStateOf("Budi Santoso") }
+    var nik by remember { mutableStateOf("3201010101010001") }
+    var tanggalLahir by remember { mutableStateOf("1998-05-05") }
+    var tempatLahir by remember { mutableStateOf("Jakarta") }
     var jenisKelamin by remember { mutableStateOf("Laki-laki") }
-    var kebangsaan by remember { mutableStateOf("") }
-    var alamatRumah by remember { mutableStateOf("") }
-    var kodePos by remember { mutableStateOf("") }
-    var noTeleponRumah by remember { mutableStateOf("") }
-    var noTelepon by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var kualifikasiPendidikan by remember { mutableStateOf("") }
-    var namaInstitusi by remember { mutableStateOf("") }
-    var jabatan by remember { mutableStateOf("") }
-    var alamatKantor by remember { mutableStateOf("") }
-    var kodePosKantor by remember { mutableStateOf("") }
-    var faxKantor by remember { mutableStateOf("") }
-    var emailKantor by remember { mutableStateOf("") }
+    var kebangsaan by remember { mutableStateOf("Indonesia") }
+    var alamatRumah by remember { mutableStateOf("Jl. Melati No. 10, Jakarta Barat") }
+    var kodePos by remember { mutableStateOf("11510") }
+    var noTeleponRumah by remember { mutableStateOf("0215551234") }
+    var noTeleponKantor by remember { mutableStateOf("0215551234") }
+    var noTelepon by remember { mutableStateOf("081234567890") }
+    var email by remember { mutableStateOf("budi.santoso@example.com") }
+    var kualifikasiPendidikan by remember { mutableStateOf("S1 Teknik Informatika") }
+    var namaInstitusi by remember { mutableStateOf("Universitas Indonesia") }
+    var jabatan by remember { mutableStateOf("Software Engineer") }
+    var alamatKantor by remember { mutableStateOf("Jl. Sudirman No. 25, Jakarta Pusat") }
+    var kodePosKantor by remember { mutableStateOf("10210") }
+    var faxKantor by remember { mutableStateOf("0215554321") }
+    var emailKantor by remember { mutableStateOf("budi.santoso@kantor.com") }
+
 
     var fileUploads by remember {
         mutableStateOf(
@@ -390,6 +391,7 @@ fun AsesiFormScreen(
                         alamat_rumah = alamatRumah,
                         kode_pos = kodePos,
                         no_telepon_rumah = noTeleponRumah,
+                        no_telepon_kantor = noTeleponKantor,
                         no_telepon = noTelepon,
                         email = email,
                         kualifikasi_pendidikan = kualifikasiPendidikan,
@@ -399,7 +401,7 @@ fun AsesiFormScreen(
                         kode_pos_kantor = kodePosKantor,
                         fax_kantor = faxKantor,
                         email_kantor = emailKantor,
-                        status = "Pending",
+                        status = "pending",
                         attachments = attachments
                     )
                     viewModel.createDataAsesi(request)
