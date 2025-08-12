@@ -61,6 +61,7 @@ import com.example.mylsp.screen.auth.RegisterScreen
 import com.example.mylsp.screen.main.ItemBar
 import com.example.mylsp.screen.main.MainScreen
 import com.example.mylsp.screen.main.WaitingApprovalScreen
+import com.example.mylsp.viewmodel.APL02ViewModel
 import com.example.mylsp.viewmodel.AsesiViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -75,6 +76,10 @@ fun AppNavigation() {
         ItemBar(Icons.Default.Dashboard, "Dashboard", "main"),
         ItemBar(Icons.AutoMirrored.Filled.ViewList, "List Skema", "skemaList"),
         ItemBar(Icons.Default.AccountCircle, "Profil", "apl_01")
+    )
+
+    val apL02ViewModel:APL02ViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(LocalContext.current.applicationContext as Application)
     )
 
     val asesiViewModel: AsesiViewModel = viewModel(
@@ -126,8 +131,9 @@ fun AppNavigation() {
             composable("apl_01") {
                 AsesiFormScreen(asesiViewModel,navController = navController)
             }
-            composable("apl_02") {
-                APL02(navController = navController)
+            composable("apl02/{id}") {
+                val id = it.arguments?.getString("id")?: "0"
+                APL02(id = id.toInt(),apL02ViewModel = apL02ViewModel,navController = navController)
             }
             composable("waiting_approval") {
                 WaitingApprovalScreen(modifier = Modifier, navController)

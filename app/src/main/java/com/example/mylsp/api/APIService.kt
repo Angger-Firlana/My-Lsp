@@ -1,5 +1,6 @@
 package com.example.mylsp.api
 
+import com.example.mylsp.model.api.Apl02
 import com.example.mylsp.model.api.AsesiRequest
 import com.example.mylsp.model.api.CreateAsesiResponse
 import com.example.mylsp.model.api.Jurusan
@@ -17,6 +18,7 @@ import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 
 interface APIService {
 
@@ -52,6 +54,9 @@ interface APIService {
         @Part("status") status: RequestBody,
         @Part attachments: List<MultipartBody.Part>
     ): Response<CreateAsesiResponse>
+    @GET("apl02/{id}")
+    suspend fun getAPL02(@Path("id") id: Int): Response<Apl02>
+
     @GET("jurusan")
     suspend fun getJurusans():Response<List<Jurusan>>
 }
