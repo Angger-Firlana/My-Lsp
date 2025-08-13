@@ -63,6 +63,7 @@ fun APL02(modifier: Modifier = Modifier,id:Int, apL02ViewModel: APL02ViewModel, 
     LaunchedEffect(Unit) {
         apL02ViewModel.getAPL02(id)
     }
+
     Box(
         modifier = Modifier
             .fillMaxSize(),

@@ -5,6 +5,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 
 @Composable
-fun DashboardAsesor(modifier: Modifier = Modifier,,navController: NavController) {
+fun DashboardAsesor(modifier: Modifier = Modifier,navController: NavController) {
 
 }

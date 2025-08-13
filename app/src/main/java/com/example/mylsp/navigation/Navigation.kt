@@ -50,6 +50,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mylsp.R
+import com.example.mylsp.screen.ProfileScreen
 import com.example.mylsp.screen.asesi.APL02
 import com.example.mylsp.screen.asesi.AsesiFormScreen
 import com.example.mylsp.screen.asesi.DetailUSK
@@ -61,6 +62,7 @@ import com.example.mylsp.screen.auth.RegisterScreen
 import com.example.mylsp.screen.main.ItemBar
 import com.example.mylsp.screen.main.MainScreen
 import com.example.mylsp.screen.main.WaitingApprovalScreen
+import com.example.mylsp.util.UserManager
 import com.example.mylsp.viewmodel.APL02ViewModel
 import com.example.mylsp.viewmodel.AsesiViewModel
 
@@ -70,12 +72,18 @@ fun AppNavigation() {
     val context = LocalContext.current
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+    val startDestination = if (UserManager(context).getUserId() != null){
+        "main"
+    }else{
+        "login"
+    }
     val currentRoute = navBackStackEntry?.destination?.route
 
     val bottomNavItems = listOf(
         ItemBar(Icons.Default.Dashboard, "Dashboard", "main"),
         ItemBar(Icons.AutoMirrored.Filled.ViewList, "List Skema", "skemaList"),
-        ItemBar(Icons.Default.AccountCircle, "Profil", "apl_01")
+        ItemBar(Icons.Default.AccountCircle, "Profil", "profile"),
     )
 
     val apL02ViewModel:APL02ViewModel = viewModel(
@@ -87,7 +95,7 @@ fun AppNavigation() {
     )
 
     val routesWithNavigation = listOf("main", "skemaList", "profil")
-    val showNavigation = currentRoute in routesWithNavigation
+    var showNavigation = currentRoute in routesWithNavigation
 
     Scaffold(
         topBar = {
@@ -107,7 +115,7 @@ fun AppNavigation() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "login",
+            startDestination = startDestination,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("login") {
@@ -123,22 +131,30 @@ fun AppNavigation() {
                 SignatureScreen(context, navController)
             }
             composable("skemaList") {
+                showNavigation = true
                 SkemaListScreen(modifier = Modifier, navController = navController)
             }
             composable("detailusk") {
-                DetailUSK(navController = navController)
+                DetailUSK(navController = navController, idSkema = 1)
             }
             composable("apl_01") {
+                showNavigation = true
                 AsesiFormScreen(asesiViewModel,navController = navController)
             }
             composable("apl02/{id}") {
+                showNavigation = false
                 val id = it.arguments?.getString("id")?: "0"
                 APL02(id = id.toInt(),apL02ViewModel = apL02ViewModel,navController = navController)
             }
             composable("waiting_approval") {
                 WaitingApprovalScreen(modifier = Modifier, navController)
             }
+            composable("profile"){
+                showNavigation = true
+                ProfileScreen(modifier = Modifier, navController = navController)
+            }
             composable("main") {
+                showNavigation = true
                 MainScreen(modifier = Modifier, navController = navController)
             }
         }
