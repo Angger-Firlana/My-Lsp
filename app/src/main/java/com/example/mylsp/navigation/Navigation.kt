@@ -54,8 +54,12 @@ import com.example.mylsp.screen.ProfileScreen
 import com.example.mylsp.screen.asesi.APL02
 import com.example.mylsp.screen.asesi.AsesiFormScreen
 import com.example.mylsp.screen.asesi.DetailUSK
+<<<<<<< HEAD
 import com.example.mylsp.screen.asesor.DetailEvent
 import com.example.mylsp.screen.asesor.Events
+=======
+import com.example.mylsp.screen.asesor.FRIA01
+>>>>>>> 4d8970ed3aebcf6c32f5387574c6adc1dc4bd18e
 import com.example.mylsp.screen.asesor.KelengkapanDataAsesor
 import com.example.mylsp.screen.asesor.SignatureScreen
 import com.example.mylsp.screen.asesor.SkemaListScreen
@@ -67,6 +71,7 @@ import com.example.mylsp.screen.main.WaitingApprovalScreen
 import com.example.mylsp.util.UserManager
 import com.example.mylsp.viewmodel.APL02ViewModel
 import com.example.mylsp.viewmodel.AsesiViewModel
+import com.example.mylsp.viewmodel.SkemaViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -86,6 +91,9 @@ fun AppNavigation() {
         ItemBar(Icons.Default.Dashboard, "Dashboard", "main"),
         ItemBar(Icons.AutoMirrored.Filled.ViewList, "List Skema", "skemaList"),
         ItemBar(Icons.Default.AccountCircle, "Profil", "profile"),
+    )
+    val skemaViewModel:SkemaViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
     )
 
     val apL02ViewModel:APL02ViewModel = viewModel(
@@ -134,7 +142,7 @@ fun AppNavigation() {
             }
             composable("skemaList") {
                 showNavigation = true
-                SkemaListScreen(modifier = Modifier, navController = navController)
+                SkemaListScreen(modifier = Modifier, skemaViewModel = skemaViewModel, navController = navController)
             }
             composable("detailusk") {
                 DetailUSK(navController = navController, idSkema = 1)
@@ -147,6 +155,11 @@ fun AppNavigation() {
                 showNavigation = false
                 val id = it.arguments?.getString("id")?: "0"
                 APL02(id = id.toInt(),apL02ViewModel = apL02ViewModel,navController = navController)
+            }
+            composable("ia01/{id}"){
+                showNavigation = false
+                val id = it.arguments?.getString("id")?: "0"
+                FRIA01(idSkema = id.toInt(),apL02ViewModel = apL02ViewModel,navController = navController)
             }
             composable("waiting_approval") {
                 WaitingApprovalScreen(modifier = Modifier, navController)
