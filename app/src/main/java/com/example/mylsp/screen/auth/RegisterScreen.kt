@@ -3,15 +3,23 @@ package com.example.mylsp.screen.auth
 import android.app.Application
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,7 +74,7 @@ fun RegisterScreen(
     LaunchedEffect(stateRegister) {
         stateRegister?.let { success->
             if (success){
-                navController.navigate("apl_01")
+                navController.navigate("login")
             }else{
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
@@ -148,38 +157,101 @@ fun RegisterScreen(
                 shape = RoundedCornerShape(16.dp)
             )
             ExposedDropdownMenuBox(
-                dropJurusans,
-                onExpandedChange = {
-                    dropJurusans = !dropJurusans
-                }
+                expanded = dropJurusans,
+                onExpandedChange = { dropJurusans = !dropJurusans }
             ) {
-
                 OutlinedTextField(
                     value = jurusanTitle,
-                    onValueChange = {
-
-                    },
+                    onValueChange = { },
                     readOnly = true,
-                    enabled = false,
-                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                    label = {
+                        Text(
+                            text = "Select Jurusan",
+                            fontFamily = AppFont.Poppins
+                        )
+                    },
+                    placeholder = {
+                        Text(
+                            text = "Choose your jurusan...",
+                            fontFamily = AppFont.Poppins,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                    },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = if (dropJurusans) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                            contentDescription = if (dropJurusans) "Collapse" else "Expand",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                    ),
+                    textStyle = TextStyle(
+                        fontFamily = AppFont.Poppins,
+                        fontSize = 16.sp
+                    )
                 )
+
                 ExposedDropdownMenu(
-                    dropJurusans,
-                    onDismissRequest = {
-                        dropJurusans = false
-                    }
+                    expanded = dropJurusans,
+                    onDismissRequest = { dropJurusans = false },
+                    modifier = Modifier.background(
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(12.dp)
+                    )
                 ) {
-                    jurusans.forEach { jurusan ->
+                    if (jurusans.isEmpty()) {
                         DropdownMenuItem(
                             text = {
-                                jurusan.nama_jurusan
+                                Text(
+                                    text = "No jurusan available",
+                                    fontFamily = AppFont.Poppins,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                    fontSize = 14.sp
+                                )
                             },
-                            onClick = {
-                                jurusanTitle = jurusan.nama_jurusan
-                                jurusanId = jurusan.id
-                                dropJurusans = false
-                            }
+                            onClick = { },
+                            enabled = false
                         )
+                    } else {
+                        jurusans.forEach { jurusan ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = jurusan.nama_jurusan,
+                                        fontFamily = AppFont.Poppins,
+                                        fontSize = 16.sp,
+                                        color = if (jurusanTitle == jurusan.nama_jurusan) {
+                                            MaterialTheme.colorScheme.primary
+                                        } else {
+                                            MaterialTheme.colorScheme.onSurface
+                                        }
+                                    )
+                                },
+                                onClick = {
+                                    jurusanTitle = jurusan.nama_jurusan
+                                    jurusanId = jurusan.id
+                                    dropJurusans = false
+                                },
+                                leadingIcon = if (jurusanTitle == jurusan.nama_jurusan) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Default.Check,
+                                            contentDescription = "Selected",
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                } else null,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
             }
@@ -192,7 +264,7 @@ fun RegisterScreen(
                     isLoading = true
                     viewModel.register(
                         RegisterRequest(
-                            email, username, password
+                            email, username, password,jurusanId
                         )
                     )
                 },

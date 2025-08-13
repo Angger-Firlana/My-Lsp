@@ -1,6 +1,7 @@
 package com.example.mylsp.api
 
 import com.example.mylsp.model.api.Apl02
+import com.example.mylsp.model.api.Asesi
 import com.example.mylsp.model.api.AsesiRequest
 import com.example.mylsp.model.api.CreateAsesiResponse
 import com.example.mylsp.model.api.Jurusan
@@ -8,6 +9,7 @@ import com.example.mylsp.model.api.LoginRequest
 import com.example.mylsp.model.api.LoginResponse
 import com.example.mylsp.model.api.RegisterRequest
 import com.example.mylsp.model.api.RegisterResponse
+import com.example.mylsp.model.api.Skemas
 import com.example.mylsp.model.api.User
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -59,4 +61,10 @@ interface APIService {
 
     @GET("jurusan")
     suspend fun getJurusans():Response<List<Jurusan>>
+
+    @GET("asesi")
+    suspend fun getDataAsesi():Response<Asesi>
+
+    @GET("schema")
+    suspend fun getListSkema():Response<Skemas>
 }

@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mylsp.model.api.Asesi
 import com.example.mylsp.model.api.AsesiRequest
 import com.example.mylsp.repository.AsesiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,9 @@ class AsesiViewModel(application: Application):AndroidViewModel(application) {
     private val _state = MutableStateFlow<Boolean?>(null)
     val state = _state.asStateFlow()
 
+    private val _asesi = MutableStateFlow<Asesi?>(null)
+    val asesi = _asesi.asStateFlow()
+
     fun createDataAsesi(asesiRequest: AsesiRequest){
         viewModelScope.launch {
             val result = repository.createDataAsesi(asesiRequest)
@@ -31,6 +35,20 @@ class AsesiViewModel(application: Application):AndroidViewModel(application) {
                     _state.value = false
                     _message.value = error.message?: "Unknown error"
                     Log.e("Error", _message.value)
+                }
+            )
+        }
+    }
+
+    fun getDataAsesi(){
+        viewModelScope.launch {
+            val result = repository.getDataAsesi()
+            result.fold(
+                onSuccess ={ body ->
+                    _asesi.value = body
+                },
+                onFailure = { error ->
+                    _message.value = error.message?: "Error Unknown"
                 }
             )
         }

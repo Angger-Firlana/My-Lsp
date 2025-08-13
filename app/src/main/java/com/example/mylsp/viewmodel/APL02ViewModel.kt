@@ -15,7 +15,7 @@ class APL02ViewModel(application: Application):AndroidViewModel(application) {
     private val _apl02 = MutableStateFlow<Apl02?>(null)
     val apl02 = _apl02.asStateFlow()
 
-    private val _message = MutableStateFlow<String>("")
+    private val _message = MutableStateFlow("")
     val message = _message.asStateFlow()
     fun getAPL02(idSchemas:Int){
         viewModelScope.launch {
