@@ -54,12 +54,9 @@ import com.example.mylsp.screen.ProfileScreen
 import com.example.mylsp.screen.asesi.APL02
 import com.example.mylsp.screen.asesi.AsesiFormScreen
 import com.example.mylsp.screen.asesi.DetailUSK
-<<<<<<< HEAD
 import com.example.mylsp.screen.asesor.DetailEvent
 import com.example.mylsp.screen.asesor.Events
-=======
 import com.example.mylsp.screen.asesor.FRIA01
->>>>>>> 4d8970ed3aebcf6c32f5387574c6adc1dc4bd18e
 import com.example.mylsp.screen.asesor.KelengkapanDataAsesor
 import com.example.mylsp.screen.asesor.SignatureScreen
 import com.example.mylsp.screen.asesor.SkemaListScreen
