@@ -1,5 +1,6 @@
 package com.example.mylsp.model.api
 
+import androidx.compose.runtime.MutableState
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.math.IntMath
 
 data class Apl02(
@@ -31,4 +32,9 @@ data class KriteriaUntukKerja(
 data class JawabanApl02(
     val idElemen: Int,
     var jawaban: String
+)
+
+data class BuktiRelevanApl02(
+    val idElemen: Int,
+    val buktiRelevans: MutableList<String> = mutableListOf()
 )

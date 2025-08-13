@@ -1,27 +1,21 @@
 package com.example.mylsp.screen.asesi
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -40,22 +34,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.mylsp.util.AppFont
-import androidx.core.net.toUri
 import com.example.mylsp.R
 import com.example.mylsp.model.api.JawabanApl02
 import com.example.mylsp.viewmodel.APL02ViewModel
-import com.example.mylsp.viewmodel.JawabanManager
+import com.example.mylsp.util.JawabanManager
 
 @Composable
 fun APL02(modifier: Modifier = Modifier,id:Int, apL02ViewModel: APL02ViewModel, navController: NavController) {
     val context = LocalContext.current
+    val jawabanManager = JawabanManager()
     val apl02 by apL02ViewModel.apl02.collectAsState()
     val message by apL02ViewModel.message.collectAsState()
     val pilihan = listOf("K", "BK")
@@ -231,7 +222,10 @@ fun APL02(modifier: Modifier = Modifier,id:Int, apL02ViewModel: APL02ViewModel, 
 
                         unit.elemen.forEach { (index, elemen) ->
                             val kuk = elemen.kuk
-                            var checked by remember { mutableStateOf(false) }
+                            val buktiRelevans = listOf(
+                                "Fotocopy semester 1-5",
+                                "Sertifikat PKL"
+                            )
                             var dipilih by remember { mutableStateOf("") }
 
                             Card(
@@ -288,7 +282,7 @@ fun APL02(modifier: Modifier = Modifier,id:Int, apL02ViewModel: APL02ViewModel, 
                                             selected = s == dipilih,
                                             onClick = {
                                                 dipilih = s
-                                                JawabanManager().addToList(jawabanApl02 = JawabanApl02(idElemen = index.toInt(), jawaban = dipilih))
+                                                JawabanManager().addJawaban(idElemen = index.toInt(), jawaban = dipilih)
                                             }
                                         )
                                         Text(
@@ -301,6 +295,58 @@ fun APL02(modifier: Modifier = Modifier,id:Int, apL02ViewModel: APL02ViewModel, 
 
                                 }
                             }
+
+                            Text("Bukti Relevan", fontFamily = AppFont.Poppins, fontWeight = FontWeight.SemiBold, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp))
+
+
+                            Column(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 16.dp),
+                            ) {
+                                buktiRelevans.forEach { bukti ->
+                                    var checked by remember { mutableStateOf(false) }
+
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                checked = !checked
+                                                if (checked) {
+                                                    jawabanManager.addBukti(
+                                                        idElemen = elemen.elemen_index,
+                                                        bukti = bukti
+                                                    )
+                                                } else {
+                                                    jawabanManager.removeBukti(
+                                                        idElemen = elemen.elemen_index,
+                                                        bukti = bukti
+                                                    )
+                                                }
+                                            }
+                                    ) {
+                                        Checkbox(
+                                            checked = checked,
+                                            onCheckedChange = { isChecked ->
+                                                checked = isChecked
+                                                if (isChecked) {
+                                                    jawabanManager.addBukti(
+                                                        idElemen = elemen.elemen_index,
+                                                        bukti = bukti
+                                                    )
+                                                } else {
+                                                    jawabanManager.removeBukti(
+                                                        idElemen = elemen.elemen_index,
+                                                        bukti = bukti
+                                                    )
+                                                }
+                                            }
+                                        )
+                                        Text(bukti, fontFamily = AppFont.Poppins)
+                                    }
+                                }
+                            }
+
+
                         }
                     }
                 }
