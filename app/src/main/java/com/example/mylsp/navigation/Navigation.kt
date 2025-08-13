@@ -54,6 +54,8 @@ import com.example.mylsp.screen.ProfileScreen
 import com.example.mylsp.screen.asesi.APL02
 import com.example.mylsp.screen.asesi.AsesiFormScreen
 import com.example.mylsp.screen.asesi.DetailUSK
+import com.example.mylsp.screen.asesor.DetailEvent
+import com.example.mylsp.screen.asesor.Events
 import com.example.mylsp.screen.asesor.KelengkapanDataAsesor
 import com.example.mylsp.screen.asesor.SignatureScreen
 import com.example.mylsp.screen.asesor.SkemaListScreen
@@ -156,6 +158,12 @@ fun AppNavigation() {
             composable("main") {
                 showNavigation = true
                 MainScreen(modifier = Modifier, navController = navController)
+            }
+            composable("events") {
+                Events(navController = navController)
+            }
+            composable("detail_event") {
+                DetailEvent(navController = navController)
             }
         }
     }

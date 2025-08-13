@@ -58,8 +58,8 @@ fun LoginScreen(
                     navController.navigate("main"){
                         popUpTo(navController.graph.startDestinationId){inclusive = true}
                     }
-                }else if (role == "asesor"){
-                    navController.navigate("dashboardAsesor"){
+                } else if (role == "asesor"){
+                    navController.navigate("events"){
                         popUpTo(navController.graph.startDestinationId){inclusive = true}
                     }
                 }else{
