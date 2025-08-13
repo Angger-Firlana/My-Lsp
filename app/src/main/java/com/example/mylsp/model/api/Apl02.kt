@@ -25,7 +25,7 @@ data class ElemenAPL02(
 )
 
 data class KriteriaUntukKerja(
-    val urutan: Int,
+    val urutan: String,
     val deskripsi_kuk: String
 )
 

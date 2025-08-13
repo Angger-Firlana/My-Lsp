@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mylsp.R
+import com.example.mylsp.component.LoadingScreen
 import com.example.mylsp.model.api.Apl02
 import com.example.mylsp.model.api.ElemenAPL02
 import com.example.mylsp.model.api.KriteriaUntukKerja
@@ -68,25 +69,26 @@ fun FRIA01(
         apL02ViewModel.getAPL02(idSkema)
     }
 
+
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            HeaderSection()
+        apl02?.let { apl02Data ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                HeaderSection()
 
-            HorizontalDivider(
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.tertiary,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
 
-            apl02?.let { apl02Data ->
                 SchemaInfoSection(apl02Data)
 
                 InstructionsCard()
@@ -96,9 +98,12 @@ fun FRIA01(
                     pilihan = pilihan,
                     jawabanManager = jawabanManager
                 )
-            }
 
-            SubmitButton()
+
+                SubmitButton()
+            }
+        }?: kotlin.run {
+            LoadingScreen()
         }
     }
 }
@@ -287,7 +292,7 @@ private fun UnitCard(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Dapatkah Saya?",
+            text = "Penilaian",
             fontFamily = AppFont.Poppins,
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
@@ -295,7 +300,6 @@ private fun UnitCard(
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        // Elements
         unit.elemen.forEach { (index, elemen) ->
             ElementCard(
                 elemen = elemen,
@@ -359,12 +363,6 @@ private fun ElementCard(
             }
         }
     }
-
-    // Evidence Section
-    EvidenceSection(
-        elemenIndex = elemen.elemen_index,
-        jawabanManager = jawabanManager
-    )
 }
 
 @Composable
@@ -427,7 +425,7 @@ private fun KUKItem(
             onValueChange = { textFieldValue = it },
             label = {
                 Text(
-                    "Catatan tambahan",
+                    "Penilaian Lanjut",
                     fontFamily = AppFont.Poppins,
                     fontSize = 12.sp
                 )
@@ -528,7 +526,7 @@ private fun SubmitButton() {
             .padding(16.dp)
     ) {
         Text(
-            "Kirim Jawaban",
+            "Kirim Penilaian",
             fontFamily = AppFont.Poppins,
             fontWeight = FontWeight.Medium,
             fontSize = 14.sp

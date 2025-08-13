@@ -4,6 +4,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,6 +55,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -104,127 +106,139 @@ fun SkemaListScreen(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            // Header Background
-            if (true){
+        if (true){
+            Box(modifier = Modifier.fillMaxSize()) {
+                // Rounded Header with Tertiary Color
                 Card(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
-                        .height(320.dp)
+                        .height(280.dp)
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.tertiary
                     ),
-                    elevation = CardDefaults.cardElevation(8.dp)
+                    elevation = CardDefaults.cardElevation(6.dp)
                 ) {
-                    // Header content
-                    Column(
+                    Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .statusBarsPadding()
-                            .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .padding(20.dp)
                     ) {
-                        Text(
-                            text = "Event Terjadwal",
-                            fontFamily = AppFont.Poppins,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 28.sp,
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Pilih event yang ingin Anda ikuti",
-                            fontFamily = AppFont.Poppins,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
-                            textAlign = TextAlign.Center
-                        )
+                        Column {
+                            // Title section - more compact
+                            Text(
+                                text = "Event Terjadwal",
+                                fontFamily = AppFont.Poppins,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 24.sp,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
 
-                        Spacer(modifier = Modifier.height(20.dp))
+                            Text(
+                                text = "Pilih event yang ingin Anda ikuti",
+                                fontFamily = AppFont.Poppins,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
 
-                        // Search Field
-                        OutlinedTextField(
-                            value = search,
-                            onValueChange = { search = it },
-                            modifier = Modifier.fillMaxWidth(),
-                            placeholder = {
-                                Text(
-                                    "Cari event...",
-                                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
-                                )
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    Icons.Default.Search,
-                                    contentDescription = "Search",
-                                    tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
-                                )
-                            },
-                            trailingIcon = {
-                                Box {
-                                    IconButton(onClick = { expanded = true }) {
-                                        Icon(
-                                            Icons.Default.FilterList,
-                                            contentDescription = "Filter",
-                                            tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
-                                        )
-                                    }
+                            Spacer(modifier = Modifier.height(16.dp))
 
-                                    DropdownMenu(
-                                        expanded = expanded,
-                                        onDismissRequest = { expanded = false }
-                                    ) {
-                                        filterOptions.forEach { option ->
-                                            DropdownMenuItem(
-                                                text = { Text(option) },
-                                                onClick = {
-                                                    selectedFilter = option
-                                                    expanded = false
-                                                }
+                            // Simplified Search Bar
+                            OutlinedTextField(
+                                value = search,
+                                onValueChange = { search = it },
+                                modifier = Modifier.fillMaxWidth(),
+                                placeholder = {
+                                    Text(
+                                        "Cari event...",
+                                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
+                                        fontSize = 14.sp
+                                    )
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Search,
+                                        contentDescription = "Search",
+                                        tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                },
+                                trailingIcon = {
+                                    Box {
+                                        IconButton(onClick = { expanded = true }) {
+                                            Icon(
+                                                Icons.Default.FilterList,
+                                                contentDescription = "Filter",
+                                                tint = if (selectedFilter != "Semua Event")
+                                                    MaterialTheme.colorScheme.onPrimary else
+                                                    MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                                                modifier = Modifier.size(20.dp)
                                             )
                                         }
+
+                                        DropdownMenu(
+                                            expanded = expanded,
+                                            onDismissRequest = { expanded = false }
+                                        ) {
+                                            filterOptions.forEach { option ->
+                                                DropdownMenuItem(
+                                                    text = {
+                                                        Text(
+                                                            option,
+                                                            fontSize = 14.sp,
+                                                            fontFamily = AppFont.Poppins
+                                                        )
+                                                    },
+                                                    onClick = {
+                                                        selectedFilter = option
+                                                        expanded = false
+                                                    }
+                                                )
+                                            }
+                                        }
                                     }
-                                }
-                            },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-                                unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
-                                focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                                unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                                cursorColor = MaterialTheme.colorScheme.onPrimary
-                            ),
-                            shape = RoundedCornerShape(16.dp)
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // Filter indicator
-                        if (selectedFilter != "Semua Event") {
-                            Text(
-                                text = "Filter: $selectedFilter",
-                                fontFamily = AppFont.Poppins,
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                                },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                    cursorColor = MaterialTheme.colorScheme.primary,
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White.copy(alpha = 0.95f)
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true
                             )
+
+                            // Compact filter indicator
+                            if (selectedFilter != "Semua Event") {
+                                Text(
+                                    text = "• $selectedFilter",
+                                    fontFamily = AppFont.Poppins,
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
                         }
                     }
                 }
 
-
-
+                // Event List
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 20.dp),
+                        .padding(horizontal = 16.dp),
                     contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                        top = 240.dp,
+                        top = 200.dp,
                         bottom = 20.dp
                     ),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(skemas.size){
                         val skema = skemas[it]
@@ -241,10 +255,9 @@ fun SkemaListScreen(
                         )
                     }
                 }
-            }else{
-                WaitingApprovalScreen(modifier, navController)
             }
-
+        }else{
+            WaitingApprovalScreen(modifier, navController)
         }
     }
 }
@@ -257,7 +270,7 @@ fun SkemaCard(
     modifier: Modifier = Modifier
 ) {
     // Extract data from skema - adjust these according to your actual data structure
-    val judulSkema = skema.judul_skema // skema.judulSkema
+    val judulSkema = skema.judul_skema
     val tanggalBerlaku = "2025-02-01"
     val nomorSkema = skema.nomor_skema
     val jurusan = skema.jurusan
@@ -267,7 +280,7 @@ fun SkemaCard(
 
     val dateSkema = LocalDate.parse(tanggalBerlaku)
     val tanggalSkema = dateSkema.format(
-        DateTimeFormatter.ofPattern("EEEE, d MMM yyyy", Locale("id", "ID"))
+        DateTimeFormatter.ofPattern("d MMM yyyy", Locale("id", "ID"))
     )
 
     val jamSkema = "09:00"
@@ -277,70 +290,75 @@ fun SkemaCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
             .clickable { onCardClick() },
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        border = BorderStroke(
-            width = 0.5.dp,
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+            containerColor = Color.White
         )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp)
+                .padding(16.dp)
         ) {
-            // Title
+            // Title with modern styling
             Text(
                 text = judulSkema,
                 fontFamily = AppFont.Poppins,
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp,
-                lineHeight = 18.sp,
+                fontSize = 16.sp,
+                lineHeight = 20.sp,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            // Event Details
-            EventDetailRow(
-                icon = Icons.Default.DateRange,
-                text = tanggalSkema,
-                iconTint = MaterialTheme.colorScheme.primary,
-                fontSize = 12.sp
-            )
+            // Simplified info grid
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Left column
+                Column(modifier = Modifier.weight(1f)) {
+                    EventDetailRow(
+                        icon = Icons.Default.DateRange,
+                        text = tanggalSkema,
+                        iconTint = MaterialTheme.colorScheme.primary,
+                        fontSize = 13.sp
+                    )
 
-            Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
-            EventDetailRow(
-                icon = Icons.Default.AccessTime,
-                text = jamSkema,
-                iconTint = MaterialTheme.colorScheme.secondary,
-                fontSize = 12.sp
-            )
+                    EventDetailRow(
+                        icon = Icons.Default.LocationOn,
+                        text = tempatKerja,
+                        iconTint = MaterialTheme.colorScheme.tertiary,
+                        fontSize = 13.sp
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(4.dp))
+                // Right column
+                Column(modifier = Modifier.weight(1f)) {
+                    EventDetailRow(
+                        icon = Icons.Default.AccessTime,
+                        text = jamSkema,
+                        iconTint = MaterialTheme.colorScheme.secondary,
+                        fontSize = 13.sp
+                    )
 
-            EventDetailRow(
-                icon = Icons.Default.LocationOn,
-                text = tempatKerja,
-                iconTint = MaterialTheme.colorScheme.tertiary,
-                fontSize = 12.sp
-            )
+                    Spacer(modifier = Modifier.height(6.dp))
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-            EventDetailRow(
-                icon = Icons.Default.People,
-                text = "$jumlahPeserta peserta",
-                iconTint = MaterialTheme.colorScheme.outline,
-                fontSize = 12.sp
-            )
+                    EventDetailRow(
+                        icon = Icons.Default.People,
+                        text = "$jumlahPeserta peserta",
+                        iconTint = MaterialTheme.colorScheme.outline,
+                        fontSize = 13.sp
+                    )
+                }
+            }
         }
     }
 }
@@ -350,21 +368,21 @@ fun EventDetailRow(
     icon: ImageVector,
     text: String,
     iconTint: Color,
-    fontSize: TextUnit = 12.sp,
+    fontSize: TextUnit = 13.sp,
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
             tint = iconTint,
-            modifier = Modifier.size(16.dp)
+            modifier = Modifier.size(14.dp)
         )
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(6.dp))
 
         Text(
             text = text,
@@ -372,7 +390,7 @@ fun EventDetailRow(
             fontWeight = FontWeight.Normal,
             fontSize = fontSize,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            lineHeight = (fontSize.value * 1.2).sp,
+            lineHeight = (fontSize.value * 1.3).sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
