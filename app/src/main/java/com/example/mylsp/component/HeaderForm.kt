@@ -26,10 +26,11 @@ import com.example.mylsp.util.AppFont
 @Composable
 fun HeaderForm(
     title: String,
-    subTitle: String?= null
+    subTitle: String?= null,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight(0.1f)
             .padding(top = 16.dp, start = 16.dp, end = 16.dp),
@@ -43,22 +44,21 @@ fun HeaderForm(
             Image(
                 painter = painterResource(R.drawable.logoheader),
                 contentDescription = "Logo Header",
-                modifier = Modifier.height(40.dp)
+                modifier = Modifier.height(30.dp)
             )
         }
 
         Column(
             modifier = Modifier.weight(3f),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = title,
                 fontFamily = AppFont.Poppins,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
-                color = Color.Black,
-                textAlign = TextAlign.Center
+                color = Color.Black
             )
             subTitle?.let {
                 Text(
@@ -77,6 +77,6 @@ fun HeaderForm(
     HorizontalDivider(
         thickness = 1.dp,
         color = MaterialTheme.colorScheme.tertiary,
-        modifier = Modifier.padding(vertical = 16.dp)
+        modifier = Modifier.padding(vertical = 8.dp)
     )
 }
