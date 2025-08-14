@@ -5,7 +5,8 @@ import com.google.android.datatransport.cct.StringMerger
 data class RegisterRequest(
     val email:String,
     val username:String,
-    val password:String
+    val password:String,
+    val jurusan_id:Int
 )
 
 data class RegisterResponse(

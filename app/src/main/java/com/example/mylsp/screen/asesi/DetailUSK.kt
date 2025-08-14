@@ -45,7 +45,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun DetailUSK(modifier: Modifier = Modifier, navController: NavController) {
+fun DetailUSK(modifier: Modifier = Modifier,navController: NavController, idSkema:Int) {
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -272,7 +272,7 @@ private fun InfoItem(
 fun DetailUSKPreview() {
     MaterialTheme {
         Surface {
-            DetailUSK(navController = rememberNavController())
+            DetailUSK(navController = rememberNavController(), idSkema = 1)
         }
     }
 }

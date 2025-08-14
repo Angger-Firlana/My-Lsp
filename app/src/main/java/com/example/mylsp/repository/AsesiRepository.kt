@@ -3,12 +3,16 @@ package com.example.mylsp.repository
 import android.content.Context
 import android.util.Log
 import com.example.mylsp.api.APIClient
+import com.example.mylsp.model.api.Asesi
 import com.example.mylsp.model.api.AsesiRequest
 import com.example.mylsp.model.api.CreateAsesiResponse
+import com.example.mylsp.model.api.Skemas
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import retrofit2.Response
 
 class AsesiRepository(context: Context) {
     private val api = APIClient.getClient(context)
@@ -29,6 +33,7 @@ class AsesiRepository(context: Context) {
                 textParts["alamat_rumah"]!!,
                 textParts["kode_pos"]!!,
                 textParts["no_telepon_rumah"]!!,
+                textParts["no_telepon_kantor"]!!,
                 textParts["no_telepon"]!!,
                 textParts["email"]!!,
                 textParts["kualifikasi_pendidikan"]!!,
@@ -59,6 +64,25 @@ class AsesiRepository(context: Context) {
 
         }
     }
+
+    suspend fun getDataAsesi():Result<Asesi>{
+        return try {
+            val response = api.getDataAsesi()
+            if (response.isSuccessful){
+                val body = response.body()
+                if (body != null){
+                    Result.success(body)
+                }else{
+                    Result.failure(Exception("Response Kosong"))
+                }
+            }else{
+                val errorBody = response.errorBody()?.string()?: "Unknown Error"
+                Result.failure(Exception(errorBody))
+            }
+        }catch (e:Exception){
+            Result.failure(e)
+        }
+    }
 }
 
 fun AsesiRequest.toMultipart(): Pair<Map<String, RequestBody>, List<MultipartBody.Part>> {
@@ -79,6 +103,7 @@ fun AsesiRequest.toMultipart(): Pair<Map<String, RequestBody>, List<MultipartBod
     alamat_rumah.asPart("alamat_rumah")
     kode_pos.asPart("kode_pos")
     no_telepon_rumah.asPart("no_telepon_rumah")
+    no_telepon_kantor.asPart("no_telepon_kantor")
     no_telepon.asPart("no_telepon")
     email.asPart("email")
     kualifikasi_pendidikan.asPart("kualifikasi_pendidikan")
@@ -90,7 +115,13 @@ fun AsesiRequest.toMultipart(): Pair<Map<String, RequestBody>, List<MultipartBod
     email_kantor.asPart("email_kantor")
     status.asPart("status")
 
-    return textParts to attachments
+    // Ubah attachments jadi MultipartBody.Part list
+    val fileParts = attachments.map { part ->
+        MultipartBody.Part.createFormData("attachments[]", part.body.contentType().toString(), part.body)
+    }
+
+    return textParts to fileParts
 }
+
 
 

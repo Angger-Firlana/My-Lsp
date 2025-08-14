@@ -29,6 +29,10 @@ class AuthRepository(context: Context) {
         }
     }
 
+    suspend fun loginAndFetchUser(){
+
+    }
+
     suspend fun register(registerRequest: RegisterRequest): Result<RegisterResponse> {
         return try {
             val response = api.register(registerRequest)

@@ -7,7 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.mylsp.model.api.LoginRequest
 import com.example.mylsp.model.api.RegisterRequest
 import com.example.mylsp.repository.AuthRepository
+import com.example.mylsp.repository.UserRepository
 import com.example.mylsp.util.TokenManager
+import com.example.mylsp.util.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -17,7 +19,9 @@ class AuthViewModel(
 
 ) : AndroidViewModel(application) {
     private val repository: AuthRepository = AuthRepository(application.applicationContext)
+    private val userRepository: UserRepository = UserRepository(application.applicationContext)
     private val tokenManager = TokenManager(application.applicationContext)
+    private val userManager = UserManager(application.applicationContext)
 
     private val _state = MutableStateFlow<Boolean?>(null)
     val state = _state.asStateFlow()
@@ -30,9 +34,16 @@ class AuthViewModel(
             val result = repository.login(loginRequest)
             result.fold(
                 onSuccess = { body ->
+                    val user = body.user
                     _state.value = true
                     _message.value = body.message
                     tokenManager.saveToken(body.token)
+                    userManager.saveUser(
+                        id = user.id.toString(),
+                        name = user.username,
+                        email = user.email,
+                        role = user.role
+                    )
                 },
                 onFailure = { error ->
                     _state.value = false

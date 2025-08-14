@@ -14,8 +14,13 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ViewList
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -77,7 +83,8 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavController) {
 
     val banners = listOf(
         ItemBanner(R.drawable.banner1, "Selamat Datang Di MyLsp"),
-        ItemBanner(R.drawable.banner2, "Deskripsi Banner 2")
+        ItemBanner(R.drawable.banner2, "Deskripsi Banner 2"),
+        ItemBanner(R.drawable.senaaska, "Ganteng Bat Jir")
     )
     val pagerState = rememberPagerState { banners.size }
     var currentBanner by remember { mutableStateOf(0) }
@@ -138,11 +145,28 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            user?.let {
+            Button(
+                onClick = { navController.navigate("skemaList") },
+                shape = MaterialTheme.shapes.large,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ),
+                elevation = ButtonDefaults.buttonElevation(4.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ViewList, // ganti icon sesuai kebutuhan
+                    contentDescription = "List Skema",
+                    modifier = Modifier.padding(end = 8.dp)
+                )
                 Text(
-                    it.toString()
+                    "List Skema",
+                    fontFamily = AppFont.Poppins,
+                    fontSize = 16.sp
                 )
             }
+
         }
     }
 }

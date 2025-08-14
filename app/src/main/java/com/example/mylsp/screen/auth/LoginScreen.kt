@@ -27,6 +27,7 @@ import com.example.mylsp.component.LoadingScreen
 import com.example.mylsp.model.api.LoginRequest
 import com.example.mylsp.repository.AuthRepository
 import com.example.mylsp.util.AppFont
+import com.example.mylsp.util.UserManager
 import com.example.mylsp.viewmodel.AuthViewModel
 
 @Composable
@@ -39,8 +40,9 @@ fun LoginScreen(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(LocalContext.current.applicationContext as Application)
     )
 
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+
+    var username by remember { mutableStateOf("anjai") }
+    var password by remember { mutableStateOf("123456") }
 
     val stateLogin by viewModel.state.collectAsState()
     val message by viewModel.message.collectAsState()
@@ -51,9 +53,21 @@ fun LoginScreen(
         stateLogin?.let { success ->
             isLoading = false
             if (success) {
-                navController.navigate("main"){
-                    popUpTo(navController.graph.startDestinationId){inclusive = true}
+                val role = UserManager(context).getUserRole()
+                if (role == "asesi"){
+                    navController.navigate("main"){
+                        popUpTo(navController.graph.startDestinationId){inclusive = true}
+                    }
+                } else if (role == "asesor"){
+                    navController.navigate("dashboardAsesor"){
+                        popUpTo(navController.graph.startDestinationId){inclusive = true}
+                    }
+                }else{
+                    navController.navigate("main"){
+                        popUpTo(navController.graph.startDestinationId){inclusive = true}
+                    }
                 }
+
             }
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             viewModel.resetState()
