@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.SupervisedUserCircle
 import androidx.compose.material3.Icon
@@ -57,6 +58,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mylsp.R
+import com.example.mylsp.component.BottomPillNav
+import com.example.mylsp.component.TopAppBar
 import com.example.mylsp.screen.BarcodeScreen
 import com.example.mylsp.screen.ProfileScreen
 import com.example.mylsp.screen.asesi.APL02
@@ -99,8 +102,7 @@ fun AppNavigation() {
     val currentRoute = navBackStackEntry?.destination?.route
 
     val bottomNavItems = listOf(
-        ItemBar(Icons.Default.Dashboard, "Dashboard", "main"),
-        ItemBar(Icons.AutoMirrored.Filled.ViewList, "List Skema", "skemaList"),
+        ItemBar(Icons.Default.QrCode, "Barcode", "barcode"),
         ItemBar(Icons.Default.AccountCircle, "Profil", "profile"),
     )
     val skemaViewModel:SkemaViewModel = viewModel(
@@ -123,14 +125,92 @@ fun AppNavigation() {
             if (showTopBar) {
                 TopAppBar()
             }
-        },
-        bottomBar = {
+        }
+    ) { innerPadding ->
+        Box(Modifier.fillMaxWidth().padding(innerPadding)){
+            NavHost(
+                navController = navController,
+                startDestination = startDestination
+            ) {
+                composable("login") {
+                    showNavigation = false
+                    showTopBar = false
+                    LoginScreen(navController = navController)
+                }
+                composable("register") {
+                    showNavigation = false
+                    showTopBar = false
+                    RegisterScreen(navController = navController)
+                }
+                composable("kelengkapanDataAsesor") {
+                    KelengkapanDataAsesor(navController = navController)
+                }
+                composable("tanda_tangan_asesor") {
+                    SignatureScreen(context, navController)
+                }
+                composable("skemaList") {
+                    showTopBar = false
+                    showNavigation = true
+                    SkemaListScreen(modifier = Modifier, skemaViewModel = skemaViewModel, navController = navController)
+                }
+                composable("detailusk") {
+                    DetailUSK(navController = navController, idSkema = 1)
+                }
+                composable("apl_01") {
+                    showNavigation = true
+                    AsesiFormScreen(asesiViewModel,navController = navController)
+                }
+                composable("apl02/{id}") {
+                    showTopBar = false
+                    showNavigation = false
+                    val id = it.arguments?.getString("id")?: "0"
+                    APL02(id = id.toInt(),apL02ViewModel = apL02ViewModel,navController = navController)
+                }
+                composable("ia01/{id}"){
+                    showTopBar = false
+                    showNavigation = false
+                    val id = it.arguments?.getString("id")?: "0"
+                    FRIA01(idSkema = id.toInt(),apL02ViewModel = apL02ViewModel,navController = navController)
+                }
+                composable("waiting_approval") {
+                    WaitingApprovalScreen(modifier = Modifier, navController)
+                }
+                composable("profile"){
+                    if (userManager.getUserRole() == "asesi"){
+                        showTopBar = true
+                    }
+                    showNavigation = true
+                    ProfileScreen(modifier = Modifier, navController = navController)
+                }
+                composable("main") {
+                    showTopBar = true
+                    showNavigation = true
+                    MainScreen(modifier = Modifier, navController = navController)
+                }
+                composable("events") {
+                    showNavigation = false
+                    Events(navController = navController)
+                }
+                composable("dashboardAsesor"){
+                    showNavigation = true
+                    DashboardAsesor(navController = navController)
+                }
+                composable("barcode"){
+                    showNavigation = false
+                    BarcodeScreen(text = "*&KJDHASD&^#!DASDHDAS")
+                }
+                composable("detail_event") {
+                    DetailEvent(navController = navController)
+                }
+            }
+
             if (showNavigation) {
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     BottomPillNav(
+                        bottomBar = bottomNavItems,
                         orange = MaterialTheme.colorScheme.tertiary,
                         modifier = Modifier
                             .padding(bottom = 18.dp),
@@ -139,211 +219,10 @@ fun AppNavigation() {
                 }
             }
         }
-    ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = startDestination,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable("login") {
-                showNavigation = false
-                showTopBar = false
-                LoginScreen(navController = navController)
-            }
-            composable("register") {
-                showNavigation = false
-                showTopBar = false
-                RegisterScreen(navController = navController)
-            }
-            composable("kelengkapanDataAsesor") {
-                KelengkapanDataAsesor(navController = navController)
-            }
-            composable("tanda_tangan_asesor") {
-                SignatureScreen(context, navController)
-            }
-            composable("skemaList") {
-                showNavigation = true
-                SkemaListScreen(modifier = Modifier, skemaViewModel = skemaViewModel, navController = navController)
-            }
-            composable("detailusk") {
-                DetailUSK(navController = navController, idSkema = 1)
-            }
-            composable("apl_01") {
-                showNavigation = true
-                AsesiFormScreen(asesiViewModel,navController = navController)
-            }
-            composable("apl02/{id}") {
-                showTopBar = false
-                showNavigation = false
-                val id = it.arguments?.getString("id")?: "0"
-                APL02(id = id.toInt(),apL02ViewModel = apL02ViewModel,navController = navController)
-            }
-            composable("ia01/{id}"){
-                showTopBar = false
-                showNavigation = false
-                val id = it.arguments?.getString("id")?: "0"
-                FRIA01(idSkema = id.toInt(),apL02ViewModel = apL02ViewModel,navController = navController)
-            }
-            composable("waiting_approval") {
-                WaitingApprovalScreen(modifier = Modifier, navController)
-            }
-            composable("profile"){
-                if (userManager.getUserRole() == "asesi"){
-                    showTopBar = true
-                }
-                showNavigation = true
-                ProfileScreen(modifier = Modifier, navController = navController)
-            }
-            composable("main") {
-                showTopBar = true
-                showNavigation = true
-                MainScreen(modifier = Modifier, navController = navController)
-            }
-            composable("events") {
-                showNavigation = false
-                Events(navController = navController)
-            }
-            composable("dashboardAsesor"){
-                showNavigation = true
-                DashboardAsesor(navController = navController)
-            }
-            composable("barcode"){
-                showNavigation = false
-                BarcodeScreen(text = "*&KJDHASD&^#!DASDHDAS")
-            }
-            composable("detail_event") {
-                DetailEvent(navController = navController)
-            }
-        }
+
     }
 }
 
-@Composable
-private fun TopAppBar() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(84.dp)
-            .background(MaterialTheme.colorScheme.tertiary)
-            .statusBarsPadding()
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painter = painterResource(R.drawable.ic_launcher_foreground),
-            contentDescription = "App Logo",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(40.dp)
-        )
 
-        Text(
-            text = "MyLSP",
-            color = Color.White,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 16.dp)
-        )
 
-        IconButton(
-            onClick = {
-                // Handle menu action
-            }
-        ) {
-            Icon(
-                Icons.Default.Menu,
-                contentDescription = "Menu",
-                tint = Color.White
-            )
-        }
-    }
-}
 
-@Composable
-private fun BottomPillNav(orange: Color, modifier: Modifier = Modifier, navController: NavController) {
-    val context = LocalContext.current
-    Surface(
-        modifier = modifier.width(320.dp).height(54.dp),
-        color = orange,
-        shape = RoundedCornerShape(24.dp),
-        shadowElevation = 6.dp
-    ) {
-        Row(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 22.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            NavIcon(Icons.Default.Apps, onClick = {
-                if(UserManager(context).getUserRole() == "asesor"){
-                    navController.navigate("dashboardAsesor")
-
-                }else{
-                    navController.navigate("main")
-
-                }
-            })
-            NavIcon(Icons.Default.QrCodeScanner, onClick = {navController.navigate("barcode")})
-            NavIcon(Icons.Default.Person, onClick = {navController.navigate("profile")})
-        }
-    }
-}
-
-@Composable
-private fun NavIcon(icon: androidx.compose.ui.graphics.vector.ImageVector, onClick: () -> Unit) {
-    IconButton(
-        onClick = {
-            onClick()
-        }
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = Color.White,
-            modifier = Modifier.size(22.dp)
-        )
-    }
-
-}
-
-@Composable
-private fun BottomNavigationBar(
-    navController: NavHostController,
-    items: List<ItemBar>,
-    currentRoute: String?
-) {
-    NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface
-    ) {
-        items.forEach { item ->
-            NavigationBarItem(
-                icon = {
-                    Icon(
-                        item.icon,
-                        contentDescription = item.title
-                    )
-                },
-                label = {
-                    Text(
-                        text = item.title,
-                        fontSize = 12.sp
-                    )
-                },
-                selected = currentRoute == item.route,
-                onClick = {
-                    if (currentRoute != item.route) {
-                        navController.navigate(item.route) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-                }
-            )
-        }
-    }
-}

@@ -269,7 +269,6 @@ fun SkemaCard(
     onCardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Extract data from skema - adjust these according to your actual data structure
     val judulSkema = skema.judul_skema
     val tanggalBerlaku = "2025-02-01"
     val nomorSkema = skema.nomor_skema

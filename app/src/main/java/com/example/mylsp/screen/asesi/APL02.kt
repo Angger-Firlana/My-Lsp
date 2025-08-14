@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mylsp.R
+import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.component.LoadingScreen
 import com.example.mylsp.model.api.Apl02
 import com.example.mylsp.model.api.ElemenAPL02
@@ -55,7 +56,9 @@ fun APL02(
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                HeaderSection()
+                HeaderForm(
+                    title = "FR.APL.02.ASESMEN MANDIRI"
+                )
                 SchemaSection(data)
                 InstructionCard()
                 UnitsSection(data, jawabanManager)
@@ -65,49 +68,6 @@ fun APL02(
             LoadingScreen()
         }
     }
-}
-
-@Composable
-private fun HeaderSection() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.1f)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(
-            modifier = Modifier.weight(1f),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Image(
-                painter = painterResource(R.drawable.logoheader),
-                contentDescription = "Logo Header"
-            )
-        }
-
-        Column(
-            modifier = Modifier.weight(3f),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "FR.APL.02.ASESMEN MANDIRI",
-                fontFamily = AppFont.Poppins,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                color = Color.Black,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-
-    HorizontalDivider(
-        thickness = 1.dp,
-        color = MaterialTheme.colorScheme.tertiary,
-        modifier = Modifier.padding(vertical = 16.dp)
-    )
 }
 
 @Composable

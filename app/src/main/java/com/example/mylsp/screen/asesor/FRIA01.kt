@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mylsp.R
+import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.component.LoadingScreen
 import com.example.mylsp.model.api.Apl02
 import com.example.mylsp.model.api.ElemenAPL02
@@ -81,7 +82,11 @@ fun FRIA01(
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                HeaderSection()
+
+                HeaderForm(
+                    title = "FR.IA.01.CL",
+                    subTitle = "CEKLIS OBSERVASI AKTIVITAS DI TEMPAT KERJA ATAU TEMPAT KERJA SIMULASI"
+                )
 
                 HorizontalDivider(
                     thickness = 1.dp,
@@ -104,53 +109,6 @@ fun FRIA01(
             }
         }?: kotlin.run {
             LoadingScreen()
-        }
-    }
-}
-
-@Composable
-private fun HeaderSection() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.1f)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        // Logo Section
-        Column(
-            modifier = Modifier.weight(1f),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Image(
-                painter = painterResource(R.drawable.logoheader),
-                contentDescription = "Logo Header"
-            )
-        }
-
-        // Title Section
-        Column(
-            modifier = Modifier.weight(3f),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "FR.IA.01.CL",
-                fontFamily = AppFont.Poppins,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                color = Color.Black,
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = "CEKLIS OBSERVASI AKTIVITAS DI TEMPAT KERJA ATAU TEMPAT KERJA SIMULASI",
-                fontFamily = AppFont.Poppins,
-                fontWeight = FontWeight.Bold,
-                fontSize = 10.sp,
-                color = Color.Black,
-                textAlign = TextAlign.Center
-            )
         }
     }
 }
