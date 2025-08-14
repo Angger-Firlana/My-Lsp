@@ -46,6 +46,23 @@ fun FRIA06A(modifier: Modifier = Modifier, navController: NavController) {
             .verticalScroll(rememberScrollState())
     ) {
 
+        // Header biru
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFF2196F3))
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "AFDHAL EZHAR RAHMA PANGESTU",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -74,8 +91,6 @@ fun FRIA06A(modifier: Modifier = Modifier, navController: NavController) {
                         color = Color.Black,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
-
-                        
                     )
                     Text(
                         text = "LEMBAR JAWABAN PERTANYAAN TERTULIS ESSAI",
@@ -85,7 +100,6 @@ fun FRIA06A(modifier: Modifier = Modifier, navController: NavController) {
                     )
                 }
             }
-
 
             Divider(
                 modifier = Modifier
@@ -195,7 +209,6 @@ fun FRIA06A(modifier: Modifier = Modifier, navController: NavController) {
                         fontWeight = FontWeight.Bold)
                 }
 
-
                 Button(
                     onClick = { },
                     modifier = Modifier
@@ -298,7 +311,6 @@ fun QuestionCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
@@ -327,30 +339,30 @@ fun QuestionCard(
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(
-                            checked = checked,
-                            onCheckedChange = { onCheckedChange(!it) },
+                            checked = !checked,
+                            onCheckedChange = { onCheckedChange(!checked) },
                             colors = CheckboxDefaults.colors(
                                 checkedColor = Color(0xFFF44336)
                             )
                         )
                         Text("Tidak", modifier = Modifier.padding(start = 4.dp))
+
                     }
                 }
             }
         }
     }
 }
-
-@Preview(
-    showBackground = true,
-    device = "spec:width=411dp,height=891dp",
-    showSystemUi = true
-)
-@Composable
-fun PreviewFRIA() {
-    MaterialTheme {
-        Surface {
-            FRIA06A(navController = rememberNavController())
+    @Preview(
+        showBackground = true,
+        device = "spec:width=411dp,height=891dp",
+        showSystemUi = true
+    )
+    @Composable
+    fun PreviewFRIA() {
+        MaterialTheme {
+            Surface {
+                FRIA06A(navController = rememberNavController())
+            }
         }
     }
-}
