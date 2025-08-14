@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mylsp.R
@@ -29,7 +30,7 @@ fun TopAppBar() {
                 .fillMaxWidth()
                 .height(55.dp)
                 .statusBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
@@ -46,17 +47,15 @@ fun TopAppBar() {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 16.dp)
+                    .padding(start = 22.dp)
             )
         }
 
         HorizontalDivider(
-            thickness = 1.dp,
+            thickness = 2.dp,
             color = MaterialTheme.colorScheme.tertiary,
             modifier = Modifier.padding(
-                top = 16.dp,
-                start = 16.dp,
-                end = 16.dp
+                horizontal = 8.dp
             )
         )
     }
