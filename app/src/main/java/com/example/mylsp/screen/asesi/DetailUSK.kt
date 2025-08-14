@@ -50,7 +50,7 @@ fun DetailUSK(modifier: Modifier = Modifier, navController: NavController) {
         modifier = modifier
             .fillMaxSize()
             .background(
-                Color(0xFF4DD0E1) // Warna biru muda sesuai gambar
+                Color(0xFF4DD0E1)
             )
     ) {
         Column(
@@ -58,12 +58,12 @@ fun DetailUSK(modifier: Modifier = Modifier, navController: NavController) {
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            // Header dengan profile dan nama
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Profile circle dengan icon person
+
                 Box(
                     modifier = Modifier
                         .size(40.dp)
@@ -98,7 +98,7 @@ fun DetailUSK(modifier: Modifier = Modifier, navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Judul utama
+
             Text(
                 text = "USK RPL – Pemrograman dasar",
                 color = Color.White,
@@ -119,7 +119,7 @@ fun DetailUSK(modifier: Modifier = Modifier, navController: NavController) {
                 Column(
                     modifier = Modifier.padding(20.dp)
                 ) {
-                    // Header card dengan icon dan judul
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
@@ -141,7 +141,7 @@ fun DetailUSK(modifier: Modifier = Modifier, navController: NavController) {
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    // Info items
+
                     InfoItem(
                         icon = Icons.Default.CalendarToday,
                         text = "Selasa, 8 nov 2027"
@@ -164,7 +164,7 @@ fun DetailUSK(modifier: Modifier = Modifier, navController: NavController) {
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Section Panduan Asesmen Mandiri
+
                     Row(
                         verticalAlignment = Alignment.Top
                     ) {
@@ -214,7 +214,7 @@ fun DetailUSK(modifier: Modifier = Modifier, navController: NavController) {
 
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    // Tombol Kerjakan
+
                     Button(
                         onClick = {
 
