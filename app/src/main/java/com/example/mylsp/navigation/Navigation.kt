@@ -63,6 +63,7 @@ import com.example.mylsp.component.TopAppBar
 import com.example.mylsp.screen.BarcodeScreen
 import com.example.mylsp.screen.ProfileScreen
 import com.example.mylsp.screen.asesi.APL02
+import com.example.mylsp.screen.asesi.AsesiBarcodeScanner
 import com.example.mylsp.screen.asesi.AsesiFormScreen
 import com.example.mylsp.screen.asesi.DetailUSK
 import com.example.mylsp.screen.asesor.DashboardAsesor
@@ -194,6 +195,12 @@ fun AppNavigation() {
                 composable("dashboardAsesor"){
                     showNavigation = true
                     DashboardAsesor(navController = navController)
+                }
+
+                composable("scanningBarcode"){
+                    showNavigation = false
+                    showTopBar = false
+                    AsesiBarcodeScanner(navController = navController)
                 }
                 composable("barcode"){
                     showNavigation = false
