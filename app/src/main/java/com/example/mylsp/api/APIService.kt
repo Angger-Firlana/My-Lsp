@@ -25,9 +25,14 @@ import retrofit2.http.Path
 interface APIService {
 
     @POST("auth/login")
-    suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
+    suspend fun login(
+        @Body request: LoginRequest
+    ): Response<LoginResponse>
     @POST("auth/register")
-    suspend fun register(@Body registerRequest: RegisterRequest): Response<RegisterResponse>
+    suspend fun register(
+        @Header("Accept") accept: String = "application/json",
+        @Body registerRequest: RegisterRequest
+    ): Response<RegisterResponse>
     @GET("user")
     suspend fun getUser():Response<User>
     @Multipart

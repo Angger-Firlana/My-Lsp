@@ -36,11 +36,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mylsp.model.api.AsesiRequest
+import com.example.mylsp.model.api.AttachmentRequest
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.viewmodel.AsesiViewModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.FileOutputStream
 
@@ -95,11 +97,11 @@ fun AsesiFormScreen(
     var fileUploads by remember {
         mutableStateOf(
             listOf(
-                FileUpload("Kartu Pelajar", "Upload kartu pelajar yang masih berlaku"),
-                FileUpload("Kartu Keluarga/KTP", "Upload kartu keluarga atau KTP"),
-                FileUpload("Pas Foto 3x4", "Pas foto 3x4 berwarna merah 2 lembar"),
-                FileUpload("Raport SMK", "Raport SMK semester 1 s.d. 5"),
-                FileUpload("Sertifikat PKL", "Sertifikat Praktek Kerja Lapangan")
+                FileUpload("KTP", "Upload kartu tanda penduduk yang masih berlaku"),
+                FileUpload("KK", "Upload kartu keluarga atau KTP"),
+                FileUpload("PasFoto3x4", "Pas foto 3x4 berwarna merah 2 lembar"),
+                FileUpload("RaportSMK", "Raport SMK semester 1 s.d. 5"),
+                FileUpload("SertifikatPKL", "Sertifikat Praktek Kerja Lapangan")
             )
         )
     }
@@ -381,7 +383,14 @@ fun AsesiFormScreen(
             // Submit Button
             Button(
                 onClick = {
-                    val attachments = fileUploads.mapNotNull { it.file }
+                    val attachments = fileUploads.mapNotNull { fu ->
+                        fu.file?.let { filePart ->
+                            AttachmentRequest(
+                                file = filePart,
+                                description = fu.description.toRequestBody("text/plain".toMediaTypeOrNull())
+                            )
+                        }
+                    }
                     val request = AsesiRequest(
                         nama_lengkap = namaLengkap,
                         nik = nik,

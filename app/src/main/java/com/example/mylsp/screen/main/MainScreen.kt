@@ -63,23 +63,6 @@ data class ItemBanner(
 @Composable
 fun MainScreen(modifier: Modifier = Modifier, navController: NavController) {
     val context = LocalContext.current
-    val viewModel: UserViewModel = viewModel(
-        factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                if (modelClass.isAssignableFrom(UserViewModel::class.java)) {
-                    val repository = UserRepository(context)
-                    @Suppress("UNCHECKED_CAST")
-                    return UserViewModel(repository) as T
-                }
-                throw IllegalArgumentException("Unknown ViewModel class")
-            }
-        }
-    )
-    val user by viewModel.user.collectAsState()
-
-    LaunchedEffect(Unit) {
-        viewModel.getUserByToken()
-    }
 
     val banners = listOf(
         ItemBanner(R.drawable.banner1, "Selamat Datang Di MyLsp"),

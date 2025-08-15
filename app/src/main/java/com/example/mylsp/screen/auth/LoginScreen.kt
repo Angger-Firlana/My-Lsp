@@ -29,10 +29,12 @@ import com.example.mylsp.repository.AuthRepository
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.UserManager
 import com.example.mylsp.viewmodel.AuthViewModel
+import com.example.mylsp.viewmodel.UserViewModel
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
+    userViewModel: UserViewModel,
     navController: NavController
 ) {
     val context = LocalContext.current.applicationContext
@@ -53,6 +55,7 @@ fun LoginScreen(
         stateLogin?.let { success ->
             isLoading = false
             if (success) {
+                userViewModel.getUserByToken()
                 val role = UserManager(context).getUserRole()
                 if (role == "asesi"){
                     navController.navigate("main"){

@@ -1,6 +1,7 @@
 package com.example.mylsp.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -34,16 +35,9 @@ class AuthViewModel(
             val result = repository.login(loginRequest)
             result.fold(
                 onSuccess = { body ->
-                    val user = body.user
                     _state.value = true
                     _message.value = body.message
                     tokenManager.saveToken(body.token)
-                    userManager.saveUser(
-                        id = user.id.toString(),
-                        name = user.username,
-                        email = user.email,
-                        role = user.role
-                    )
                 },
                 onFailure = { error ->
                     _state.value = false
@@ -60,11 +54,12 @@ class AuthViewModel(
                 onSuccess = { body ->
                     _state.value = true
                     _message.value = body.message
-                    tokenManager.saveToken(body.token)
                 },
                 onFailure = { error ->
                     _state.value = false
                     _message.value = error.message?: "Register Gagal"
+                    Log.e("Error Response", error.message.toString())
+
                 }
             )
         }

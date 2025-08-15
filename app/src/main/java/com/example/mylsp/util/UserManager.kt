@@ -20,13 +20,15 @@ class UserManager(context: Context) {
         id: String,
         name: String,
         email: String,
-        role: String
+        role: String,
+        jurusan_id:Int
     ) {
         sharedPrefs.edit {
             putString("user_id", id)
             putString("user_name", name)
             putString("user_email", email)
             putString("user_role", role)
+            putInt("jurusan_id", jurusan_id)
         }
     }
 
@@ -34,6 +36,7 @@ class UserManager(context: Context) {
     fun getUserName(): String? = sharedPrefs.getString("user_name", null)
     fun getUserEmail(): String? = sharedPrefs.getString("user_email", null)
     fun getUserRole(): String? = sharedPrefs.getString("user_role", null)
+    fun getJurusanId(): Int = sharedPrefs.getInt("jurusan_id", 0)
 
     fun clearUser() {
         sharedPrefs.edit {

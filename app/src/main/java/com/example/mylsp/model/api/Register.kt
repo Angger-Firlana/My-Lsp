@@ -11,6 +11,5 @@ data class RegisterRequest(
 
 data class RegisterResponse(
     val message:String,
-    val token:String,
-    val code:Int
+    val user:User
 )

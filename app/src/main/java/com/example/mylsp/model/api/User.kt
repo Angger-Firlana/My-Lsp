@@ -9,5 +9,6 @@ data class UserDetail(
     val id:Int,
     val username:String,
     val email:String,
-    val role:String
+    val role:String,
+    val jurusan_id:Int
 )

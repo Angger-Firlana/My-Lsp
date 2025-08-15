@@ -80,6 +80,7 @@ fun RegisterScreen(
             }
         }
         isLoading = false
+        viewModel.resetState()
     }
 
     LaunchedEffect(Unit){

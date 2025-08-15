@@ -82,6 +82,7 @@ import com.example.mylsp.util.UserManager
 import com.example.mylsp.viewmodel.APL02ViewModel
 import com.example.mylsp.viewmodel.AsesiViewModel
 import com.example.mylsp.viewmodel.SkemaViewModel
+import com.example.mylsp.viewmodel.UserViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -118,6 +119,10 @@ fun AppNavigation() {
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(LocalContext.current.applicationContext as Application)
     )
 
+    val userViewModel: UserViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(LocalContext.current.applicationContext as Application)
+    )
+
     val routesWithNavigation = listOf("main", "skemaList", "profil")
     var showNavigation by remember { mutableStateOf(false) }
     var showTopBar by remember { mutableStateOf(false) }
@@ -136,7 +141,7 @@ fun AppNavigation() {
                 composable("login") {
                     showNavigation = false
                     showTopBar = false
-                    LoginScreen(navController = navController)
+                    LoginScreen(userViewModel = userViewModel, navController = navController)
                 }
                 composable("register") {
                     showNavigation = false

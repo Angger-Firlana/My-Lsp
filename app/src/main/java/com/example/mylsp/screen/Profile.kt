@@ -74,7 +74,8 @@ fun ProfileScreen(modifier: Modifier, navController: NavController) {
         userManager.getUserId()!!.toInt(),
         userManager.getUserName()!!,
         userManager.getUserEmail()!!,
-        userManager.getUserRole()!!
+        userManager.getUserRole()!!,
+        userManager.getJurusanId()
     )
 
     Box(modifier = modifier

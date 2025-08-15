@@ -115,12 +115,31 @@ fun AsesiRequest.toMultipart(): Pair<Map<String, RequestBody>, List<MultipartBod
     email_kantor.asPart("email_kantor")
     status.asPart("status")
 
-    // Ubah attachments jadi MultipartBody.Part list
-    val fileParts = attachments.map { part ->
-        MultipartBody.Part.createFormData("attachments[]", part.body.contentType().toString(), part.body)
+    val multipartList = mutableListOf<MultipartBody.Part>()
+
+    attachments.forEachIndexed { index, part ->
+        // File
+        multipartList.add(
+            MultipartBody.Part.createFormData(
+                "attachments[$index][file]",
+                part.file.body.contentType().toString(),
+                part.file.body
+            )
+        )
+
+        // Description
+        multipartList.add(
+            MultipartBody.Part.createFormData(
+                "attachments[$index][description]",
+                null,
+                part.description
+            )
+        )
     }
 
-    return textParts to fileParts
+
+
+    return textParts to multipartList
 }
 
 

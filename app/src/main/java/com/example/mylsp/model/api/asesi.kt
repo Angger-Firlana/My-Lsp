@@ -1,6 +1,7 @@
 package com.example.mylsp.model.api
 
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 data class Asesi(
     val id: Int,
@@ -48,8 +49,14 @@ data class AsesiRequest(
     val fax_kantor: String?,
     val email_kantor: String?,
     val status:String,
-    val attachments: List<MultipartBody.Part>
+    val attachments: List<AttachmentRequest>
 )
+
+data class AttachmentRequest(
+    val file: MultipartBody.Part,
+    val description: RequestBody
+)
+
 
 data class CreateAsesiResponse(
     val message: String
