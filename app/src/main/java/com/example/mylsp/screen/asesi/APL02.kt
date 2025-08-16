@@ -1,6 +1,6 @@
 package com.example.mylsp.screen.asesi
 
-import androidx.compose.foundation.Image
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -12,19 +12,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.mylsp.R
+import com.example.mylsp.component.ErrorCard
 import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.component.LoadingScreen
-import com.example.mylsp.model.api.Apl02
-import com.example.mylsp.model.api.ElemenAPL02
-import com.example.mylsp.model.api.JawabanApl02
-import com.example.mylsp.model.api.UnitApl02
+import com.example.mylsp.model.api.*
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.JawabanManager
 import com.example.mylsp.viewmodel.APL02ViewModel
@@ -40,9 +36,21 @@ fun APL02(
     val jawabanManager = remember { JawabanManager() }
     val apl02 by apL02ViewModel.apl02.collectAsState()
     val message by apL02ViewModel.message.collectAsState()
+    val state by apL02ViewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
         apL02ViewModel.getAPL02(id)
+    }
+
+    LaunchedEffect(state) {
+        state?.let { success ->
+            if (success){
+                navController.navigate("scanningBarcode"){
+                    popUpTo("apl02"){inclusive = true}
+                }
+            }
+            apL02ViewModel.resetState()
+        }
     }
 
     Box(
@@ -61,10 +69,16 @@ fun APL02(
                 )
                 SchemaSection(data)
                 InstructionCard()
-                UnitsSection(data, jawabanManager)
-                SubmitButton(jawabanManager)
+                UnitsSection(id, data, jawabanManager)
+                SubmitButton(apL02ViewModel)
+                if (message.isNotEmpty()){
+                    ErrorCard(
+                        errorMessage = message,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
             }
-        }?: kotlin.run {
+        } ?: run {
             LoadingScreen()
         }
     }
@@ -160,16 +174,22 @@ private fun InstructionCard() {
 
 @Composable
 private fun UnitsSection(
+    skemaId: Int,
     data: Apl02,
     jawabanManager: JawabanManager
 ) {
-    data.data?.forEach { unit ->
-        UnitCompetensiSection(unit, jawabanManager)
+    data.data.forEach { unit ->
+        UnitCompetensiSection(
+            skemaId = skemaId,
+            unit = unit,
+            jawabanManager = jawabanManager
+        )
     }
 }
 
 @Composable
 private fun UnitCompetensiSection(
+    skemaId: Int,
     unit: UnitApl02,
     jawabanManager: JawabanManager
 ) {
@@ -184,8 +204,7 @@ private fun UnitCompetensiSection(
             fontFamily = AppFont.Poppins,
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
-            color = Color.Black,
-            textAlign = TextAlign.Center
+            color = Color.Black
         )
 
         Column(
@@ -194,14 +213,12 @@ private fun UnitCompetensiSection(
             Text(
                 text = "Kode Unit : ${unit.kode_unit}",
                 fontFamily = AppFont.Poppins,
-                fontSize = 12.sp,
-                color = Color.Black
+                fontSize = 12.sp
             )
             Text(
                 text = "Judul Unit : ${unit.judul_unit}",
                 fontFamily = AppFont.Poppins,
-                fontSize = 12.sp,
-                color = Color.Black
+                fontSize = 12.sp
             )
         }
     }
@@ -211,28 +228,35 @@ private fun UnitCompetensiSection(
         fontFamily = AppFont.Poppins,
         fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
-        color = Color.Black,
-        textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center
     )
 
-    unit.elemen.forEach { (index, elemen) ->
+    unit.elemen.forEach { (_, elemen) ->
         ElemenCard(
-            index = index,
-            elemen = elemen,
-            jawabanManager = jawabanManager
-        )
+            elemen = elemen
+        ) { buktiRelevans, kompetensinitas ->
+            // langsung panggil util
+            jawabanManager.upsertElemen(
+                skemaId = skemaId,
+                unitKe = unit.unit_ke,
+                kodeUnit = unit.kode_unit,
+                elemenId = elemen.elemen_index,
+                kompetensinitas = kompetensinitas,
+                buktiList = buktiRelevans
+            )
+        }
     }
 }
 
 @Composable
 private fun ElemenCard(
-    index: String,
     elemen: ElemenAPL02,
-    jawabanManager: JawabanManager
+    onSubmit: (List<String>, String) -> Unit
 ) {
     var selectedOption by remember { mutableStateOf("") }
-    val options = listOf("K", "BK")
+    val buktiSelected = remember { mutableStateListOf<String>() }
+
     val buktiRelevans = listOf(
         "Fotocopy semester 1-5",
         "Sertifikat PKL"
@@ -284,16 +308,13 @@ private fun ElemenCard(
         }
     }
 
-    // Radio Button Selection
+    // Radio Button Section
     RadioButtonGroup(
-        options = options,
+        options = listOf("k", "bk"),
         selectedOption = selectedOption,
         onOptionSelected = { option ->
             selectedOption = option
-            jawabanManager.addJawaban(
-                idElemen = index.toInt(),
-                jawaban = option
-            )
+            onSubmit(buktiSelected, selectedOption)
         }
     )
 
@@ -302,16 +323,11 @@ private fun ElemenCard(
         buktiList = buktiRelevans,
         onBuktiChanged = { bukti, isChecked ->
             if (isChecked) {
-                jawabanManager.addBukti(
-                    idElemen = elemen.elemen_index,
-                    bukti = bukti
-                )
+                buktiSelected.add(bukti)
             } else {
-                jawabanManager.removeBukti(
-                    idElemen = elemen.elemen_index,
-                    bukti = bukti
-                )
+                buktiSelected.remove(bukti)
             }
+            onSubmit(buktiSelected, selectedOption)
         }
     )
 }
@@ -339,7 +355,7 @@ private fun RadioButtonGroup(
                     onClick = { onOptionSelected(option) }
                 )
                 Text(
-                    text = option,
+                    text = option.uppercase(),
                     fontFamily = AppFont.Poppins,
                     fontWeight = FontWeight.Medium,
                     fontSize = 12.sp
@@ -412,10 +428,12 @@ private fun BuktiCheckboxItem(
 }
 
 @Composable
-private fun SubmitButton(jawabanManager: JawabanManager) {
+private fun SubmitButton(apL02ViewModel: APL02ViewModel) {
     Button(
         onClick = {
-            // TODO: Implement submit logic
+            val jawaban = com.example.mylsp.util.Util.jawabanApl02.value
+            apL02ViewModel.sendApl02()
+            Log.d("APL02", "Jawaban: $jawaban")
         },
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier

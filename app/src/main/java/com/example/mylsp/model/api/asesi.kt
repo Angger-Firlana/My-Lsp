@@ -7,7 +7,7 @@ data class Asesi(
     val id: Int,
     val user_id: Int?,
     val nama_lengkap: String?,
-    val nik: String?,
+    val no_ktp: String?,
     val tgl_lahir: String?,
     val tempat_lahir: String?,
     val jenis_kelamin:String?,
@@ -25,7 +25,8 @@ data class Asesi(
     val kode_pos_kantor: String?,
     val fax_kantor: String?,
     val email_kantor: String?,
-    val status:String
+    val status:String,
+    val user: UserDetail
 )
 
 data class AsesiRequest(

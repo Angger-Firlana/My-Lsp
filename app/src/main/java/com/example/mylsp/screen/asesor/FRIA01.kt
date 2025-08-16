@@ -358,10 +358,6 @@ private fun KUKItem(
                         selected = option == selectedOption,
                         onClick = {
                             selectedOption = option
-                            jawabanManager.addJawaban(
-                                idElemen = elemenIndex,
-                                jawaban = selectedOption
-                            )
                         }
                     )
                     Text(
@@ -430,15 +426,7 @@ private fun EvidenceSection(
                     .clickable {
                         checked = !checked
                         if (checked) {
-                            jawabanManager.addBukti(
-                                idElemen = elemenIndex,
-                                bukti = bukti
-                            )
                         } else {
-                            jawabanManager.removeBukti(
-                                idElemen = elemenIndex,
-                                bukti = bukti
-                            )
                         }
                     }
                     .padding(vertical = 4.dp)
@@ -448,15 +436,7 @@ private fun EvidenceSection(
                     onCheckedChange = { isChecked ->
                         checked = isChecked
                         if (isChecked) {
-                            jawabanManager.addBukti(
-                                idElemen = elemenIndex,
-                                bukti = bukti
-                            )
                         } else {
-                            jawabanManager.removeBukti(
-                                idElemen = elemenIndex,
-                                bukti = bukti
-                            )
                         }
                     }
                 )

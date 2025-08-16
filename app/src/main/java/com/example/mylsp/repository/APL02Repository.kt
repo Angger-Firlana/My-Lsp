@@ -3,6 +3,8 @@ package com.example.mylsp.repository
 import android.content.Context
 import com.example.mylsp.api.APIClient
 import com.example.mylsp.model.api.Apl02
+import com.example.mylsp.model.api.ResponseSubmission
+import com.example.mylsp.model.api.SubmissionGroup
 
 class APL02Repository(context:Context){
     val api = APIClient.getClient(context)
@@ -20,6 +22,25 @@ class APL02Repository(context:Context){
                 val errorBody = response.errorBody()?.string()?: "Unknown error"
                 Result.failure(Exception(errorBody))
             }
+        }catch (e:Exception){
+            Result.failure(e)
+        }
+    }
+
+    suspend fun sendSubmission(submission: SubmissionGroup):Result<ResponseSubmission>{
+        return try{
+            val response = api.sendSubmission(submissionRequest = submission)
+            if(response.isSuccessful){
+                val body = response.body()
+                if(body != null){
+                    Result.success(body)
+                }else{
+                    Result.failure(Exception("Response Body Is Null"))
+                }
+            }else{
+                val errorBody = response.errorBody()?.string()?: "Unknown error"
+                Result.failure(Exception(errorBody))
+                }
         }catch (e:Exception){
             Result.failure(e)
         }

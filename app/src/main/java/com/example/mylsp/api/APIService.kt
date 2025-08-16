@@ -9,7 +9,9 @@ import com.example.mylsp.model.api.LoginRequest
 import com.example.mylsp.model.api.LoginResponse
 import com.example.mylsp.model.api.RegisterRequest
 import com.example.mylsp.model.api.RegisterResponse
+import com.example.mylsp.model.api.ResponseSubmission
 import com.example.mylsp.model.api.Skemas
+import com.example.mylsp.model.api.SubmissionGroup
 import com.example.mylsp.model.api.User
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -63,6 +65,12 @@ interface APIService {
     ): Response<CreateAsesiResponse>
     @GET("apl02/{id}")
     suspend fun getAPL02(@Path("id") id: Int): Response<Apl02>
+
+    @POST("assesment/formapl02")
+    suspend fun sendSubmission(
+        @Header("Accept") accept: String = "application/json",
+        @Body submissionRequest: SubmissionGroup
+    ): Response<ResponseSubmission>
 
     @GET("jurusan")
     suspend fun getJurusans():Response<List<Jurusan>>
