@@ -26,17 +26,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.model.api.AsesiRequest
 import com.example.mylsp.model.api.AttachmentRequest
+import com.example.mylsp.screen.main.WaitingApprovalScreen
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.viewmodel.AsesiViewModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -59,7 +59,7 @@ fun SectionHeader(title: String) {
         text = title,
         fontSize = 18.sp,
         fontWeight = FontWeight.SemiBold,
-        color = Color(0xFF1A1A1A),
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier.padding(bottom = 16.dp, top = 8.dp)
     )
 }
@@ -72,6 +72,7 @@ fun AsesiFormScreen(
     val context = LocalContext.current
     val state by viewModel.state.collectAsState()
     val message by viewModel.message.collectAsState()
+    val asesi by viewModel.asesi.collectAsState()
 
     var namaLengkap by remember { mutableStateOf("Budi Santoso") }
     var nik by remember { mutableStateOf("3201010101010001") }
@@ -92,7 +93,6 @@ fun AsesiFormScreen(
     var kodePosKantor by remember { mutableStateOf("10210") }
     var faxKantor by remember { mutableStateOf("0215554321") }
     var emailKantor by remember { mutableStateOf("budi.santoso@kantor.com") }
-
 
     var fileUploads by remember {
         mutableStateOf(
@@ -115,7 +115,11 @@ fun AsesiFormScreen(
             if (currentUploadIndex >= 0) {
                 val file = uriToFile(it, context)
                 val requestFile = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-                val part = MultipartBody.Part.createFormData("${fileUploads[currentUploadIndex].name.lowercase().replace(" ", "_")}[]", file.name, requestFile)
+                val part = MultipartBody.Part.createFormData(
+                    "${fileUploads[currentUploadIndex].name.lowercase().replace(" ", "_")}[]",
+                    file.name,
+                    requestFile
+                )
 
                 fileUploads = fileUploads.toMutableList().apply {
                     this[currentUploadIndex] = this[currentUploadIndex].copy(
@@ -127,11 +131,15 @@ fun AsesiFormScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.getDataApl01ByUser()
+    }
+
     LaunchedEffect(state) {
         state?.let { success ->
-            if(success){
+            if (success) {
                 navController.navigate("main")
-            }else{
+            } else {
                 Toast.makeText(context, message, Toast.LENGTH_LONG).show()
             }
             viewModel.resetState()
@@ -141,338 +149,202 @@ fun AsesiFormScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFF8F9FA),
-                        Color(0xFFE3F2FD)
-                    )
-                )
-            )
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(24.dp)
-        ) {
-            // Header
-            Text(
-                text = "Lengkapi Identitas Anda",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF1A1A1A),
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 32.dp)
-            )
+        asesi?.let { dataAsesi ->
+            if (dataAsesi.status == "pending") {
+                navController.navigate("waiting_approval"){
+                    popUpTo(navController.graph.startDestinationId){
+                        inclusive = true
+                    }
+                }
+            }else{
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Detail Asesi",
+                            style = TextStyle(
+                                fontFamily = AppFont.Poppins,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
 
-            // Personal Information Section
-            SectionHeader("Data Pribadi")
+                        DetailItem(label = "Nama Lengkap", value = dataAsesi.nama_lengkap)
+                        DetailItem(label = "No KTP", value = dataAsesi.no_ktp)
+                        DetailItem(label = "Tanggal Lahir", value = dataAsesi.tgl_lahir)
+                        DetailItem(label = "Tempat Lahir", value = dataAsesi.tempat_lahir)
+                        DetailItem(label = "Jenis Kelamin", value = dataAsesi.jenis_kelamin)
+                        DetailItem(label = "Kebangsaan", value = dataAsesi.kebangsaan)
+                        DetailItem(label = "Alamat Rumah", value = dataAsesi.alamat_rumah)
+                        DetailItem(label = "Kode Pos", value = dataAsesi.kode_pos)
+                        DetailItem(label = "No Telepon Rumah", value = dataAsesi.no_telepon_rumah)
+                        DetailItem(label = "No Telepon Kantor", value = dataAsesi.no_telepon_kantor)
+                        DetailItem(label = "No Telepon", value = dataAsesi.no_telepon)
+                        DetailItem(label = "Email", value = dataAsesi.email)
+                        DetailItem(label = "Kualifikasi Pendidikan", value = dataAsesi.kualifikasi_pendidikan)
+                        DetailItem(label = "Nama Institusi", value = dataAsesi.nama_institusi)
+                        DetailItem(label = "Jabatan", value = dataAsesi.jabatan)
+                        DetailItem(label = "Alamat Kantor", value = dataAsesi.alamat_kantor)
+                        DetailItem(label = "Kode Pos Kantor", value = dataAsesi.kode_pos_kantor)
+                        DetailItem(label = "Fax Kantor", value = dataAsesi.fax_kantor)
+                        DetailItem(label = "Email Kantor", value = dataAsesi.email_kantor)
+                        DetailItem(label = "Status", value = dataAsesi.status)
 
-            ModernTextField(
-                value = namaLengkap,
-                onValueChange = { namaLengkap = it },
-                placeholder = "Nama Lengkap",
-                label = "Nama Lengkap"
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ModernTextField(
-                value = nik,
-                onValueChange = { nik = it },
-                placeholder = "NIK",
-                label = "NIK"
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ModernTextField(
-                value = tanggalLahir,
-                onValueChange = { tanggalLahir = it },
-                placeholder = "16 Februari 2008",
-                label = "Tanggal Lahir"
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ModernTextField(
-                value = tempatLahir,
-                onValueChange = { tempatLahir = it },
-                placeholder = "Tempat Lahir",
-                label = "Tempat Lahir"
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Gender Selection
-            Text(
-                text = "Jenis Kelamin",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFF1A1A1A),
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(24.dp)
-            ) {
-                GenderOption(
-                    text = "Laki-laki",
-                    selected = jenisKelamin == "Laki-laki",
-                    onSelect = { jenisKelamin = "Laki-laki" }
-                )
-                GenderOption(
-                    text = "Perempuan",
-                    selected = jenisKelamin == "Perempuan",
-                    onSelect = { jenisKelamin = "Perempuan" }
-                )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "User Detail",
+                            style = TextStyle(
+                                fontFamily = AppFont.Poppins,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 16.sp
+                            )
+                        )
+                        DetailItem(label = "Username", value = dataAsesi.user.username)
+                        DetailItem(label = "Email User", value = dataAsesi.user.email)
+                        DetailItem(label = "Role", value = dataAsesi.user.role)
+                    }
+                }
             }
+        } ?: run {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(24.dp)
+            ) {
+                SectionHeader("Data Pribadi")
+                ModernTextField(value = namaLengkap, onValueChange = { namaLengkap = it }, placeholder = "Nama Lengkap", label = "Nama Lengkap")
+                Spacer(Modifier.height(16.dp))
+                ModernTextField(value = nik, onValueChange = { nik = it }, placeholder = "NIK", label = "NIK")
+                Spacer(Modifier.height(16.dp))
+                ModernTextField(value = tanggalLahir, onValueChange = { tanggalLahir = it }, placeholder = "16 Februari 2008", label = "Tanggal Lahir")
+                Spacer(Modifier.height(16.dp))
+                ModernTextField(value = tempatLahir, onValueChange = { tempatLahir = it }, placeholder = "Tempat Lahir", label = "Tempat Lahir")
+                Spacer(Modifier.height(24.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Text("Jenis Kelamin", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(bottom = 12.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                    GenderOption("Laki-laki", jenisKelamin == "Laki-laki") { jenisKelamin = "Laki-laki" }
+                    GenderOption("Perempuan", jenisKelamin == "Perempuan") { jenisKelamin = "Perempuan" }
+                }
+                Spacer(Modifier.height(16.dp))
 
-            ModernTextField(
-                value = kebangsaan,
-                onValueChange = { kebangsaan = it },
-                placeholder = "Kebangsaan",
-                label = "Kebangsaan"
-            )
+                ModernTextField(value = kebangsaan, onValueChange = { kebangsaan = it }, placeholder = "Kebangsaan", label = "Kebangsaan")
+                Spacer(Modifier.height(16.dp))
+                ModernTextField(value = alamatRumah, onValueChange = { alamatRumah = it }, placeholder = "Alamat lengkap tempat tinggal", label = "Alamat Rumah", minLines = 3)
+                Spacer(Modifier.height(16.dp))
+                ModernTextField(value = kodePos, onValueChange = { kodePos = it }, placeholder = "Kode Pos", label = "Kode Pos")
+                Spacer(Modifier.height(16.dp))
+                ModernTextField(value = noTeleponRumah, onValueChange = { noTeleponRumah = it }, placeholder = "No Telepon Rumah", label = "No Telepon Rumah")
+                Spacer(Modifier.height(16.dp))
+                ModernTextField(value = noTelepon, onValueChange = { noTelepon = it }, placeholder = "No Telepon/HP", label = "No Telepon")
+                Spacer(Modifier.height(16.dp))
+                ModernTextField(value = email, onValueChange = { email = it }, placeholder = "Email", label = "Email")
+                Spacer(Modifier.height(24.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
+                SectionHeader("Data Pendidikan")
+                ModernTextField(value = kualifikasiPendidikan, onValueChange = { kualifikasiPendidikan = it }, placeholder = "Kualifikasi Pendidikan", label = "Kualifikasi Pendidikan")
+                Spacer(Modifier.height(16.dp))
+                ModernTextField(value = namaInstitusi, onValueChange = { namaInstitusi = it }, placeholder = "Nama Institusi/Sekolah", label = "Nama Institusi")
+                Spacer(Modifier.height(24.dp))
 
-            ModernTextField(
-                value = alamatRumah,
-                onValueChange = { alamatRumah = it },
-                placeholder = "Alamat lengkap tempat tinggal",
-                label = "Alamat Rumah",
-                minLines = 3
-            )
+                SectionHeader("Data Pekerjaan")
+                ModernTextField(value = jabatan, onValueChange = { jabatan = it }, placeholder = "Jabatan", label = "Jabatan")
+                Spacer(Modifier.height(16.dp))
+                ModernTextField(value = alamatKantor, onValueChange = { alamatKantor = it }, placeholder = "Alamat Kantor", label = "Alamat Kantor", minLines = 2)
+                Spacer(Modifier.height(16.dp))
+                ModernTextField(value = kodePosKantor, onValueChange = { kodePosKantor = it }, placeholder = "Kode Pos Kantor", label = "Kode Pos Kantor")
+                Spacer(Modifier.height(16.dp))
+                ModernTextField(value = faxKantor, onValueChange = { faxKantor = it }, placeholder = "Fax Kantor", label = "Fax Kantor")
+                Spacer(Modifier.height(16.dp))
+                ModernTextField(value = emailKantor, onValueChange = { emailKantor = it }, placeholder = "Email Kantor", label = "Email Kantor")
+                Spacer(Modifier.height(32.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ModernTextField(
-                value = kodePos,
-                onValueChange = { kodePos = it },
-                placeholder = "Kode Pos",
-                label = "Kode Pos"
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ModernTextField(
-                value = noTeleponRumah,
-                onValueChange = { noTeleponRumah = it },
-                placeholder = "No Telepon Rumah",
-                label = "No Telepon Rumah"
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ModernTextField(
-                value = noTelepon,
-                onValueChange = { noTelepon = it },
-                placeholder = "No Telepon/HP",
-                label = "No Telepon"
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ModernTextField(
-                value = email,
-                onValueChange = { email = it },
-                placeholder = "Email",
-                label = "Email"
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Education Section
-            SectionHeader("Data Pendidikan")
-
-            ModernTextField(
-                value = kualifikasiPendidikan,
-                onValueChange = { kualifikasiPendidikan = it },
-                placeholder = "Kualifikasi Pendidikan",
-                label = "Kualifikasi Pendidikan"
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ModernTextField(
-                value = namaInstitusi,
-                onValueChange = { namaInstitusi = it },
-                placeholder = "Nama Institusi/Sekolah",
-                label = "Nama Institusi"
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Work Information Section
-            SectionHeader("Data Pekerjaan")
-
-            ModernTextField(
-                value = jabatan,
-                onValueChange = { jabatan = it },
-                placeholder = "Jabatan",
-                label = "Jabatan"
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ModernTextField(
-                value = alamatKantor,
-                onValueChange = { alamatKantor = it },
-                placeholder = "Alamat Kantor",
-                label = "Alamat Kantor",
-                minLines = 2
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ModernTextField(
-                value = kodePosKantor,
-                onValueChange = { kodePosKantor = it },
-                placeholder = "Kode Pos Kantor",
-                label = "Kode Pos Kantor"
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ModernTextField(
-                value = faxKantor,
-                onValueChange = { faxKantor = it },
-                placeholder = "Fax Kantor",
-                label = "Fax Kantor"
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ModernTextField(
-                value = emailKantor,
-                onValueChange = { emailKantor = it },
-                placeholder = "Email Kantor",
-                label = "Email Kantor"
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // File Upload Section
-            Text(
-                text = "Dokumen Pendukung",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF1A1A1A),
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            fileUploads.forEachIndexed { index, fileUpload ->
-                FileUploadCard(
-                    fileUpload = fileUpload,
-                    onClick = {
+                Text("Dokumen Pendukung", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(bottom = 16.dp))
+                fileUploads.forEachIndexed { index, fileUpload ->
+                    FileUploadCard(fileUpload) {
                         currentUploadIndex = index
                         launcher.launch("*/*")
                     }
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-
-            Spacer(modifier = Modifier.height(40.dp))
-
-            // Submit Button
-            Button(
-                onClick = {
-                    val attachments = fileUploads.mapNotNull { fu ->
-                        fu.file?.let { filePart ->
-                            AttachmentRequest(
-                                file = filePart,
-                                description = fu.description.toRequestBody("text/plain".toMediaTypeOrNull())
-                            )
-                        }
-                    }
-                    val request = AsesiRequest(
-                        nama_lengkap = namaLengkap,
-                        nik = nik,
-                        tgl_lahir = tanggalLahir,
-                        tempat_lahir = tempatLahir,
-                        jenis_kelamin = jenisKelamin,
-                        kebangsaan = kebangsaan,
-                        alamat_rumah = alamatRumah,
-                        kode_pos = kodePos,
-                        no_telepon_rumah = noTeleponRumah,
-                        no_telepon_kantor = noTeleponKantor,
-                        no_telepon = noTelepon,
-                        email = email,
-                        kualifikasi_pendidikan = kualifikasiPendidikan,
-                        nama_institusi = namaInstitusi,
-                        jabatan = jabatan,
-                        alamat_kantor = alamatKantor,
-                        kode_pos_kantor = kodePosKantor,
-                        fax_kantor = faxKantor,
-                        email_kantor = emailKantor,
-                        status = "pending",
-                        attachments = attachments
-                    )
-                    viewModel.createDataAsesi(request)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF2196F3)
-                ),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Text(
-                    text = "🔗 Simpan data",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.White
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            message.takeIf { it.isNotEmpty() }?.let {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (state == true) Color(0xFFE8F5E8) else Color(0xFFFFEBEE)
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(
-                        text = it,
-                        color = if (state == true) Color(0xFF2E7D32) else Color(0xFFC62828),
-                        modifier = Modifier.padding(16.dp),
-                        fontSize = 14.sp
-                    )
+                    Spacer(Modifier.height(12.dp))
                 }
-            }
 
-            Spacer(modifier = Modifier.height(32.dp))
-        }
-
-        // Decorative elements (bottom wave)
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .size(200.dp)
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFFFF9800).copy(alpha = 0.3f),
-                            Color.Transparent
+                Spacer(Modifier.height(40.dp))
+                Button(
+                    onClick = {
+                        val attachments = fileUploads.mapNotNull { fu ->
+                            fu.file?.let { filePart ->
+                                AttachmentRequest(
+                                    file = filePart,
+                                    description = fu.description.toRequestBody("text/plain".toMediaTypeOrNull())
+                                )
+                            }
+                        }
+                        val request = AsesiRequest(
+                            nama_lengkap = namaLengkap,
+                            nik = nik,
+                            tgl_lahir = tanggalLahir,
+                            tempat_lahir = tempatLahir,
+                            jenis_kelamin = jenisKelamin,
+                            kebangsaan = kebangsaan,
+                            alamat_rumah = alamatRumah,
+                            kode_pos = kodePos,
+                            no_telepon_rumah = noTeleponRumah,
+                            no_telepon_kantor = noTeleponKantor,
+                            no_telepon = noTelepon,
+                            email = email,
+                            kualifikasi_pendidikan = kualifikasiPendidikan,
+                            nama_institusi = namaInstitusi,
+                            jabatan = jabatan,
+                            alamat_kantor = alamatKantor,
+                            kode_pos_kantor = kodePosKantor,
+                            fax_kantor = faxKantor,
+                            email_kantor = emailKantor,
+                            status = "pending",
+                            attachments = attachments
                         )
+                        viewModel.createDataAsesi(request)
+                    },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
-                    shape = CircleShape
-                )
-        )
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Text("🔗 Simpan data", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                }
+
+                Spacer(Modifier.height(16.dp))
+                message.takeIf { it.isNotEmpty() }?.let {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (state == true) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.errorContainer
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = it,
+                            color = if (state == true) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.padding(16.dp),
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+                Spacer(Modifier.height(32.dp))
+            }
+        }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModernTextField(
     value: String,
@@ -487,34 +359,26 @@ fun ModernTextField(
                 text = it,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color(0xFF1A1A1A),
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
         }
-
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
             placeholder = {
-                Text(
-                    placeholder,
-                    color = Color(0xFF9E9E9E),
-                    fontSize = 14.sp
-                )
+                Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
             },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFF2196F3),
-                unfocusedBorderColor = Color(0xFFE0E0E0),
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
             ),
             shape = RoundedCornerShape(16.dp),
             minLines = minLines,
-            textStyle = androidx.compose.ui.text.TextStyle(
-                fontSize = 14.sp,
-                color = Color(0xFF1A1A1A)
-            )
+            textStyle = LocalTextStyle.current.copy(fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
         )
     }
 }
@@ -532,93 +396,91 @@ fun GenderOption(
         RadioButton(
             selected = selected,
             onClick = onSelect,
-            colors = RadioButtonDefaults.colors(
-                selectedColor = Color(0xFF2196F3)
-            )
+            colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.primary)
         )
-        Text(
-            text = text,
-            fontSize = 14.sp,
-            color = Color(0xFF1A1A1A),
-            modifier = Modifier.padding(start = 8.dp)
-        )
+        Text(text = text, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(start = 8.dp))
     }
 }
 
 @Composable
-fun FileUploadCard(
-    fileUpload: FileUpload,
-    onClick: () -> Unit
-) {
+fun FileUploadCard(fileUpload: FileUpload, onClick: () -> Unit) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        ),
+        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(
-                        if (fileUpload.file != null) Color(0xFFE8F5E8) else Color(0xFFF5F5F5),
-                        CircleShape
-                    ),
+                modifier = Modifier.size(40.dp).background(
+                    if (fileUpload.file != null) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                    CircleShape
+                ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = if (fileUpload.file != null) Icons.Default.Check else Icons.Default.AttachFile,
                     contentDescription = null,
-                    tint = if (fileUpload.file != null) Color(0xFF4CAF50) else Color(0xFF757575),
+                    tint = if (fileUpload.file != null) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp)
                 )
             }
-
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 12.dp)
+                modifier = Modifier.weight(1f).padding(horizontal = 12.dp)
             ) {
-                Text(
-                    text = fileUpload.name,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF1A1A1A)
-                )
+                Text(fileUpload.name, fontSize = 14.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
                 Text(
                     text = fileUpload.fileName ?: fileUpload.description,
                     fontSize = 12.sp,
-                    color = if (fileUpload.file != null) Color(0xFF4CAF50) else Color(0xFF757575),
+                    color = if (fileUpload.file != null) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2
                 )
             }
-
             if (fileUpload.file != null) {
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = "Remove file",
-                    tint = Color(0xFF757575),
-                    modifier = Modifier
-                        .size(20.dp)
-                        .clickable {
-                            // Handle file removal
-                        }
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(20.dp).clickable {
+                        // TODO: remove file logic
+                    }
                 )
             }
         }
     }
 }
 
-// Utility functions (keep existing ones)
+@Composable
+fun DetailItem(label: String, value: String?) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        Text(
+            text = "$label:",
+            style = TextStyle(
+                fontFamily = AppFont.Poppins,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp
+            ),
+            modifier = Modifier.width(150.dp)
+        )
+        Text(
+            text = value ?: "-",
+            style = TextStyle(
+                fontFamily = AppFont.Poppins,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp
+            )
+        )
+    }
+}
+
+// Utility functions
 fun uriToFile(uri: Uri, context: Context): File {
     val inputStream = context.contentResolver.openInputStream(uri)
     val file = File(context.cacheDir, context.contentResolver.getFileName(uri))
@@ -640,4 +502,3 @@ fun ContentResolver.getFileName(uri: Uri): String {
     }
     return name
 }
-

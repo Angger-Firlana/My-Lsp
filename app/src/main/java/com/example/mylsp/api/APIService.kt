@@ -26,6 +26,7 @@ import retrofit2.http.Path
 
 interface APIService {
 
+    //Auth
     @POST("auth/login")
     suspend fun login(
         @Body request: LoginRequest
@@ -35,8 +36,12 @@ interface APIService {
         @Header("Accept") accept: String = "application/json",
         @Body registerRequest: RegisterRequest
     ): Response<RegisterResponse>
+
+    //User
     @GET("user")
     suspend fun getUser():Response<User>
+
+    //Assessment
     @Multipart
     @POST("assesment/formapl01")
     suspend fun createApl01(
@@ -72,12 +77,19 @@ interface APIService {
         @Body submissionRequest: SubmissionGroup
     ): Response<ResponseSubmission>
 
+    //getApl01
+    @GET("apl01ByUser/{id}")
+    suspend fun getApl01ByUser(@Path("id") id: Int): Response<Asesi>
+
+    //Jurusan
     @GET("jurusan")
     suspend fun getJurusans():Response<List<Jurusan>>
 
+    //Asesi
     @GET("asesi")
     suspend fun getDataAsesi():Response<Asesi>
 
+    //Skema
     @GET("schema")
     suspend fun getListSkema():Response<Skemas>
 }

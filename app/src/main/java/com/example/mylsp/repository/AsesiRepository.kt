@@ -83,6 +83,25 @@ class AsesiRepository(context: Context) {
             Result.failure(e)
         }
     }
+
+    suspend fun getApl01ByUser(id:Int):Result<Asesi>{
+        return try {
+            val response = api.getApl01ByUser(id)
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    Result.success(body)
+                } else {
+                    Result.failure(Exception("Response Body Is Null"))
+                }
+            }else{
+                val errorBody = response.errorBody()?.string()?: "Unknown Error"
+                Result.failure(Exception(errorBody))
+            }
+        }catch (e:Exception){
+            Result.failure(e)
+        }
+    }
 }
 
 fun AsesiRequest.toMultipart(): Pair<Map<String, RequestBody>, List<MultipartBody.Part>> {

@@ -163,6 +163,7 @@ fun AppNavigation() {
                     DetailUSK(navController = navController, idSkema = 1)
                 }
                 composable("apl_01") {
+                    showTopBar = true
                     showNavigation = true
                     AsesiFormScreen(asesiViewModel,navController = navController)
                 }
@@ -179,6 +180,8 @@ fun AppNavigation() {
                     FRIA01(idSkema = id.toInt(),apL02ViewModel = apL02ViewModel,navController = navController)
                 }
                 composable("waiting_approval") {
+                    showTopBar = false
+                    showNavigation = false
                     WaitingApprovalScreen(modifier = Modifier, navController)
                 }
                 composable("profile"){

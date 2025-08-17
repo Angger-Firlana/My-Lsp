@@ -36,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,10 +58,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mylsp.R
 import com.example.mylsp.component.ItemProfile
+import com.example.mylsp.component.LoadingScreen
 import com.example.mylsp.model.api.UserDetail
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.TokenManager
 import com.example.mylsp.util.UserManager
+import kotlinx.coroutines.delay
 
 @Composable
 fun ProfileScreen(modifier: Modifier, navController: NavController) {
@@ -69,6 +72,9 @@ fun ProfileScreen(modifier: Modifier, navController: NavController) {
     val tokenManager = TokenManager(context)
 
     var showLogout by remember { mutableStateOf(false) }
+    var logout by remember { mutableStateOf(false) }
+
+
 
     val user = UserDetail(
         userManager.getUserId()!!.toInt(),
@@ -90,7 +96,6 @@ fun ProfileScreen(modifier: Modifier, navController: NavController) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Profile Image Section
             Box(
                 modifier = Modifier.size(140.dp),
                 contentAlignment = Alignment.Center
@@ -110,7 +115,6 @@ fun ProfileScreen(modifier: Modifier, navController: NavController) {
                     contentScale = ContentScale.Crop
                 )
 
-                // Online status indicator
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -168,7 +172,6 @@ fun ProfileScreen(modifier: Modifier, navController: NavController) {
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // Stats Section
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -290,16 +293,27 @@ fun ProfileScreen(modifier: Modifier, navController: NavController) {
                     showLogout = false
                 },
                 onConfirm = {
-                    userManager.clearUser()
-                    tokenManager.clearToken()
-                    navController.navigate("login") {
-                        popUpTo(navController.graph.startDestinationId) {
-                            inclusive = true
-                        }
-                        launchSingleTop = true
-                    }
+
+                    logout = true
+
                 }
             )
+        }
+
+        if (logout){
+            LoadingScreen()
+            LaunchedEffect(Unit) {
+                delay(2000)
+                logout = false
+                userManager.clearUser()
+                tokenManager.clearToken()
+                navController.navigate("login") {
+                    popUpTo(navController.graph.startDestinationId) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                }
+            }
         }
     }
 }
