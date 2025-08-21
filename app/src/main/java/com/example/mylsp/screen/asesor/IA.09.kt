@@ -25,6 +25,8 @@ import com.example.mylsp.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IA09Screen() {
+    var scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -39,7 +41,7 @@ fun IA09Screen() {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "ASOSIASI LEZHAR RAHMA PANGESTU",
+                text = "APDHAI LEZHAR RAHMA PANGESTU",
                 color = Color.White,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
@@ -52,6 +54,7 @@ fun IA09Screen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
+                .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
             // Logo dan judul section
@@ -78,7 +81,7 @@ fun IA09Screen() {
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = "FR.IA.06A",
+                        text = "FR.IA.09",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black,
@@ -108,16 +111,16 @@ fun IA09Screen() {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 IA09FormRow(
-                    label = "Judul Unit",
-                    value = "Okupasi Junior Custom-Made"
+                    label = "Judul",
+                    value = "MENGSAMBANG PERSIAPAN DAN PEMELIHARAAN RESERVOIR PLAN DALAM MENJANGKAU POTENSI KAPASITAS"
                 )
                 IA09FormRow(
-                    label = "Kode Unit",
-                    value = "LSK.FRI.03.001.01 (8-04/03/2023"
+                    label = "Nomor",
+                    value = "Semen/Template Kerja/Mandiri"
                 )
                 IA09FormRow(
-                    label = "Unit",
-                    value = "Standardized Template Report Mendiri"
+                    label = "TUK",
+                    value = ""
                 )
                 IA09FormRow(
                     label = "Nama Asesor",
@@ -132,6 +135,215 @@ fun IA09Screen() {
                     value = ""
                 )
             }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Unit Kompetensi Section
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
+                    .padding(8.dp)
+            ) {
+                Text(
+                    text = "Unit Kompetensi",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                IA09FormRow(label = "Kode Unit", value = "LSP.NTC.090.003")
+                IA09FormRow(label = "Judul Unit", value = "Memproses Reservoir")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Setiap pertanyaan section
+            Text(
+                text = "Setiap pertanyaan harus terkait dengan elemen",
+                fontSize = 12.sp,
+                color = Color.Black,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            Text(
+                text = "Tuliskan bukti-bukti yang berkaitan dengan KUK, batasi jumlah pertanyaan, setiap pertanyaan harus menggambarkan satu atau lebih KUK yang terkait berdasarkan bukti yang dikumpulkan",
+                fontSize = 10.sp,
+                color = Color.Gray,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            // Bukti-Bukti Kompetensi Section
+            Text(
+                text = "Bukti-Bukti Kompetensi",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            // Satu box besar untuk bukti kompetensi
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp)
+                    .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+                    .padding(8.dp)
+            ) {
+                Column {
+                    Text("1.", fontSize = 12.sp, color = Color.Black)
+                    Text("2.", fontSize = 12.sp, color = Color.Black, modifier = Modifier.padding(top = 4.dp))
+                    Text("3.", fontSize = 12.sp, color = Color.Black, modifier = Modifier.padding(top = 4.dp))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Daftar Pertanyaan Wawancara dan Rekomendasi dalam satu box
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
+                    .padding(12.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Daftar Pertanyaan Wawancara
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = "Daftar Pertanyaan Wawancara",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+
+                        repeat(3) { index ->
+                            Text(
+                                text = "${index + 1}. Sesuai dengan bukti :",
+                                fontSize = 10.sp,
+                                color = Color.Black,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                        }
+                    }
+
+                    // Rekomendasi
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = "Rekomendasi",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+
+                        repeat(3) { index ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(12.dp)
+                                        .border(1.dp, Color.Gray)
+                                )
+                                Text(
+                                    text = "K",
+                                    fontSize = 10.sp,
+                                    modifier = Modifier.padding(horizontal = 4.dp)
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .size(12.dp)
+                                        .border(1.dp, Color.Gray)
+                                )
+                                Text(
+                                    text = "BK",
+                                    fontSize = 10.sp,
+                                    modifier = Modifier.padding(horizontal = 4.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Nama Asesi dan Nama Asesor (di luar box)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Nama Asesi",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp)
+                            .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+                    )
+                }
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Nama Asesor",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp)
+                            .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Tanda Tangan Asesi (di luar box)
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Tanda Tangan Asesi",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(80.dp)
+                        .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+                )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
         }
 
         // Divider sebelum tombol
