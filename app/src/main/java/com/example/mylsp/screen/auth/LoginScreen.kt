@@ -30,6 +30,7 @@ import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.UserManager
 import com.example.mylsp.viewmodel.AuthViewModel
 import com.example.mylsp.viewmodel.UserViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun LoginScreen(
@@ -57,17 +58,22 @@ fun LoginScreen(
             if (success) {
                 userViewModel.getUserByToken()
                 val role = UserManager(context).getUserRole()
-                if (role == "asesi"){
-                    navController.navigate("main"){
-                        popUpTo(navController.graph.startDestinationId){inclusive = true}
+                delay(1000)
+                when (role) {
+                    "asesi" -> {
+                        navController.navigate("main"){
+                            popUpTo(navController.graph.startDestinationId){inclusive = true}
+                        }
                     }
-                } else if (role == "asesor"){
-                    navController.navigate("dashboardAsesor"){
-                        popUpTo(navController.graph.startDestinationId){inclusive = true}
+                    "asesor" -> {
+                        navController.navigate("dashboardAsesor"){
+                            popUpTo(navController.graph.startDestinationId){inclusive = true}
+                        }
                     }
-                }else{
-                    navController.navigate("main"){
-                        popUpTo(navController.graph.startDestinationId){inclusive = true}
+                    else -> {
+                        navController.navigate("main"){
+                            popUpTo(navController.graph.startDestinationId){inclusive = true}
+                        }
                     }
                 }
 

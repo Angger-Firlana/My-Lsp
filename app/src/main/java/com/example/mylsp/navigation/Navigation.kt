@@ -201,6 +201,7 @@ fun AppNavigation() {
                     Events(navController = navController)
                 }
                 composable("dashboardAsesor"){
+                    showTopBar = false
                     showNavigation = true
                     DashboardAsesor(navController = navController)
                 }
