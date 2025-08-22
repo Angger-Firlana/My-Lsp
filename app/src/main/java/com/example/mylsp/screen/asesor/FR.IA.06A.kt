@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.sp
 import com.example.mylsp.R
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.mylsp.component.HeaderForm
+import com.example.mylsp.component.SkemaSertifikasi
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +48,6 @@ fun FRIA06A(modifier: Modifier = Modifier, navController: NavController) {
             .verticalScroll(rememberScrollState())
     ) {
 
-        // Header biru
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -70,44 +71,12 @@ fun FRIA06A(modifier: Modifier = Modifier, navController: NavController) {
                 .padding(16.dp)
         ) {
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.hd),
-                    contentDescription = "LSP Logo",
-                    modifier = Modifier.size(70.dp)
-                )
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Column {
-                    Text(
-                        text = "FR.IA.06C",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Text(
-                        text = "LEMBAR JAWABAN PERTANYAAN TERTULIS ESSAI",
-                        fontSize = 12.sp,
-                        color = Color.Black,
-                        modifier = Modifier.padding(top = 2.dp)
-                    )
-                }
-            }
-
-            Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                color = Color.Gray,
-                thickness = 1.dp
+            HeaderForm(
+                "FR.IA.06.C",
+                "LEMBAR JAWABAN PERTANYAAN TERTULIS ESSAI"
             )
+
+
         }
 
         Column(
@@ -115,24 +84,23 @@ fun FRIA06A(modifier: Modifier = Modifier, navController: NavController) {
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
         ) {
-            Text(
-                text = "Skema Sertifikasi",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
+
+            SkemaSertifikasi(
+                judulUnit = "Okupasi Junior Custom Made",
+                kodeUnit = "SKM.TBS.OJCM/LSP.SMKN24/2023",
+                TUK = "Sewaktu/Tempat Kerja/Mandiri",
+                namaAsesor = null,
+                namaAsesi = null,
+                tanggalAsesmen = null
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Divider(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color.Red,
+                thickness = 1.dp
+            )
 
-            FormField("Judul Unit", "Okupasi Junior Custom Made")
-            FormField("Kode Unit", "SKM.TBS.OJCM/LSP.SMKN24/2023")
-            FormField("TUK", "Sewaktu/Tempat Kerja/Mandiri")
-            FormField("Nama Asesor", "")
-            FormField("Nama Asesi", "")
-            FormField("Tanggal", "")
-            FormField("Waktu", "")
-
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             Text(
                 text = "Jawablah semua pertanyaan di bawah ini:",
@@ -141,7 +109,7 @@ fun FRIA06A(modifier: Modifier = Modifier, navController: NavController) {
                 color = Color.Black
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             QuestionCard(
                 number = "1",
@@ -230,32 +198,7 @@ fun FRIA06A(modifier: Modifier = Modifier, navController: NavController) {
     }
 }
 
-@Composable
-fun FormField(label: String, value: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp)
-    ) {
-        Text(
-            text = label,
-            fontSize = 14.sp,
-            color = Color.Black,
-            modifier = Modifier.width(100.dp)
-        )
-        Text(
-            text = ":",
-            fontSize = 14.sp,
-            color = Color.Black,
-            modifier = Modifier.padding(horizontal = 8.dp)
-        )
-        Text(
-            text = value,
-            fontSize = 14.sp,
-            color = Color.Black
-        )
-    }
-}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -274,7 +217,7 @@ fun QuestionCard(
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(10.dp)) {
             Text(
                 text = "$number.",
                 fontSize = 14.sp,
@@ -339,10 +282,10 @@ fun QuestionCard(
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(
-                            checked = !checked,
-                            onCheckedChange = { onCheckedChange(!checked) },
+                            checked = checked,
+                            onCheckedChange =  onCheckedChange ,
                             colors = CheckboxDefaults.colors(
-                                checkedColor = Color(0xFFF44336)
+                                checkedColor = Color(0xFF4CAF50)
                             )
                         )
                         Text("Tidak", modifier = Modifier.padding(start = 4.dp))

@@ -32,7 +32,7 @@ fun IA09Screen() {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        // Header biru
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
