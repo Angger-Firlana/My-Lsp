@@ -36,7 +36,7 @@ fun PenilaianAsesiRekomendasiScreen() {
                         text = "AFDHAL EZHAR RAHMA PANGESTU",
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
+                        fontSize = 20.sp,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -54,16 +54,16 @@ fun PenilaianAsesiRekomendasiScreen() {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 20.dp, vertical = 16.dp)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             // Nama Mata Uji Kompetensi
             Text(
                 text = "Nama Mata Uji Kompetensi: USK PRL - Pemrograman Dasar",
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(bottom = 24.dp)
             )
 
             // Daftar Dokumen Sertifikasi with button
@@ -76,7 +76,7 @@ fun PenilaianAsesiRekomendasiScreen() {
             ) {
                 Text(
                     text = "Daftar Dokumen Sertifikasi",
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                     color = Color.Black,
                     fontWeight = FontWeight.Bold
                 )
@@ -86,14 +86,15 @@ fun PenilaianAsesiRekomendasiScreen() {
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF2196F3)
                     ),
-                    shape = RoundedCornerShape(4.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
-                    modifier = Modifier.height(28.dp)
+                    shape = RoundedCornerShape(6.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+                    modifier = Modifier.height(32.dp)
                 ) {
                     Text(
                         text = "Lengkap",
                         color = Color.White,
-                        fontSize = 12.sp
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
                     )
                 }
             }
@@ -102,13 +103,13 @@ fun PenilaianAsesiRekomendasiScreen() {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 20.dp),
+                    .padding(bottom = 24.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "Data Diri",
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                     color = Color.Black,
                     fontWeight = FontWeight.Bold
                 )
@@ -118,74 +119,75 @@ fun PenilaianAsesiRekomendasiScreen() {
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF2196F3)
                     ),
-                    shape = RoundedCornerShape(4.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
-                    modifier = Modifier.height(28.dp)
+                    shape = RoundedCornerShape(6.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+                    modifier = Modifier.height(32.dp)
                 ) {
                     Text(
                         text = "Lengkap",
                         color = Color.White,
-                        fontSize = 12.sp
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
                     )
                 }
             }
 
             // Divider line
             Divider(
-                color = Color.Gray.copy(alpha = 0.1f),
+                color = Color(0xFF2196F3),
                 thickness = 1.dp,
-                modifier = Modifier.padding(bottom = 20.dp)
+                modifier = Modifier.padding(bottom = 24.dp)
             )
 
             // Program info
             Text(
                 text = "Program: Rekayasa Perangkat Lunak",
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 color = Color.Black,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 12.dp)
             )
 
             // Kelas info
             Text(
                 text = "Kelas: 11",
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 color = Color.Black,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 12.dp)
             )
 
             // NISN info
             Text(
                 text = "NISN: 076231233",
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 color = Color.Black,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 12.dp)
             )
 
             // Email info
             Text(
                 text = "email: afdhal322@gmail.com",
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 color = Color.Black,
-                modifier = Modifier.padding(bottom = 30.dp)
+                modifier = Modifier.padding(bottom = 40.dp)
             )
 
             // Rekomendasi title
             Text(
                 text = "Rekomendasi",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
                 color = Color(0xFF2196F3),
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 20.dp)
+                    .padding(bottom = 32.dp)
             )
 
             // Checkbox options
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
+                    .padding(horizontal = 40.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 // Kompeten checkbox
@@ -199,11 +201,12 @@ fun PenilaianAsesiRekomendasiScreen() {
                             if (it) belumKompeten = false
                         }
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = "Kompeten",
-                        fontSize = 14.sp,
-                        color = Color.Black
+                        fontSize = 16.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Medium
                     )
                 }
 
@@ -218,20 +221,23 @@ fun PenilaianAsesiRekomendasiScreen() {
                             if (it) kompeten = false
                         }
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = "Belum Kompeten",
-                        fontSize = 14.sp,
-                        color = Color.Black
+                        fontSize = 16.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Medium
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
-            // Kirim button - positioned at bottom
+            // Kirim button - positioned at bottom right
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
                 horizontalArrangement = Arrangement.End
             ) {
                 Button(
@@ -239,14 +245,14 @@ fun PenilaianAsesiRekomendasiScreen() {
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFFF9800)
                     ),
-                    shape = RoundedCornerShape(4.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
-                    modifier = Modifier.height(32.dp)
+                    shape = RoundedCornerShape(6.dp),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp),
+                    modifier = Modifier.height(40.dp)
                 ) {
                     Text(
                         text = "Kirim",
                         color = Color.White,
-                        fontSize = 12.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -262,34 +268,36 @@ fun CustomCheckBox(
 ) {
     Box(
         modifier = Modifier
-            .size(20.dp)
-            .border(2.dp, Color.Black, RoundedCornerShape(2.dp))
-            .background(if (checked) Color(0xFF2196F3) else Color.Transparent)
+            .size(24.dp)
+            .border(2.dp, Color.Black, RoundedCornerShape(3.dp))
+            .background(if (checked) Color(0xFF2196F3) else Color.Transparent, RoundedCornerShape(3.dp))
             .clickable { onCheckedChange(!checked) }
     )
 }
 
 @Composable
 fun BottomNavigationBar() {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp),
-        color = Color(0xFFFF9800),
-        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.BottomCenter
     ) {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+        // Card kuning kecil dengan rounded corner
+        Surface(
+            modifier = Modifier
+                .width(200.dp)
+                .height(50.dp),
+            color = Color(0xFFFF9800),
+            shape = RoundedCornerShape(25.dp)
         ) {
-            // Home icon dengan grid pattern
-            Box(
-                modifier = Modifier.size(28.dp),
-                contentAlignment = Alignment.Center
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                // Home icon dengan grid pattern minimalis
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(2.dp)
@@ -297,40 +305,40 @@ fun BottomNavigationBar() {
                         repeat(2) {
                             Box(
                                 modifier = Modifier
-                                    .size(6.dp)
+                                    .size(4.dp)
                                     .background(Color.White, RoundedCornerShape(1.dp))
                             )
                         }
                     }
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                        horizontalArrangement = Arrangement.spacedBy(1.5.dp)
                     ) {
                         repeat(2) {
                             Box(
                                 modifier = Modifier
-                                    .size(6.dp)
+                                    .size(4.dp)
                                     .background(Color.White, RoundedCornerShape(1.dp))
                             )
                         }
                     }
                 }
+
+                // Center scan icon
+                Icon(
+                    Icons.Outlined.CropFree,
+                    contentDescription = "Scan",
+                    tint = Color.White,
+                    modifier = Modifier.size(22.dp)
+                )
+
+                // Profile icon
+                Icon(
+                    Icons.Default.Person,
+                    contentDescription = "Profile",
+                    tint = Color.White,
+                    modifier = Modifier.size(22.dp)
+                )
             }
-
-            // Center scan icon
-            Icon(
-                Icons.Outlined.CropFree,
-                contentDescription = "Scan",
-                tint = Color.White,
-                modifier = Modifier.size(26.dp)
-            )
-
-            // Profile icon
-            Icon(
-                Icons.Default.Person,
-                contentDescription = "Profile",
-                tint = Color.White,
-                modifier = Modifier.size(26.dp)
-            )
         }
     }
 }
