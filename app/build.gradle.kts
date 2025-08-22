@@ -40,6 +40,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.foundation)
     val camerax_version = "1.3.0"
 
     implementation ("androidx.camera:camera-core:$camerax_version")
