@@ -27,7 +27,7 @@ import com.example.mylsp.component.SkemaSertifikasi
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FRIA06A(modifier: Modifier = Modifier, navController: NavController) {
+fun FRIA06C(modifier: Modifier = Modifier, navController: NavController) {
 
     var answer1 by remember { mutableStateOf("") }
     var answer2 by remember { mutableStateOf("") }
@@ -35,11 +35,11 @@ fun FRIA06A(modifier: Modifier = Modifier, navController: NavController) {
     var answer4 by remember { mutableStateOf("") }
     var answer5 by remember { mutableStateOf("") }
 
-    var checked1 by remember { mutableStateOf(false) }
-    var checked2 by remember { mutableStateOf(false) }
-    var checked3 by remember { mutableStateOf(false) }
-    var checked4 by remember { mutableStateOf(false) }
-    var checked5 by remember { mutableStateOf(false) }
+    var checked1 by remember { mutableStateOf<Boolean?>(null) }
+    var checked2 by remember { mutableStateOf<Boolean?>(null) }
+    var checked3 by remember { mutableStateOf<Boolean?>(null) }
+    var checked4 by remember { mutableStateOf<Boolean?>(null) }
+    var checked5 by remember { mutableStateOf<Boolean?>(null) }
 
     Column(
         modifier = Modifier
@@ -207,8 +207,8 @@ fun QuestionCard(
     question: String,
     answer: String,
     onAnswerChange: (String) -> Unit,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
+    checked: Boolean?,
+    onCheckedChange: (Boolean?) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -271,8 +271,8 @@ fun QuestionCard(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(
-                            checked = checked,
-                            onCheckedChange = onCheckedChange,
+                            checked = checked == true,
+                            onCheckedChange = { onCheckedChange(true) },
                             colors = CheckboxDefaults.colors(
                                 checkedColor = Color(0xFF4CAF50)
                             )
@@ -282,14 +282,13 @@ fun QuestionCard(
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(
-                            checked = checked,
-                            onCheckedChange =  onCheckedChange ,
+                            checked = checked == false,
+                            onCheckedChange = { onCheckedChange(false) },
                             colors = CheckboxDefaults.colors(
                                 checkedColor = Color(0xFF4CAF50)
                             )
                         )
                         Text("Tidak", modifier = Modifier.padding(start = 4.dp))
-
                     }
                 }
             }
@@ -305,7 +304,7 @@ fun QuestionCard(
     fun PreviewFRIA() {
         MaterialTheme {
             Surface {
-                FRIA06A(navController = rememberNavController())
+                FRIA06C(navController = rememberNavController())
             }
         }
     }
