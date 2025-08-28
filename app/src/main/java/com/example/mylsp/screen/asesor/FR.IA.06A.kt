@@ -64,6 +64,7 @@ fun FRIA06CL(modifier: Modifier = Modifier, navController: NavController) {
             )
         }
 
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -72,10 +73,9 @@ fun FRIA06CL(modifier: Modifier = Modifier, navController: NavController) {
         ) {
 
             HeaderForm(
-                "FR.IA.06.C",
+                "FR.IA.06.CL",
                 "LEMBAR JAWABAN PERTANYAAN TERTULIS ESSAI"
             )
-
 
         }
 
@@ -198,8 +198,6 @@ fun FRIA06CL(modifier: Modifier = Modifier, navController: NavController) {
     }
 }
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuestionCard(
@@ -295,16 +293,17 @@ fun QuestionCard(
         }
     }
 }
-    @Preview(
-        showBackground = true,
-        device = "spec:width=411dp,height=891dp",
-        showSystemUi = true
-    )
-    @Composable
-    fun PreviewFRIA() {
-        MaterialTheme {
-            Surface {
-                FRIA06C(navController = rememberNavController())
-            }
+
+@Preview(
+    showBackground = true,
+    device = "spec:width=411dp,height=891dp",
+    showSystemUi = true
+)
+@Composable
+fun PreviewFRIACL() {
+    MaterialTheme {
+        Surface {
+            FRIA06CL(navController = rememberNavController())
         }
     }
+}
