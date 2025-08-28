@@ -138,9 +138,9 @@ fun AppNavigation() {
         Box(Modifier.fillMaxWidth().padding(innerPadding)){
             NavHost(
                 navController = navController,
-                startDestination = "apl06"
+                startDestination = startDestination
             ) {
-                composable("apl06") {
+                composable("login") {
                     showNavigation = false
                     showTopBar = false
                     LoginScreen(userViewModel = userViewModel, navController = navController)
@@ -150,9 +150,7 @@ fun AppNavigation() {
                     showTopBar = false
                     RegisterScreen(navController = navController)
                 }
-                composable("apl06"){
-                    FRIA06A(navController = navController)
-                }
+
                 composable("apl05"){
                     FRAK05(navController = navController)
                 }

@@ -67,6 +67,7 @@ fun FRIA06C(modifier: Modifier = Modifier, navController: NavController) {
             )
 
 
+
         }
 
         Column(
