@@ -71,8 +71,8 @@ interface APIService {
         @Part attachments: List<MultipartBody.Part>
     ): Response<CreateAsesiResponse>
 
-    @GET("assesment/formapl01/status")
-    suspend fun getFormApl01Status(): Response<FormApl01Response>
+    @GET("approvement/assesment/formapl01/{id}")
+    suspend fun getFormApl01Status(@Path("id") id:Int): Response<Asesi>
 
     @GET("apl02/{id}")
     suspend fun getAPL02(@Path("id") id: Int): Response<Apl02>

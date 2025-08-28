@@ -3,6 +3,7 @@ package com.example.mylsp.repository
 import android.content.Context
 import android.util.Log
 import com.example.mylsp.api.APIClient
+import com.example.mylsp.model.api.Asesi
 import com.example.mylsp.model.api.FormApl01Response
 import retrofit2.Response
 
@@ -10,9 +11,9 @@ class APL01Repository(private val context: Context) {
 
     private val api = APIClient.getClient(context)
 
-    suspend fun getFormApl01Status(): Result<FormApl01Response> {
+    suspend fun getFormApl01Status(id:Int): Result<Asesi> {
         return try {
-            val response = api.getFormApl01Status()
+            val response = api.getFormApl01Status(id)
 
             if(response.isSuccessful) {
                 val body = response.body()
