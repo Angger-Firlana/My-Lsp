@@ -43,7 +43,6 @@ fun LoginScreen(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(LocalContext.current.applicationContext as Application)
     )
 
-
     var username by remember { mutableStateOf("anjai") }
     var password by remember { mutableStateOf("123456") }
 
@@ -169,7 +168,6 @@ fun LoginScreen(
                             input = username,
                             password = password
                     ))
-
                 },
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()

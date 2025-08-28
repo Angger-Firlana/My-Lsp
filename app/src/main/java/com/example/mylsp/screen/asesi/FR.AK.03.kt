@@ -69,7 +69,7 @@ fun FRAK03(modifier: Modifier = Modifier, navController: NavController) {
 
         Text(
             "Umpan balik dari asesi (diisi oleh Asesi setelah pengambilan keputusan)",
-            fontSize = 14.sp
+            fontSize = 10.sp
         )
 
         Spacer(modifier = Modifier.height(8.dp))

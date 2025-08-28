@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,15 +21,25 @@ import com.example.mylsp.util.AppFont
 @Composable
 fun SkemaSertifikasi(
     modifier: Modifier = Modifier,
-    judulUnit: String,
-    kodeUnit: String,
-    TUK: String,
-    namaAsesor: String?= null,
-    namaAsesi: String?= null,
-    tanggalAsesmen: String?= null
+    judulUnit: String? = null,
+    kodeUnit: String? = null,
+    TUK: String? = null,
+    namaAsesor: String? = null,
+    namaAsesi: String? = null,
+    tanggalAsesmen: String? = null,
+
+    // label kolom pertama dibuat opsional
+    labelJudulUnit: String? = "Judul Unit",
+    labelKodeUnit: String? = "Kode Unit",
+    labelTUK: String? = "TUK",
+    labelNamaAsesor: String? = "Nama Asesor",
+    labelNamaAsesi: String? = "Nama Asesi",
+    labelTanggalAsesmen: String? = "Tanggal Asesmen"
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
         horizontalAlignment = Alignment.Start
     ) {
         Text(
@@ -43,34 +55,41 @@ fun SkemaSertifikasi(
                 .padding(16.dp)
         ) {
             Column {
-                Text("Judul Unit", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text("Kode Unit", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text("TUK", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text("Nama Asesor", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text("Nama Asesi", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text("Tanggal Asesmen", fontSize = 12.sp, fontFamily = AppFont.Poppins)
+                labelJudulUnit?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
+                labelKodeUnit?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
+                labelTUK?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
+                labelNamaAsesor?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
+                labelNamaAsesi?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
+                labelTanggalAsesmen?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
             }
 
             Spacer(modifier = Modifier.width(8.dp))
 
             Column {
-                Text(":", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text(":", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text(":", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text(":", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text(":", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text(":", fontSize = 12.sp, fontFamily = AppFont.Poppins)
+                labelJudulUnit?.let { Text(":", fontSize = 12.sp, fontFamily = AppFont.Poppins) }
+                labelKodeUnit?.let { Text(":", fontSize = 12.sp, fontFamily = AppFont.Poppins) }
+                labelTUK?.let { Text(":", fontSize = 12.sp, fontFamily = AppFont.Poppins) }
+                labelNamaAsesor?.let { Text(":", fontSize = 12.sp, fontFamily = AppFont.Poppins) }
+                labelNamaAsesi?.let { Text(":", fontSize = 12.sp, fontFamily = AppFont.Poppins) }
+                labelTanggalAsesmen?.let { Text(":", fontSize = 12.sp, fontFamily = AppFont.Poppins) }
             }
+
             Spacer(modifier = Modifier.width(8.dp))
 
             Column {
-                Text(judulUnit, fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text(kodeUnit, fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text(TUK, fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text(namaAsesor ?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text(namaAsesi ?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text(tanggalAsesmen ?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins)
+                judulUnit?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
+                kodeUnit?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
+                TUK?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
+                namaAsesor?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
+                namaAsesi?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
+                tanggalAsesmen?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
             }
         }
+
+        HorizontalDivider(
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.tertiary,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
     }
 }

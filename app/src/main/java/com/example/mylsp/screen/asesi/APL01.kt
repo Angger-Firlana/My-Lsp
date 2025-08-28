@@ -38,6 +38,7 @@ import com.example.mylsp.model.api.AsesiRequest
 import com.example.mylsp.model.api.AttachmentRequest
 import com.example.mylsp.screen.main.WaitingApprovalScreen
 import com.example.mylsp.util.AppFont
+import com.example.mylsp.viewmodel.APL01ViewModel
 import com.example.mylsp.viewmodel.AsesiViewModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -67,12 +68,13 @@ fun SectionHeader(title: String) {
 @Composable
 fun AsesiFormScreen(
     viewModel: AsesiViewModel,
+    apl01ViewModel: APL01ViewModel,
     navController: NavController
 ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsState()
     val message by viewModel.message.collectAsState()
-    val asesi by viewModel.asesi.collectAsState()
+    val asesi by apl01ViewModel.formData.collectAsState()
 
     var namaLengkap by remember { mutableStateOf("Budi Santoso") }
     var nik by remember { mutableStateOf("3201010101010001") }
@@ -132,7 +134,7 @@ fun AsesiFormScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.getDataApl01ByUser()
+        apl01ViewModel.fetchFormApl01Status()
     }
 
     LaunchedEffect(state) {
