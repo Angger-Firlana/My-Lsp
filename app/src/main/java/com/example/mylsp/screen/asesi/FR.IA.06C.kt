@@ -1,5 +1,6 @@
 package com.example.mylsp.screen.asesor
 
+import android.R.attr.checked
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,7 +28,7 @@ import com.example.mylsp.component.SkemaSertifikasi
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FRIA06CL(modifier: Modifier = Modifier, navController: NavController) {
+fun FRIA06C(modifier: Modifier = Modifier, navController: NavController) {
 
     var answer1 by remember { mutableStateOf("") }
     var answer2 by remember { mutableStateOf("") }
@@ -35,11 +36,16 @@ fun FRIA06CL(modifier: Modifier = Modifier, navController: NavController) {
     var answer4 by remember { mutableStateOf("") }
     var answer5 by remember { mutableStateOf("") }
 
-    var checked1 by remember { mutableStateOf<Boolean?>(null) }
-    var checked2 by remember { mutableStateOf<Boolean?>(null) }
-    var checked3 by remember { mutableStateOf<Boolean?>(null) }
-    var checked4 by remember { mutableStateOf<Boolean?>(null) }
-    var checked5 by remember { mutableStateOf<Boolean?>(null) }
+    var checked1Yes by remember { mutableStateOf(false) }
+    var checked1No by remember { mutableStateOf(false) }
+    var checked2Yes by remember { mutableStateOf(false) }
+    var checked2No by remember { mutableStateOf(false) }
+    var checked3Yes by remember { mutableStateOf(false) }
+    var checked3No by remember { mutableStateOf(false) }
+    var checked4Yes by remember { mutableStateOf(false) }
+    var checked4No by remember { mutableStateOf(false) }
+    var checked5Yes by remember { mutableStateOf(false) }
+    var checked5No by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -47,22 +53,6 @@ fun FRIA06CL(modifier: Modifier = Modifier, navController: NavController) {
             .background(Color.White)
             .verticalScroll(rememberScrollState())
     ) {
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF2196F3))
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "AFDHAL EZHAR RAHMA PANGESTU",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                textAlign = TextAlign.Center
-            )
-        }
 
         Column(
             modifier = Modifier
@@ -116,8 +106,10 @@ fun FRIA06CL(modifier: Modifier = Modifier, navController: NavController) {
                 question = "Bagaimana cara Anda jika menghadapi pelanggan yang mengeluh karena adanya produk yang tidak sesuai dengan pesanannya?",
                 answer = answer1,
                 onAnswerChange = { answer1 = it },
-                checked = checked1,
-                onCheckedChange = { checked1 = it }
+                checkedYes = checked1Yes,
+                onCheckedYesChange = { checked1Yes = it },
+                checkedNo = checked1No,
+                onCheckedNoChange = { checked1No = it }
             )
 
             QuestionCard(
@@ -125,8 +117,10 @@ fun FRIA06CL(modifier: Modifier = Modifier, navController: NavController) {
                 question = "Perbedaan pendapat yang terjadi di lingkungan tempat kerja bisa menjadi tantangan tersendiri jika tidak dihadapi dengan baik. Sebab, bisa menurunkan konflik yang berdampak negatif pada produktivitas dan kesejahteraan anggota tim. Bagaimana mengatasi perbedaan pendapat di tempat kerja dengan cara yang profesional?",
                 answer = answer2,
                 onAnswerChange = { answer2 = it },
-                checked = checked2,
-                onCheckedChange = { checked2 = it }
+                checkedYes = checked2Yes,
+                onCheckedYesChange = { checked2Yes = it },
+                checkedNo = checked2No,
+                onCheckedNoChange = { checked2No = it }
             )
 
             QuestionCard(
@@ -134,8 +128,10 @@ fun FRIA06CL(modifier: Modifier = Modifier, navController: NavController) {
                 question = "Apakah tujuan diadakannya prosedur keamanan kesehatan dan keselamatan kerja?",
                 answer = answer3,
                 onAnswerChange = { answer3 = it },
-                checked = checked3,
-                onCheckedChange = { checked3 = it }
+                checkedYes = checked3Yes,
+                onCheckedYesChange = { checked3Yes = it },
+                checkedNo = checked3No,
+                onCheckedNoChange = { checked3No = it }
             )
 
             QuestionCard(
@@ -143,54 +139,44 @@ fun FRIA06CL(modifier: Modifier = Modifier, navController: NavController) {
                 question = "Sehabis menggunting mesin jahit bahan jahitan, sebaiknya membersihkan sisa benang pada mesin. Jika kita melakukan membersihkan sisa kain, benang, atau debu halus yang menempel pada mesin. Tuliskan peralatan yang digunakan untuk membersihkan mesin jahit!",
                 answer = answer4,
                 onAnswerChange = { answer4 = it },
-                checked = checked4,
-                onCheckedChange = { checked4 = it }
+                checkedYes = checked4Yes,
+                onCheckedYesChange = { checked4Yes = it },
+                checkedNo = checked4No,
+                onCheckedNoChange = { checked4No = it }
             )
+
 
             QuestionCard(
                 number = "5",
                 question = "Mengukur tubuh merupakan langkah pertama pada kegiatan membuat suatu busana. Tuliskan salah satu fungsi mengukur tubuh!",
                 answer = answer5,
                 onAnswerChange = { answer5 = it },
-                checked = checked5,
-                onCheckedChange = { checked5 = it }
+                checkedYes = checked5Yes,
+                onCheckedYesChange = { checked5Yes = it },
+                checkedNo = checked5No,
+                onCheckedNoChange = { checked5No = it }
             )
+
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+            // Button "Kirim Jawaban" dengan background orange
+            Button(
+                onClick = {
+                    // Tambahkan logic untuk mengirim jawaban di sini
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726)), // Orange color
+                shape = RoundedCornerShape(8.dp)
             ) {
-                Button(
-                    onClick = {  },
-                    modifier = Modifier
-                        .width(120.dp)
-                        .height(40.dp)
-                        .border(1.dp, Color(0xFF2F2F2F), RoundedCornerShape(20.dp)),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(20.dp)
-                ) {
-                    Text("APPROVE",
-                        color = Color(0xFF2F2F2F),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold)
-                }
-
-                Button(
-                    onClick = { },
-                    modifier = Modifier
-                        .width(120.dp)
-                        .height(40.dp)
-                        .border(1.dp, Color(0xFF2F2F2F), RoundedCornerShape(20.dp)),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(20.dp)
-                ) {
-                    Text("REJECT",
-                        color = Color(0xFF2F2F2F),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold)
-                }
+                Text(
+                    "Kirim Jawaban",
+                    color = Color.White,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -207,8 +193,10 @@ fun QuestionCard(
     question: String,
     answer: String,
     onAnswerChange: (String) -> Unit,
-    checked: Boolean?,
-    onCheckedChange: (Boolean?) -> Unit
+    checkedYes: Boolean,
+    onCheckedYesChange: (Boolean) -> Unit,
+    checkedNo: Boolean,
+    onCheckedNoChange: (Boolean) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -218,75 +206,52 @@ fun QuestionCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
-            Text(
-                text = "$number.",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
+            Text("$number.", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.Black)
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                text = question,
-                fontSize = 13.sp,
-                color = Color.Black,
-                lineHeight = 18.sp
-            )
+            Text(question, fontSize = 13.sp, color = Color.Black, lineHeight = 18.sp)
 
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = answer,
                 onValueChange = onAnswerChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp),
+                modifier = Modifier.fillMaxWidth().height(80.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color.Black,
                     unfocusedBorderColor = Color.Gray
                 ),
                 shape = RoundedCornerShape(4.dp),
-                placeholder = {
-                    Text("Tulis jawaban disini", fontSize = 12.sp, color = Color.Gray)
-                }
+                placeholder = { Text("Tulis jawaban disini", fontSize = 12.sp, color = Color.Gray) }
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Pencapaian:",
-                    fontSize = 14.sp,
-                    color = Color.Black,
-                    modifier = Modifier.padding(end = 8.dp)
-                )
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Text("Pencapaian:", fontSize = 14.sp, color = Color.Black, modifier = Modifier.padding(end = 8.dp))
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(
-                            checked = checked == true,
-                            onCheckedChange = { onCheckedChange(true) },
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = Color(0xFF4CAF50)
-                            )
+                            checked = checkedYes,
+                            onCheckedChange = {
+                                onCheckedYesChange(it)
+                                if (it) onCheckedNoChange(false) // Kalau Ya dicentang, Tidak harus false
+                            },
+                            colors = CheckboxDefaults.colors(checkedColor = Color(0xFF4CAF50))
                         )
                         Text("Ya", modifier = Modifier.padding(start = 4.dp))
                     }
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(
-                            checked = checked == false,
-                            onCheckedChange = { onCheckedChange(false) },
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = Color(0xFF4CAF50)
-                            )
+                            checked = checkedNo,
+                            onCheckedChange = {
+                                onCheckedNoChange(it)
+                                if (it) onCheckedYesChange(false) // Kalau Tidak dicentang, Ya harus false
+                            },
+                            colors = CheckboxDefaults.colors(checkedColor = Color(0xFF4CAF50))
                         )
                         Text("Tidak", modifier = Modifier.padding(start = 4.dp))
                     }
@@ -295,16 +260,18 @@ fun QuestionCard(
         }
     }
 }
-    @Preview(
-        showBackground = true,
-        device = "spec:width=411dp,height=891dp",
-        showSystemUi = true
-    )
-    @Composable
-    fun PreviewFRIA() {
-        MaterialTheme {
-            Surface {
-                FRIA06C(navController = rememberNavController())
-            }
+
+@Preview(
+    showBackground = true,
+    device = "spec:width=411dp,height=891dp",
+    showSystemUi = true
+)
+
+@Composable
+fun PreviewFRIA06C() {
+    MaterialTheme {
+        Surface {
+            FRIA06C(navController = rememberNavController())
         }
     }
+}

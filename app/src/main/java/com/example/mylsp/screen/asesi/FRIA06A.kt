@@ -15,6 +15,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.util.AppFont
 import java.time.LocalDate
@@ -23,7 +25,7 @@ import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun FRIA06A() {
+fun FRIA06A(navController: NavController) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color(0xFFF0F2F5)
@@ -219,5 +221,5 @@ private fun getQuestions(): List<String> {
 @Preview(showBackground = true)
 @Composable
 fun FRIA06APreview() {
-    FRIA06A()
+    FRIA06A(navController = rememberNavController())
 }

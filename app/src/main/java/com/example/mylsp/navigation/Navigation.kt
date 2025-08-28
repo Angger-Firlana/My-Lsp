@@ -38,7 +38,12 @@ import com.example.mylsp.screen.asesi.APL02
 import com.example.mylsp.screen.asesi.AsesiBarcodeScanner
 import com.example.mylsp.screen.asesi.AsesiFormScreen
 import com.example.mylsp.screen.asesi.DetailUSK
+<<<<<<< HEAD
 import com.example.mylsp.screen.asesi.FRAK01
+=======
+import com.example.mylsp.screen.asesi.FRAK05
+import com.example.mylsp.screen.asesi.FRIA06A
+>>>>>>> e6417386c80251b50db315ec276b6ebd3707556c
 import com.example.mylsp.screen.asesor.DashboardAsesor
 import com.example.mylsp.screen.asesor.DetailEvent
 import com.example.mylsp.screen.asesor.Events
@@ -132,10 +137,19 @@ fun AppNavigation() {
     Scaffold(
         topBar = { if (showTopBar) TopAppBar() }
     ) { innerPadding ->
+<<<<<<< HEAD
         Box(Modifier.fillMaxWidth().padding(innerPadding)) {
             NavHost(navController = navController, startDestination = startDestination) {
 
                 composable("login") {
+=======
+        Box(Modifier.fillMaxWidth().padding(innerPadding)){
+            NavHost(
+                navController = navController,
+                startDestination = "apl06"
+            ) {
+                composable("apl06") {
+>>>>>>> e6417386c80251b50db315ec276b6ebd3707556c
                     showNavigation = false
                     showTopBar = false
                     LoginScreen(userViewModel = userViewModel, navController = navController)
@@ -146,7 +160,16 @@ fun AppNavigation() {
                     showTopBar = false
                     RegisterScreen(navController = navController)
                 }
+<<<<<<< HEAD
 
+=======
+                composable("apl06"){
+                    FRIA06A(navController = navController)
+                }
+                composable("apl05"){
+                    FRAK05(navController = navController)
+                }
+>>>>>>> e6417386c80251b50db315ec276b6ebd3707556c
                 composable("kelengkapanDataAsesor") {
                     KelengkapanDataAsesor(navController = navController)
                 }
