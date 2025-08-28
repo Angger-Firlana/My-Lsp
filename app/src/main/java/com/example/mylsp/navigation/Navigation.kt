@@ -72,7 +72,6 @@ import com.example.mylsp.screen.asesor.DashboardAsesor
 import com.example.mylsp.screen.asesor.DetailEvent
 import com.example.mylsp.screen.asesor.Events
 import com.example.mylsp.screen.asesor.FRIA01
-import com.example.mylsp.screen.asesor.FRIA06A
 import com.example.mylsp.screen.asesor.KelengkapanDataAsesor
 import com.example.mylsp.screen.asesor.SignatureScreen
 import com.example.mylsp.screen.asesor.SkemaListScreen
