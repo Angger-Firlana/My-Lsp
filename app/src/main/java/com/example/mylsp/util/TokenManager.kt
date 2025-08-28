@@ -17,7 +17,9 @@ class TokenManager(context:Context) {
     )
 
     fun saveToken(token: String) {
-        sharedPrefs.edit() { putString("token", token) }
+        sharedPrefs.edit(commit = true) {
+            putString("token", token)
+        }
     }
 
     fun getToken(): String? {
@@ -25,6 +27,8 @@ class TokenManager(context:Context) {
     }
 
     fun clearToken() {
-        sharedPrefs.edit() { remove("token") }
+        sharedPrefs.edit(commit = true) {
+            remove("token")
+        }
     }
 }

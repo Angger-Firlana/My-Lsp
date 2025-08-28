@@ -2,11 +2,11 @@ package com.example.mylsp.repository
 
 import android.content.Context
 import com.example.mylsp.api.APIClient
-import com.example.mylsp.model.api.Jurusan
+import com.example.mylsp.model.api.JurusanResponse
 
 class JurusanRepository(context: Context) {
     private val api = APIClient.getClient(context)
-    suspend fun getJurusans():Result<List<Jurusan>>{
+    suspend fun getJurusans():Result<JurusanResponse>{
         return try {
             val response = api.getJurusans()
             if (response.isSuccessful){

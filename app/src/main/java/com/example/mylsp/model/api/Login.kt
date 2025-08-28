@@ -1,8 +1,15 @@
 package com.example.mylsp.model.api
 
 data class LoginRequest(val input:String, val password:String)
+
 data class LoginResponse(
     val message:String,
     val token:String,
-    val user: UserDetail
+    val user: UserLogin
+)
+
+data class UserLogin(
+    val id: Int,
+    val jurusan_id: Int,
+    val role: String
 )

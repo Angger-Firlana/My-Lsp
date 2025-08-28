@@ -24,11 +24,12 @@ class JurusanViewModel(application:Application):AndroidViewModel(application) {
             val result = repository.getJurusans()
             result.fold(
                 onSuccess = { body ->
-                    _jurusans.value = body
+                    _jurusans.value = body.data
+                    Log.d("coba tes", body.toString())
                 },
                 onFailure = { error->
                     _message.value = error.message.toString()
-                    Log.e("error", _message.value)
+                    Log.e("error jurusan", _message.value)
                 }
             )
         }
