@@ -67,6 +67,7 @@ import com.example.mylsp.screen.asesi.AsesiBarcodeScanner
 import com.example.mylsp.screen.asesi.AsesiFormScreen
 import com.example.mylsp.screen.asesi.DetailUSK
 import com.example.mylsp.screen.asesi.FRAK05
+import com.example.mylsp.screen.asesi.FRIA06A
 import com.example.mylsp.screen.asesor.DashboardAsesor
 import com.example.mylsp.screen.asesor.DetailEvent
 import com.example.mylsp.screen.asesor.Events
