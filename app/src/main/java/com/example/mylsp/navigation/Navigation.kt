@@ -66,10 +66,12 @@ import com.example.mylsp.screen.asesi.APL02
 import com.example.mylsp.screen.asesi.AsesiBarcodeScanner
 import com.example.mylsp.screen.asesi.AsesiFormScreen
 import com.example.mylsp.screen.asesi.DetailUSK
+import com.example.mylsp.screen.asesi.FRAK05
 import com.example.mylsp.screen.asesor.DashboardAsesor
 import com.example.mylsp.screen.asesor.DetailEvent
 import com.example.mylsp.screen.asesor.Events
 import com.example.mylsp.screen.asesor.FRIA01
+import com.example.mylsp.screen.asesor.FRIA06A
 import com.example.mylsp.screen.asesor.KelengkapanDataAsesor
 import com.example.mylsp.screen.asesor.SignatureScreen
 import com.example.mylsp.screen.asesor.SkemaListScreen
@@ -136,9 +138,9 @@ fun AppNavigation() {
         Box(Modifier.fillMaxWidth().padding(innerPadding)){
             NavHost(
                 navController = navController,
-                startDestination = startDestination
+                startDestination = "apl06"
             ) {
-                composable("login") {
+                composable("apl06") {
                     showNavigation = false
                     showTopBar = false
                     LoginScreen(userViewModel = userViewModel, navController = navController)
@@ -147,6 +149,12 @@ fun AppNavigation() {
                     showNavigation = false
                     showTopBar = false
                     RegisterScreen(navController = navController)
+                }
+                composable("apl06"){
+                    FRIA06A(navController = navController)
+                }
+                composable("apl05"){
+                    FRAK05(navController = navController)
                 }
                 composable("kelengkapanDataAsesor") {
                     KelengkapanDataAsesor(navController = navController)
