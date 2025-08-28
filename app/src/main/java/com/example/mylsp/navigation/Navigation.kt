@@ -143,9 +143,9 @@ fun AppNavigation() {
         Box(Modifier.fillMaxWidth().padding(innerPadding)){
             NavHost(
                 navController = navController,
-                startDestination = "apl06"
+                startDestination = startDestination
             ) {
-                composable("apl06") {
+                composable("login") {
                     showNavigation = false
                     showTopBar = false
                     LoginScreen(userViewModel = userViewModel, navController = navController)
