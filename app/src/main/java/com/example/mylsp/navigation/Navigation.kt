@@ -81,6 +81,7 @@ import com.example.mylsp.screen.main.ItemBar
 import com.example.mylsp.screen.main.MainScreen
 import com.example.mylsp.screen.main.WaitingApprovalScreen
 import com.example.mylsp.util.UserManager
+import com.example.mylsp.viewmodel.APL01ViewModel
 import com.example.mylsp.viewmodel.APL02ViewModel
 import com.example.mylsp.viewmodel.AsesiViewModel
 import com.example.mylsp.viewmodel.SkemaViewModel
@@ -125,6 +126,10 @@ fun AppNavigation() {
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(LocalContext.current.applicationContext as Application)
     )
 
+    val apl01ViewModel: APL01ViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(LocalContext.current.applicationContext as Application)
+    )
+
     val routesWithNavigation = listOf("main", "skemaList", "profil")
     var showNavigation by remember { mutableStateOf(false) }
     var showTopBar by remember { mutableStateOf(false) }
@@ -165,7 +170,7 @@ fun AppNavigation() {
                 composable("skemaList") {
                     showTopBar = false
                     showNavigation = true
-                    SkemaListScreen(modifier = Modifier, skemaViewModel = skemaViewModel, navController = navController)
+                    SkemaListScreen(modifier = Modifier, skemaViewModel = skemaViewModel, navController = navController, status = "")
                 }
                 composable("detailusk") {
                     DetailUSK(navController = navController, idSkema = 1)
@@ -173,7 +178,7 @@ fun AppNavigation() {
                 composable("apl_01") {
                     showTopBar = true
                     showNavigation = true
-                    AsesiFormScreen(asesiViewModel,navController = navController)
+                    AsesiFormScreen(asesiViewModel, apl01ViewModel = apl01ViewModel, navController = navController)
                 }
                 composable("apl02/{id}") {
                     showTopBar = false
@@ -190,7 +195,7 @@ fun AppNavigation() {
                 composable("waiting_approval") {
                     showTopBar = false
                     showNavigation = false
-                    WaitingApprovalScreen(modifier = Modifier, navController)
+                    WaitingApprovalScreen(modifier = Modifier, navController, status = "")
                 }
                 composable("profile"){
                     if (userManager.getUserRole() == "asesi"){
