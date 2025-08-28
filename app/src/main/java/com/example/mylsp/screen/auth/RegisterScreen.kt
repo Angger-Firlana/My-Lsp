@@ -1,6 +1,7 @@
 package com.example.mylsp.screen.auth
 
 import android.app.Application
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -81,6 +82,10 @@ fun RegisterScreen(
         }
         isLoading = false
         viewModel.resetState()
+    }
+
+    LaunchedEffect(jurusans) {
+        Log.d("jurusan", "${jurusans.size}")
     }
 
     LaunchedEffect(Unit){

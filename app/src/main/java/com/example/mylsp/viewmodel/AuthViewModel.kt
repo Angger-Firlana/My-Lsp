@@ -37,11 +37,16 @@ class AuthViewModel(
                 onSuccess = { body ->
                     _state.value = true
                     _message.value = body.message
-                    tokenManager.saveToken(body.token)
+
+                    val token = body.token
+                    Log.d("AuthViewModel", "Token diterima: $token")
+                    tokenManager.saveToken(token)
+                    Log.d("AuthViewModel", "Token berhasil disimpan")
                 },
                 onFailure = { error ->
                     _state.value = false
                     _message.value = error.message ?: "Login Gagal : Tidak Diketahui"
+                    Log.e("Login Error", error.message.toString())
                 }
             )
         }

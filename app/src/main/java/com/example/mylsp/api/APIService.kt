@@ -4,7 +4,9 @@ import com.example.mylsp.model.api.Apl02
 import com.example.mylsp.model.api.Asesi
 import com.example.mylsp.model.api.AsesiRequest
 import com.example.mylsp.model.api.CreateAsesiResponse
+import com.example.mylsp.model.api.FormApl01Response
 import com.example.mylsp.model.api.Jurusan
+import com.example.mylsp.model.api.JurusanResponse
 import com.example.mylsp.model.api.LoginRequest
 import com.example.mylsp.model.api.LoginResponse
 import com.example.mylsp.model.api.RegisterRequest
@@ -68,6 +70,10 @@ interface APIService {
         @Part("status") status: RequestBody,
         @Part attachments: List<MultipartBody.Part>
     ): Response<CreateAsesiResponse>
+
+    @GET("assesment/formapl01/status")
+    suspend fun getFormApl01Status(): Response<FormApl01Response>
+
     @GET("apl02/{id}")
     suspend fun getAPL02(@Path("id") id: Int): Response<Apl02>
 
@@ -83,7 +89,7 @@ interface APIService {
 
     //Jurusan
     @GET("jurusan")
-    suspend fun getJurusans():Response<List<Jurusan>>
+    suspend fun getJurusans():Response<JurusanResponse>
 
     //Asesi
     @GET("asesi")

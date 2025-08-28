@@ -85,7 +85,8 @@ import java.util.Locale
 fun SkemaListScreen(
     modifier: Modifier = Modifier,
     skemaViewModel: SkemaViewModel,
-    navController: NavController
+    navController: NavController,
+    status: String?
 ) {
     val context = LocalContext.current
     val userManager = UserManager(context)
@@ -106,7 +107,13 @@ fun SkemaListScreen(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        if (true){
+        if (status == null || status == "pending"){
+            WaitingApprovalScreen(
+                modifier = modifier,
+                navController = navController,
+                status = status
+            )
+        }else{
             Box(modifier = Modifier.fillMaxSize()) {
                 // Rounded Header with Tertiary Color
                 Card(
@@ -256,8 +263,6 @@ fun SkemaListScreen(
                     }
                 }
             }
-        }else{
-            WaitingApprovalScreen(modifier, navController)
         }
     }
 }

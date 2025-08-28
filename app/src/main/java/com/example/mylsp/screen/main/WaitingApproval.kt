@@ -38,154 +38,122 @@ import androidx.navigation.NavController
 import com.example.mylsp.util.AppFont
 
 @Composable
-fun WaitingApprovalScreen(modifier: Modifier, navController: NavController) {
+fun WaitingApprovalScreen(
+    modifier: Modifier,
+    navController: NavController,
+    status: String?,
+) {
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-
-            Column(
+        Column(
+            modifier = Modifier
+                .padding(32.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Icon di atas
+            Box(
                 modifier = Modifier
-                    .padding(32.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .size(80.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF4CAF50).copy(alpha = 0.1f)),
+                contentAlignment = Alignment.Center
             ) {
-                // Success Icon with Background
-                Box(
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFF4CAF50).copy(alpha = 0.1f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.CheckCircle,
-                        contentDescription = "Success",
-                        modifier = Modifier.size(48.dp),
-                        tint = Color(0xFF4CAF50)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Main Title
-                Text(
-                    text = "Pendaftaran Berhasil!",
-                    fontFamily = AppFont.Poppins,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center
+                Icon(
+                    imageVector = Icons.Filled.CheckCircle,
+                    contentDescription = "Success",
+                    modifier = Modifier.size(48.dp),
+                    tint = Color(0xFF4CAF50)
                 )
+            }
 
-                Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-                // Status Info with Icon
-                Card(
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFFFF3CD)
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Schedule,
-                            contentDescription = "Waiting",
-                            tint = Color(0xFFFF9800),
-                            modifier = Modifier.size(24.dp)
-                        )
+            // Judul
+            Text(
+                text = when (status) {
+                    null -> "Belum Mengisi Form APL01"
+                    "pending" -> "Pendaftaran Berhasil!"
+                    "accepted" -> "Pendaftaran Diterima!"
+                    "rejected" -> "Pendaftaran Ditolak"
+                    else -> "Status Tidak Dikenal"
+                },
+                fontFamily = AppFont.Poppins,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center
+            )
 
-                        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-                        Text(
-                            text = "Status: Menunggu Persetujuan",
-                            fontFamily = AppFont.Poppins,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 14.sp,
-                            color = Color(0xFFFF9800)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // Description
-                Text(
-                    text = "Data kamu sedang dalam proses review oleh admin. Kami akan mengirimkan notifikasi segera setelah pendaftaran disetujui.",
-                    fontFamily = AppFont.Poppins,
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                )
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                // Action Buttons
+            // Card Status
+            Card(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3CD)),
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Column(
+                    modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Icon(
+                        imageVector = Icons.Filled.Schedule,
+                        contentDescription = "Waiting",
+                        tint = Color(0xFFFF9800),
+                        modifier = Modifier.size(24.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Status: ${status ?: "Belum Mengisi"}",
+                        fontFamily = AppFont.Poppins,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp,
+                        color = Color(0xFFFF9800)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Tombol aksi
+            when (status) {
+                "accepted" -> {
                     Button(
-                        onClick = { navController.navigate("main"){
-                            popUpTo(navController.graph.startDestinationId){inclusive = true}
-                        } },
-                        modifier = Modifier
-                            .width(200.dp),
+                        onClick = {
+                            navController.navigate("main") {
+                                popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                            }
+                        },
+                        modifier = Modifier.width(200.dp),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary
                         )
-                    ) {
-                        Text(
-                            text = "Kembali ke Beranda",
-                            fontFamily = AppFont.Poppins,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 12.sp
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    OutlinedButton(
-                        onClick = {
-                            // Add refresh or check status functionality
-                            // navController.navigate("check_status")
-                        },
-                        modifier = Modifier
-                            .width(200.dp)
-                            .height(48.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        Text(
-                            text = "Cek Status",
-                            fontFamily = AppFont.Poppins,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 12.sp
-                        )
-                    }
+                    ) { Text("Lanjut ke Dashboard") }
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Additional Info
-                Text(
-                    text = "Estimasi waktu: 1-3 hari kerja",
-                    fontFamily = AppFont.Poppins,
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                    textAlign = TextAlign.Center
-                )
+                "rejected", null -> {
+                    Button(
+                        onClick = {
+                            navController.navigate("apl_01") {
+                                popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                            }
+                        },
+                        modifier = Modifier.width(200.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) { Text("Isi Ulang Form APL01") }
+                }
             }
-
+        }
     }
 }
