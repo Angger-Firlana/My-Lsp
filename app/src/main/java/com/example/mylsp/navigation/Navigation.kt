@@ -4,23 +4,13 @@ import android.app.Application
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -29,28 +19,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mylsp.component.BottomPillNav
 import com.example.mylsp.component.TopAppBar
 import com.example.mylsp.screen.BarcodeScreen
 import com.example.mylsp.screen.ProfileScreen
-import com.example.mylsp.screen.asesi.APL02
-import com.example.mylsp.screen.asesi.AsesiBarcodeScanner
-import com.example.mylsp.screen.asesi.AsesiFormScreen
-import com.example.mylsp.screen.asesi.DetailUSK
-<<<<<<< HEAD
-import com.example.mylsp.screen.asesi.FRAK01
-=======
-import com.example.mylsp.screen.asesi.FRAK05
-import com.example.mylsp.screen.asesi.FRIA06A
->>>>>>> e6417386c80251b50db315ec276b6ebd3707556c
-import com.example.mylsp.screen.asesor.DashboardAsesor
-import com.example.mylsp.screen.asesor.DetailEvent
-import com.example.mylsp.screen.asesor.Events
-import com.example.mylsp.screen.asesor.FRIA01
-import com.example.mylsp.screen.asesor.KelengkapanDataAsesor
-import com.example.mylsp.screen.asesor.SignatureScreen
-import com.example.mylsp.screen.asesor.SkemaListScreen
+import com.example.mylsp.screen.asesi.*
+import com.example.mylsp.screen.asesor.*
 import com.example.mylsp.screen.auth.LoginScreen
 import com.example.mylsp.screen.auth.RegisterScreen
 import com.example.mylsp.screen.main.ItemBar
@@ -59,11 +35,7 @@ import com.example.mylsp.screen.main.WaitingApprovalScreen
 import com.example.mylsp.util.FormApl01Manager
 import com.example.mylsp.util.TokenManager
 import com.example.mylsp.util.UserManager
-import com.example.mylsp.viewmodel.APL01ViewModel
-import com.example.mylsp.viewmodel.APL02ViewModel
-import com.example.mylsp.viewmodel.AsesiViewModel
-import com.example.mylsp.viewmodel.SkemaViewModel
-import com.example.mylsp.viewmodel.UserViewModel
+import com.example.mylsp.viewmodel.*
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -77,47 +49,12 @@ fun AppNavigation() {
     val token = tokenManager.getToken() ?: ""
 
     val navController = rememberNavController()
-    var startDestination by remember { mutableStateOf("login") }
 
     val formViewModel: APL01ViewModel = viewModel(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(
             context.applicationContext as Application
         )
     )
-
-    val formData by formViewModel.formData.collectAsState()
-    val status = formData?.status
-    val createdAt = formData?.created_at
-
-    // Fetch status APL01 langsung saat Composable diluncurkan (mirip jurusan)
-    LaunchedEffect(Unit) {
-        if (userId != null && userRole == "asesi" && token.isNotEmpty()) {
-            formViewModel.fetchFormApl01Status()
-        }
-    }
-
-    // Debug log
-    LaunchedEffect(formData) {
-        Log.d("AppNavigation", "Status: ${formData?.status}")
-        Log.d("AppNavigation", "Created At: $createdAt")
-        Log.d("AppNavigation", "Token: $token")
-    }
-
-    // Tentukan startDestination berdasarkan role & status
-    LaunchedEffect(formData, userId, userRole) {
-        startDestination = when {
-            userId == null -> "login"
-            userRole == "asesor" -> "dashboardAsesor"
-            status == null -> "apl_01"
-            else -> "waiting_approval"
-        }
-    }
-
-    val bottomNavItems = listOf(
-        ItemBar(Icons.Default.QrCode, "Barcode", "barcode"),
-        ItemBar(Icons.Default.AccountCircle, "Profil", "profile"),
-    )
-
     val skemaViewModel: SkemaViewModel = viewModel(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
     )
@@ -131,56 +68,77 @@ fun AppNavigation() {
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
     )
 
-    var showNavigation by remember { mutableStateOf(false) }
-    var showTopBar by remember { mutableStateOf(false) }
+    val formData by formViewModel.formData.collectAsState()
+    val status = formData?.status
+
+    // Fetch APL01 status
+    LaunchedEffect(Unit) {
+        if (userId != null && userRole == "asesi" && token.isNotEmpty()) {
+            formViewModel.fetchFormApl01Status()
+        }
+    }
+
+    // Debug log
+    LaunchedEffect(formData) {
+        Log.d("AppNavigation", "Status: ${formData?.status}")
+        Log.d("AppNavigation", "Token: $token")
+    }
+
+    // Tentukan startDestination
+    val startDestination = when {
+        userId == null -> "login"
+        userRole == "asesor" -> "dashboardAsesor"
+        status == null -> "apl_01"
+        else -> "waiting_approval"
+    }
+
+    val bottomNavItems = listOf(
+        ItemBar(Icons.Default.QrCode, "Barcode", "barcode"),
+        ItemBar(Icons.Default.AccountCircle, "Profil", "profile"),
+    )
 
     Scaffold(
-        topBar = { if (showTopBar) TopAppBar() }
+        topBar = {
+            val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+            if (currentRoute in listOf("apl_01", "profile", "main", "skemaList")) TopAppBar()
+        }
     ) { innerPadding ->
-<<<<<<< HEAD
-        Box(Modifier.fillMaxWidth().padding(innerPadding)) {
+        Box(Modifier.fillMaxSize().padding(innerPadding)) {
+
             NavHost(navController = navController, startDestination = startDestination) {
 
-                composable("login") {
-=======
-        Box(Modifier.fillMaxWidth().padding(innerPadding)){
-            NavHost(
-                navController = navController,
-                startDestination = "apl06"
-            ) {
-                composable("apl06") {
->>>>>>> e6417386c80251b50db315ec276b6ebd3707556c
-                    showNavigation = false
-                    showTopBar = false
-                    LoginScreen(userViewModel = userViewModel, navController = navController)
-                }
+                // Auth
+                composable("login") { LoginScreen(userViewModel = userViewModel, navController = navController) }
+                composable("register") { RegisterScreen(navController = navController) }
 
-                composable("register") {
-                    showNavigation = false
-                    showTopBar = false
-                    RegisterScreen(navController = navController)
+                // APL Forms
+                composable("apl_01") { AsesiFormScreen(asesiViewModel, navController) }
+                composable("apl02/{id}") {
+                    val id = it.arguments?.getString("id")?.toIntOrNull() ?: 0
+                    APL02(id = id, apL02ViewModel = apL02ViewModel, navController = navController)
                 }
-<<<<<<< HEAD
+                composable("ia01/{id}") {
+                    val id = it.arguments?.getString("id")?.toIntOrNull() ?: 0
+                    FRIA01(idSkema = id, apL02ViewModel = apL02ViewModel, navController = navController)
+                }
+                composable("apl06") { FRIA06A(navController = navController) }
+                composable("apl05") { FRAK05(navController = navController) }
 
-=======
-                composable("apl06"){
-                    FRIA06A(navController = navController)
+                // Waiting & Main
+                composable("waiting_approval") {
+                    WaitingApprovalScreen(
+                        modifier = Modifier.fillMaxSize(),
+                        navController = navController,
+                        status = formData?.status
+                    )
                 }
-                composable("apl05"){
-                    FRAK05(navController = navController)
-                }
->>>>>>> e6417386c80251b50db315ec276b6ebd3707556c
-                composable("kelengkapanDataAsesor") {
-                    KelengkapanDataAsesor(navController = navController)
-                }
+                composable("main") { MainScreen(modifier = Modifier, navController = navController) }
 
-                composable("tanda_tangan_asesor") {
-                    SignatureScreen(context, navController)
-                }
+                // Profile
+                composable("profile") { ProfileScreen(modifier = Modifier, navController = navController) }
 
+                // Skema
                 composable("skemaList") {
-                    showTopBar = false
-                    showNavigation = true
                     SkemaListScreen(
                         modifier = Modifier,
                         skemaViewModel = skemaViewModel,
@@ -188,87 +146,26 @@ fun AppNavigation() {
                         status = formData?.status
                     )
                 }
+                composable("detailusk") { DetailUSK(navController = navController, idSkema = 1) }
 
-                composable("detailusk") {
-                    DetailUSK(navController = navController, idSkema = 1)
-                }
+                // Asesor
+                composable("dashboardAsesor") { DashboardAsesor(navController = navController) }
+                composable("events") { Events(navController = navController) }
+                composable("detail_event") { DetailEvent(navController = navController) }
+                composable("kelengkapanDataAsesor") { KelengkapanDataAsesor(navController = navController) }
+                composable("tanda_tangan_asesor") { SignatureScreen(context, navController) }
 
-                composable("apl_01") {
-                    showTopBar = true
-                    showNavigation = true
-                    AsesiFormScreen(asesiViewModel, navController)
-                }
+                // Barcode
+                composable("scanningBarcode") { AsesiBarcodeScanner(navController = navController) }
+                composable("barcode") { BarcodeScreen(text = "*&KJDHASD&^#!DASDHDAS") }
 
-                composable("apl02/{id}") {
-                    showTopBar = false
-                    showNavigation = false
-                    val id = it.arguments?.getString("id") ?: "0"
-                    APL02(id = id.toInt(), apL02ViewModel = apL02ViewModel, navController = navController)
-                }
-
-                composable("ia01/{id}") {
-                    showTopBar = false
-                    showNavigation = false
-                    val id = it.arguments?.getString("id") ?: "0"
-                    FRIA01(idSkema = id.toInt(), apL02ViewModel = apL02ViewModel, navController = navController)
-                }
-
-                composable("waiting_approval") {
-                    showTopBar = false
-                    showNavigation = false
-                    WaitingApprovalScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        navController = navController,
-                        status = formData?.status,
-                    )
-                }
-
-                composable("profile") {
-                    if (userRole == "asesi") showTopBar = true
-                    showNavigation = true
-                    ProfileScreen(modifier = Modifier, navController = navController)
-                }
-
-                composable("main") {
-                    showTopBar = true
-                    showNavigation = true
-                    MainScreen(modifier = Modifier, navController = navController)
-                }
-
-                composable("events") {
-                    showNavigation = false
-                    Events(navController = navController)
-                }
-
-                composable("dashboardAsesor") {
-                    showTopBar = false
-                    showNavigation = true
-                    DashboardAsesor(navController = navController)
-                }
-
-                composable("scanningBarcode") {
-                    showNavigation = false
-                    showTopBar = false
-                    AsesiBarcodeScanner(navController = navController)
-                }
-
-                composable("barcode") {
-                    showNavigation = false
-                    BarcodeScreen(text = "*&KJDHASD&^#!DASDHDAS")
-                }
-
-                composable("detail_event") {
-                    showNavigation = false
-                    DetailEvent(navController = navController)
-                }
-
-                composable("ak01") {
-                    showNavigation = false
-                    FRAK01(navController = navController)
-                }
+                // AK / FRAK
+                composable("ak01") { FRAK01(navController = navController) }
             }
 
-            if (showNavigation) {
+            // Bottom navigation
+            val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+            if (currentRoute in listOf("profile", "main", "skemaList", "dashboardAsesor")) {
                 Column(
                     modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
                     horizontalAlignment = Alignment.CenterHorizontally
