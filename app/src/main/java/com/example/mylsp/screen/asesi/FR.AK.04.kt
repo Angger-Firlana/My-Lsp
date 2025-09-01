@@ -34,7 +34,7 @@ import com.example.mylsp.util.AppFont
  */
 
 @Composable
-fun FRAK04(modifier: Modifier = Modifier) {
+fun FRAK04(modifier: Modifier = Modifier, nextForm: () -> Unit) {
     val stroke = Color(0xFFE6E6E6)
     val chipBg = Color(0xFFF1F3F4)
     val labelColor = Color(0xFF4B5563) // abu label
@@ -221,7 +221,9 @@ fun FRAK04(modifier: Modifier = Modifier) {
 
         // Tombol bawah (pakai warna theme/tertiary yang sudah dipakai project)
         Button(
-            onClick = { /* no-op preview */ },
+            onClick = {
+                nextForm()
+            },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.tertiary),
@@ -307,14 +309,3 @@ private fun StaticValueFrame(text: String) {
     }
 }
 
-/* ==== Preview 412 x 917 ==== */
-@Preview(
-    name = "FR.AK.04 – 412x917",
-    showBackground = true,
-    widthDp = 412,
-    heightDp = 917
-)
-@Composable
-fun FRAK04Preview() {
-    MaterialTheme { FRAK04() }
-}

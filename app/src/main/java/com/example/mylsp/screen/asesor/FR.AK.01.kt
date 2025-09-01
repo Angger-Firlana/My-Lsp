@@ -1,4 +1,4 @@
-package com.example.mylsp.screen.asesi
+package com.example.mylsp.screen.asesor
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -26,13 +27,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.component.SkemaSertifikasi
 import com.example.mylsp.util.AppFont
 
 @Composable
-fun FRAK01(modifier: Modifier = Modifier, navController: NavController) {
+fun FRAK01(modifier: Modifier = Modifier, nextForm:()-> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -68,6 +68,18 @@ fun FRAK01(modifier: Modifier = Modifier, navController: NavController) {
         Spacer(modifier = modifier.height(8.dp))
 
         PernyataanAsesiAsesor()
+        Button(
+            onClick = {
+                nextForm()
+            }
+        ) {
+            Text(
+                "Lanjut",
+                fontSize = 14.sp,
+                fontFamily = AppFont.Poppins,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
 

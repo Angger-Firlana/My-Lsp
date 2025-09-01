@@ -1,4 +1,4 @@
-package com.example.mylsp.screen.asesi
+package com.example.mylsp.screen.asesor
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -35,16 +34,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.component.SkemaSertifikasi
+import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
 
 @Composable
@@ -95,7 +93,7 @@ fun FRAK05(modifier: Modifier = Modifier, navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        KirimJawabanButton { navController.popBackStack() }
+        KirimJawabanButton { navController.navigate(Screen.Congrats.route) }
 
         Spacer(modifier = Modifier.height(16.dp))
     }

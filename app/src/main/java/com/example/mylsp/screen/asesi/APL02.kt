@@ -30,7 +30,7 @@ fun APL02(
     modifier: Modifier = Modifier,
     id: Int,
     apL02ViewModel: APL02ViewModel,
-    navController: NavController
+    nextForm: () -> Unit
 ) {
     val context = LocalContext.current
     val jawabanManager = remember { JawabanManager() }
@@ -44,10 +44,8 @@ fun APL02(
 
     LaunchedEffect(state) {
         state?.let { success ->
-            if (success){
-                navController.navigate("scanningBarcode"){
-                    popUpTo("apl02"){inclusive = true}
-                }
+            if (success) run {
+                nextForm()
             }
             apL02ViewModel.resetState()
         }
@@ -70,7 +68,7 @@ fun APL02(
                 SchemaSection(data)
                 InstructionCard()
                 UnitsSection(id, data, jawabanManager)
-                SubmitButton(apL02ViewModel)
+                SubmitButton(apL02ViewModel, nextForm)
                 if (message.isNotEmpty()){
                     ErrorCard(
                         errorMessage = message,
@@ -428,12 +426,13 @@ private fun BuktiCheckboxItem(
 }
 
 @Composable
-private fun SubmitButton(apL02ViewModel: APL02ViewModel) {
+private fun SubmitButton(apL02ViewModel: APL02ViewModel, nextForm: () -> Unit) {
     Button(
         onClick = {
-            val jawaban = com.example.mylsp.util.Util.jawabanApl02.value
-            apL02ViewModel.sendApl02()
-            Log.d("APL02", "Jawaban: $jawaban")
+             nextForm()
+//            val jawaban = com.example.mylsp.util.Util.jawabanApl02.value
+//            apL02ViewModel.sendApl02()
+//            Log.d("APL02", "Jawaban: $jawaban")
         },
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier

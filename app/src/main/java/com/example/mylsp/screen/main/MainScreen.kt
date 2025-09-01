@@ -44,6 +44,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mylsp.R
+import com.example.mylsp.navigation.Screen
 import com.example.mylsp.repository.UserRepository
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.viewmodel.AuthViewModel
@@ -129,7 +130,7 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { navController.navigate("skemaList") },
+                onClick = { navController.navigate(Screen.AssessmentList.route) },
                 shape = MaterialTheme.shapes.large,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,

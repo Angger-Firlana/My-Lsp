@@ -23,7 +23,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,14 +33,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.mylsp.util.AppFont
 
 @Composable
 fun WaitingApprovalScreen(
-    modifier: Modifier,
-    navController: NavController,
-    status: String?,
+    modifier: Modifier = Modifier,
+    nextStep: () -> Unit,
+    backFillForm: () -> Unit,
+    formName: String = "APL01", // default nama form
+    type: String = "pendaftaran", // ✨ bisa "pendaftaran" atau "jawaban"
+    status: String? = null,
+    textButton: String? = null
 ) {
     Box(
         modifier = modifier
@@ -74,15 +76,33 @@ fun WaitingApprovalScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Judul
+            // Judul dinamis
+            val title = when (status) {
+                null -> if (type == "jawaban")
+                    "Belum Mengisi Jawaban $formName"
+                else
+                    "Belum Mengisi Form $formName"
+
+                "pending" -> if (type == "jawaban")
+                    "Jawaban $formName Sedang Dicek"
+                else
+                    "Pendaftaran $formName Berhasil!"
+
+                "accepted" -> if (type == "jawaban")
+                    "Jawaban $formName Diterima!"
+                else
+                    "Pendaftaran $formName Diterima!"
+
+                "rejected" -> if (type == "jawaban")
+                    "Jawaban $formName Ditolak"
+                else
+                    "Pendaftaran $formName Ditolak"
+
+                else -> "Status Tidak Dikenal"
+            }
+
             Text(
-                text = when (status) {
-                    null -> "Belum Mengisi Form APL01"
-                    "pending" -> "Pendaftaran Berhasil!"
-                    "accepted" -> "Pendaftaran Diterima!"
-                    "rejected" -> "Pendaftaran Ditolak"
-                    else -> "Status Tidak Dikenal"
-                },
+                text = title,
                 fontFamily = AppFont.Poppins,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
@@ -112,7 +132,7 @@ fun WaitingApprovalScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Status: ${status ?: "Belum Mengisi"}",
+                        text = "Status: ${status ?: if (type == "jawaban") "Belum Mengisi" else "Belum Mengisi $formName"}",
                         fontFamily = AppFont.Poppins,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp,
@@ -127,31 +147,25 @@ fun WaitingApprovalScreen(
             when (status) {
                 "accepted" -> {
                     Button(
-                        onClick = {
-                            navController.navigate("main") {
-                                popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                            }
-                        },
+                        onClick = nextStep,
                         modifier = Modifier.width(200.dp),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary
                         )
-                    ) { Text("Lanjut ke Dashboard") }
+                    ) { Text(textButton ?: "Lanjut ke Dashboard") }
                 }
                 "rejected", null -> {
                     Button(
-                        onClick = {
-                            navController.navigate("apl_01") {
-                                popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                            }
-                        },
+                        onClick = backFillForm,
                         modifier = Modifier.width(200.dp),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary
                         )
-                    ) { Text("Isi Ulang Form APL01") }
+                    ) {
+                        Text(textButton ?: if (type == "jawaban") "Isi Ulang Jawaban" else "Isi Ulang Form $formName")
+                    }
                 }
             }
         }

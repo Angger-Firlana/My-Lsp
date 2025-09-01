@@ -36,7 +36,8 @@ import kotlinx.coroutines.delay
 fun LoginScreen(
     modifier: Modifier = Modifier,
     userViewModel: UserViewModel,
-    navController: NavController
+    successLogin: (String) -> Unit,
+    navigateRegister: () -> Unit
 ) {
     val context = LocalContext.current.applicationContext
     val viewModel: AuthViewModel = viewModel(
@@ -58,24 +59,11 @@ fun LoginScreen(
                 userViewModel.getUserByToken()
                 val role = UserManager(context).getUserRole()
                 delay(1000)
-                when (role) {
-                    "asesi" -> {
-                        navController.navigate("main"){
-                            popUpTo(navController.graph.startDestinationId){inclusive = true}
-                        }
-                    }
-                    "asesor" -> {
-                        navController.navigate("dashboardAsesor"){
-                            popUpTo(navController.graph.startDestinationId){inclusive = true}
-                        }
-                    }
-                    else -> {
-                        navController.navigate("main"){
-                            popUpTo(navController.graph.startDestinationId){inclusive = true}
-                        }
-                    }
+                role?.let{
+                    successLogin(role)
+                }?:run{
+                    Toast.makeText(context, "Terjadi Kesalahan Saat Login Coba Lagi", Toast.LENGTH_SHORT).show()
                 }
-
             }
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             viewModel.resetState()
@@ -195,7 +183,7 @@ fun LoginScreen(
                     fontFamily = AppFont.Poppins,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.clickable {
-                        navController.navigate("register")
+                        navigateRegister()
                     }
                 )
             }

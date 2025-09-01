@@ -47,7 +47,7 @@ import com.example.mylsp.viewmodel.JurusanViewModel
 @Composable
 fun RegisterScreen(
     modifier: Modifier = Modifier,
-    navController: NavController
+    backToLogin: () -> Unit
 ) {
     val context = LocalContext.current
     val viewModel: AuthViewModel = viewModel(
@@ -75,7 +75,7 @@ fun RegisterScreen(
     LaunchedEffect(stateRegister) {
         stateRegister?.let { success->
             if (success){
-                navController.navigate("login")
+                backToLogin()
             }else{
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
@@ -299,7 +299,7 @@ fun RegisterScreen(
                     fontFamily = AppFont.Poppins,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.clickable {
-                        navController.navigate("login")
+                        backToLogin()
                     }
                 )
             }

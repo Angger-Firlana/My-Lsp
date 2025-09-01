@@ -2,9 +2,8 @@ package com.example.mylsp.screen.asesor
 
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,13 +18,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.LocationOn
@@ -35,7 +30,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,7 +37,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -53,39 +46,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import com.example.mylsp.model.api.SkemaDetail
-import com.example.mylsp.screen.main.WaitingApprovalScreen
+import com.example.mylsp.model.api.Assessment
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.UserManager
-import com.example.mylsp.util.Util
-import com.example.mylsp.viewmodel.MukViewModel
-import com.example.mylsp.viewmodel.SkemaViewModel
-import com.example.mylsp.viewmodel.UserViewModel
+import com.example.mylsp.viewmodel.AssesmentViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SkemaListScreen(
+fun AssesmentListScreen(
     modifier: Modifier = Modifier,
-    skemaViewModel: SkemaViewModel,
-    navController: NavController,
+    assesmentViewModel: AssesmentViewModel,
+    navigateToWaitingScreen: ()-> Unit,
+    navigateToAssesment: (String, Int) -> Unit,
     status: String?
 ) {
     val context = LocalContext.current
@@ -94,13 +77,13 @@ fun SkemaListScreen(
     var expanded by remember { mutableStateOf(false) }
     var selectedFilter by remember { mutableStateOf("Semua Event") }
 
-    val skemas by skemaViewModel.skemas.collectAsState()
+    val assesments by assesmentViewModel.listAssessment.collectAsState()
 
     val filterOptions = listOf("Semua Event", "Event Hari Ini", "Event Minggu Ini", "Event Bulan Ini")
 
     LaunchedEffect(Unit) {
         Log.d("User", "")
-        skemaViewModel.getListSkema()
+        assesmentViewModel.getListAssesment()
     }
 
     Surface(
@@ -108,11 +91,7 @@ fun SkemaListScreen(
         color = MaterialTheme.colorScheme.background
     ) {
         if (status == null || status == "pending"){
-            WaitingApprovalScreen(
-                modifier = modifier,
-                navController = navController,
-                status = status
-            )
+            navigateToWaitingScreen()
         }else{
             Box(modifier = Modifier.fillMaxSize()) {
                 // Rounded Header with Tertiary Color
@@ -247,16 +226,16 @@ fun SkemaListScreen(
                     ),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(skemas.size){
-                        val skema = skemas[it]
-                        SkemaCard(
-                            skema = skema,
+                    items(assesments.size){
+                        val assesment = assesments[it]
+                        AssessmentCard(
+                            assessment = assesment,
                             onCardClick = {
                                 val role = userManager.getUserRole()
-                                if(role == "asesi"){
-                                    navController.navigate("apl02/${skema.id}")
-                                }else if (role == "asesor"){
-                                    navController.navigate("ia01/${skema.id}")
+                                if (role != null) {
+                                    navigateToAssesment(role,assesment.id)
+                                }else{
+                                    Toast.makeText(context, "Terjadi kesalahan silahkan coba lagi",  Toast.LENGTH_SHORT).show()
                                 }
                             }
                         )
@@ -269,26 +248,28 @@ fun SkemaListScreen(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SkemaCard(
-    skema: SkemaDetail,
+fun AssessmentCard(
+    assessment: Assessment,
     onCardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val judulSkema = skema.judul_skema
-    val tanggalBerlaku = "2025-02-01"
-    val nomorSkema = skema.nomor_skema
-    val jurusan = skema.jurusan
-    val totalUnits = skema.total_units
-    val total_elements = skema.total_elements
-    val totalKuk = skema.total_kuk
+    val judulSkema = assessment.schema.judul_skema
+    val tanggalAssesment = assessment.tanggal_assesment
+    val nomorSkema = assessment.schema.nomor_skema
+    val jurusanId = assessment.schema.jurusan_id
 
-    val dateSkema = LocalDate.parse(tanggalBerlaku)
+    // contoh placeholder (kalau nanti backend nambah field, tinggal ganti)
+    val totalUnits = 10
+    val totalElements = 20
+    val totalKuk = 30
+
+    val dateSkema = LocalDate.parse(tanggalAssesment)
     val tanggalSkema = dateSkema.format(
         DateTimeFormatter.ofPattern("d MMM yyyy", Locale("id", "ID"))
     )
 
     val jamSkema = "09:00"
-    val tempatKerja = "Lab Komputer"
+    val tempatAssesment = assessment.tuk
     val jumlahPeserta = "72"
 
     Card(
@@ -306,7 +287,7 @@ fun SkemaCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // Title with modern styling
+            // Title dengan styling modern
             Text(
                 text = judulSkema,
                 fontFamily = AppFont.Poppins,
@@ -320,7 +301,7 @@ fun SkemaCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Simplified info grid
+            // Info grid
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -338,7 +319,7 @@ fun SkemaCard(
 
                     EventDetailRow(
                         icon = Icons.Default.LocationOn,
-                        text = tempatKerja,
+                        text = tempatAssesment,
                         iconTint = MaterialTheme.colorScheme.tertiary,
                         fontSize = 13.sp
                     )
@@ -366,6 +347,7 @@ fun SkemaCard(
         }
     }
 }
+
 
 @Composable
 fun EventDetailRow(

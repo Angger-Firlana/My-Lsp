@@ -3,6 +3,7 @@ package com.example.mylsp.api
 import com.example.mylsp.model.api.Apl02
 import com.example.mylsp.model.api.Asesi
 import com.example.mylsp.model.api.AsesiRequest
+import com.example.mylsp.model.api.AssessmentResponse
 import com.example.mylsp.model.api.CreateAsesiResponse
 import com.example.mylsp.model.api.FormApl01Response
 import com.example.mylsp.model.api.Jurusan
@@ -27,7 +28,6 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface APIService {
-
     //Auth
     @POST("auth/login")
     suspend fun login(
@@ -70,6 +70,9 @@ interface APIService {
         @Part("status") status: RequestBody,
         @Part attachments: List<MultipartBody.Part>
     ): Response<CreateAsesiResponse>
+
+    @GET("assesment")
+    suspend fun getAssesments(): Response<AssessmentResponse>
 
     @GET("approvement/assesment/formapl01/{id}")
     suspend fun getFormApl01Status(@Path("id") id:Int): Response<Asesi>
