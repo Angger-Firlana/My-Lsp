@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mylsp.R
+import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.UserManager
 
@@ -117,7 +118,7 @@ fun DashboardAsesor(modifier: Modifier = Modifier, navController: NavController)
             Spacer(Modifier.height(16.dp))
 
             MenuButton("Jadwal Sertifikasi", ButtonBlue, onClick = {
-                navController.navigate("skemaList")
+                navController.navigate(Screen.AssessmentList.route)
             })
             Spacer(Modifier.height(12.dp))
             MenuButton("Penilaian Asesi", ButtonBlue, onClick = {})

@@ -23,12 +23,15 @@ import com.example.mylsp.screen.asesor.FRAK01
 import com.example.mylsp.screen.asesi.FRAK04
 import com.example.mylsp.screen.asesor.FRAK05
 import com.example.mylsp.screen.asesi.FRIA06A
+import com.example.mylsp.screen.asesor.ApprovedUnapprovedScreen
 import com.example.mylsp.screen.asesor.DashboardAsesor
 import com.example.mylsp.screen.asesor.DetailEvent
 import com.example.mylsp.screen.asesor.Events
 import com.example.mylsp.screen.asesor.FRIA01
 import com.example.mylsp.screen.asesor.KelengkapanDataAsesor
 import com.example.mylsp.screen.asesor.AssesmentListScreen
+import com.example.mylsp.screen.asesor.FRAK02
+import com.example.mylsp.screen.asesor.FRIA06C
 import com.example.mylsp.screen.auth.LoginScreen
 import com.example.mylsp.screen.auth.RegisterScreen
 import com.example.mylsp.screen.main.MainScreen
@@ -73,7 +76,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        modifier = modifier
+        modifier = Modifier
     ) {
         composable(Screen.Login.route) {
             showBottomBar(false)
@@ -83,13 +86,13 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
                 successLogin = { role ->
 
                     when (role) {
-                        "asesi" -> {
+                        "assesi" -> {
                             navController.navigate("main"){
                                 popUpTo(navController.graph.startDestinationId){inclusive = true}
                             }
                         }
-                        "asesor" -> {
-                            navController.navigate("dashboardAsesor"){
+                        "assesor" -> {
+                            navController.navigate(Screen.DashboardAsesor.route){
                                 popUpTo(navController.graph.startDestinationId){inclusive = true}
                             }
                         }
@@ -192,8 +195,14 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         composable(Screen.Ak01.route){
             showTopBar(false)
             showBottomBar(false)
+            val role = it.arguments?.getString("role")?: "assesi"
             FRAK01(nextForm = {
-                navController.navigate(Screen.Ak04.route)
+                if (role == "assesi"){
+                    navController.navigate(Screen.Ak04.route)
+
+                }else if(role == "assesor"){
+                    navController.navigate(Screen.Ia01.createRoute(1))
+                }
             })
         }
         composable(Screen.Ak03.route){
@@ -219,7 +228,13 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             showTopBar(false)
             showBottomBar(false)
             val id = it.arguments?.getString("id")?: "0"
-            FRIA01(idSkema = id.toInt(),apL02ViewModel = apL02ViewModel,navController = navController)
+            FRIA01(
+                idSkema = id.toInt(),
+                apL02ViewModel = apL02ViewModel,
+                nextForm = {
+                    navController.navigate(Screen.Ak01.createRoute("assesor"))
+                }
+            )
         }
         composable(Screen.WaitingApproval.route) {
             showTopBar(false)
@@ -276,7 +291,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             Events(navController = navController)
         }
         composable(Screen.DashboardAsesor.route){
-            showTopBar(true)
+            showTopBar(false)
             showBottomBar(false)
             DashboardAsesor(navController = navController)
         }
@@ -286,6 +301,49 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             showTopBar(false)
             AsesiBarcodeScanner(navController = navController)
         }
+
+        composable(Screen.ApprovedUnapproved.route) {
+            showTopBar(false)
+            showBottomBar(false)
+            ApprovedUnapprovedScreen(
+                modifier = Modifier,
+                // Bisa ambil userName dari UserManager atau parameter lain
+                userName = userManager.getUserName() ?: "User",
+                navigateToForm = {
+                    navController.navigate(it)
+                }
+            )
+        }
+
+        // Tambahkan juga route untuk form-form yang belum ada composable
+        composable(Screen.Ia02.route) {
+            showTopBar(false)
+            showBottomBar(false)
+            // TODO: Buat screen untuk FR.IA.02 - TPO TUGAS PRAKTIK DEMONSTRASI
+            //FRIA02(navController = navController)
+        }
+
+        composable(Screen.Ia03.route) {
+            showTopBar(false)
+            showBottomBar(false)
+            // TODO: Buat screen untuk FR.IA.03 - PERTANYAAN UNTUK MENDUKUNG OBSERVASI
+            //FRIA03(navController = navController)
+        }
+
+        composable(Screen.Ia06c.route) {
+            showTopBar(false)
+            showBottomBar(false)
+            // TODO: Buat screen untuk FR.IA.06.C - LEMBAR JAWABAN PERTANYAAN TERTULIS
+            FRIA06C(navController = navController)
+        }
+
+        composable(Screen.Ak02.route) {
+            showTopBar(false)
+            showBottomBar(false)
+            // TODO: Buat screen untuk FR.AK.02 - REKAMAN ASESMEN KOMPETENSI
+            FRAK02(navController = navController)
+        }
+
         composable("barcode"){
             showBottomBar(false)
             BarcodeScreen(text = "*&KJDHASD&^#!DASDHDAS")

@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mylsp.R
+import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
 
 data class Participant(
@@ -154,7 +155,7 @@ fun DetailEvent(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            ParticipantsList(participants = participants)
+            ParticipantsList(participants = participants, navController)
         }
     }
 }
@@ -293,7 +294,7 @@ fun StatCard(
 }
 
 @Composable
-fun ParticipantsList(participants: List<Participant>) {
+fun ParticipantsList(participants: List<Participant>, navController: NavController) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -301,13 +302,13 @@ fun ParticipantsList(participants: List<Participant>) {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(participants) { participant ->
-            ParticipantCard(participant = participant)
+            ParticipantCard(participant = participant, navController)
         }
     }
 }
 
 @Composable
-fun ParticipantCard(participant: Participant) {
+fun ParticipantCard(participant: Participant, navController: NavController) {
     val (statusText, statusColor) = when (participant.status) {
         ParticipantStatus.COMPLETED -> "Selesai" to Color(0xFF4CAF50) // Hijau
         ParticipantStatus.ACTIVE -> "Sedang Ujian" to Color(0xFF2196F3) // Biru
@@ -315,6 +316,8 @@ fun ParticipantCard(participant: Participant) {
     }
 
     Card(
+        onClick = {
+            navController.navigate(Screen.ApprovedUnapproved.route)        },
         modifier = Modifier
             .fillMaxWidth()
             .shadow(3.dp, RoundedCornerShape(12.dp)),
@@ -398,13 +401,13 @@ fun ParticipantCard(participant: Participant) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 LinearProgressIndicator(
-                    progress = participant.progress,
+                    progress = { participant.progress },
                     modifier = Modifier
                         .weight(1f)
                         .height(8.dp)
                         .clip(RoundedCornerShape(50)),
                     color = Color(0xFF85B6F7),
-                    trackColor = Color(0xFFE0E0E0)
+                    trackColor = Color(0xFFE0E0E0),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(

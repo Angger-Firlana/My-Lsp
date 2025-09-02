@@ -60,6 +60,7 @@ import com.example.mylsp.R
 import com.example.mylsp.component.ItemProfile
 import com.example.mylsp.component.LoadingScreen
 import com.example.mylsp.model.api.UserDetail
+import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.TokenManager
 import com.example.mylsp.util.UserManager
@@ -77,10 +78,10 @@ fun ProfileScreen(modifier: Modifier, navController: NavController) {
 
 
     val user = UserDetail(
-        userManager.getUserId()!!.toInt(),
-        userManager.getUserName()!!,
-        userManager.getUserEmail()!!,
-        userManager.getUserRole()!!,
+        userManager.getUserId()?.toInt() ?:0,
+        userManager.getUserName()?: "Unknown",
+        userManager.getUserEmail()?: "Unknown",
+        userManager.getUserRole()?: "Unknown",
         userManager.getJurusanId()
     )
 
@@ -307,7 +308,7 @@ fun ProfileScreen(modifier: Modifier, navController: NavController) {
                 logout = false
                 userManager.clearUser()
                 tokenManager.clearToken()
-                navController.navigate("login") {
+                navController.navigate(Screen.Login.route) {
                     popUpTo(navController.graph.startDestinationId) {
                         inclusive = true
                     }

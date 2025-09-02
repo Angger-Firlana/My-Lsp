@@ -342,9 +342,3 @@ fun BottomNavigationBar() {
         }
     }
 }
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun PenilaianAsesiRekomendasiScreenPreview() {
-    PenilaianAsesiRekomendasiScreen()
-}

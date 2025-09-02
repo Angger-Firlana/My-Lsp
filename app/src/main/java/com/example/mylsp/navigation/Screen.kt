@@ -16,20 +16,28 @@ sealed class Screen(val route: String) {
     data object Apl02: Screen("apl02/{id}"){
         fun createRoute(id: Int) = "apl02/$id"
     }
-    data object Ak01: Screen("ak01")
+    data object Ak01: Screen("ak01/{role}"){
+        fun createRoute(role: String) = "ak01/$role"
+    }
     data object Ak02: Screen("ak02")
     data object Ak03: Screen("ak03")
     data object Ak04: Screen("ak04")
     data object Ak05: Screen("ak05")
-    data object Ia06a: Screen("ia06a")
     data object Ia01: Screen("ia01/{id}"){
         fun createRoute(id: Int) = "ia01/$id"
     }
+    data object Ia02: Screen("ia02")
+    data object Ia03: Screen("ia03")
+    data object Ia06a: Screen("ia06a")
+    data object Ia06c: Screen("ia06c")
 
     data object WaitingApproval: Screen("waiting_approval/{route}/{status}"){
         fun createRoute(status: String, form: String) = "waiting_approval/$form/$status"
     }
     data object AssessmentList: Screen("assessmentList")
+
+    // Route untuk ApprovedUnapprovedScreen
+    data object ApprovedUnapproved: Screen("approved_unapproved")
 
     data object Congrats: Screen("congrats")
     data object KelengkapanDataAsesor: Screen("kelengkapanDataAsesor")

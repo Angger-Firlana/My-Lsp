@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
 
 
@@ -27,13 +28,15 @@ data class ApprovalItem(
     val code: String,
     val title: String,
     val nis: String,
-    val approved: Boolean? // true=Approved, false=Unapproved aktif, null=belum pilih
+    val approved: Boolean?, // true=Approved, false=Unapproved aktif, null=belum
+    val route: String
 )
 
 @Composable
 fun ApprovedUnapprovedScreen(
     userName: String = "Afdhal Ezhar Rahma Pangestu",
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navigateToForm: (String) -> Unit
 ) {
     // Gradient full-bleed
     val bgGradient = Brush.verticalGradient(
@@ -45,17 +48,17 @@ fun ApprovedUnapprovedScreen(
     )
 
     val items = listOf(
-        ApprovalItem("FR.APL.02", "ASESMEN MANDIRI", "NIS: 8880", true),
-        ApprovalItem("FR.AK.01", "PERSETUJUAN ASESMEN DAN KERAHASIAAN", "NIS: 8880", null),
-        ApprovalItem("FR.AK.04", "BANDING ASESMEN", "NIS: 8880", true),
-        ApprovalItem("FR.IA.01.CL", "CEKLIST OBSERVASI AKTIVITAS DI TEMPAT KERJA/SIMULASI", "NIS: 8880", null),
-        ApprovalItem("FR.IA.02", "TPO TUGAS PRAKTIK DEMONSTRASI", "NIS: 8880", false),
-        ApprovalItem("FR.IA.03", "PERTANYAAN UNTUK MENDUKUNG OBSERVASI", "NIS: 8880", null),
-        ApprovalItem("FR.IA.06A.DPT", "DAFTAR PERTANYAAN TERTULIS (ESAI)", "NIS: 8880", null),
-        ApprovalItem("FR.IA.06.C", "LEMBAR JAWABAN PERTANYAAN TERTULIS (ESAI)", "NIS: 8880", null),
-        ApprovalItem("FR.AK.02", "REKAMAN ASESMEN KOMPETENSI", "NIS: 8880", null),
-        ApprovalItem("FR.AK.03", "UMPAN BALIK DAN CATATAN ASESMEN", "NIS: 8880", null),
-        ApprovalItem("FR.AK.05", "LAPORAN ASESMEN", "NIS: 8880", null),
+        ApprovalItem("FR.APL.02", "ASESMEN MANDIRI", "NIS: 8880", true, Screen.Apl02.createRoute(1)),
+        ApprovalItem("FR.AK.01", "PERSETUJUAN ASESMEN DAN KERAHASIAAN", "NIS: 8880", null, Screen.Ak01.createRoute("assesor")),
+        ApprovalItem("FR.AK.04", "BANDING ASESMEN", "NIS: 8880", true, Screen.Ak04.route),
+        ApprovalItem("FR.IA.01.CL", "CEKLIST OBSERVASI AKTIVITAS DI TEMPAT KERJA/SIMULASI", "NIS: 8880", null, Screen.Ia01.createRoute(1)),
+        ApprovalItem("FR.IA.02", "TPO TUGAS PRAKTIK DEMONSTRASI", "NIS: 8880", false, Screen.Ia02.route),
+        ApprovalItem("FR.IA.03", "PERTANYAAN UNTUK MENDUKUNG OBSERVASI", "NIS: 8880", null, Screen.Ia03.route),
+        ApprovalItem("FR.IA.06A.DPT", "DAFTAR PERTANYAAN TERTULIS (ESAI)", "NIS: 8880", null, Screen.Ia06a.route),
+        ApprovalItem("FR.IA.06.C", "LEMBAR JAWABAN PERTANYAAN TERTULIS (ESAI)", "NIS: 8880", null, Screen.Ia06c.route),
+        ApprovalItem("FR.AK.02", "REKAMAN ASESMEN KOMPETENSI", "NIS: 8880", null, Screen.Ak02.route),
+        ApprovalItem("FR.AK.03", "UMPAN BALIK DAN CATATAN ASESMEN", "NIS: 8880", null, Screen.Ak03.route),
+        ApprovalItem("FR.AK.05", "LAPORAN ASESMEN", "NIS: 8880", null, Screen.Ak05.route),
     )
 
     // Penting: background dulu, baru .then(modifier) agar padding dari parent
@@ -95,7 +98,7 @@ fun ApprovedUnapprovedScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(items) { item ->
-                ApprovalCard(item)
+                ApprovalCard(item, navigateToForm ={navigateToForm(item.route)})
             }
         }
     }
@@ -105,7 +108,7 @@ fun ApprovedUnapprovedScreen(
 // CARD & PILL
 // -----------------------------------------
 @Composable
-private fun ApprovalCard(item: ApprovalItem) {
+private fun ApprovalCard(item: ApprovalItem, navigateToForm: () -> Unit) {
     val shape = RoundedCornerShape(12.dp)
 
     val approvedActive = Color(0xFF4CAF50)
@@ -113,6 +116,9 @@ private fun ApprovalCard(item: ApprovalItem) {
     val pillInactive = Color(0xFF757575)
 
     Surface(
+        onClick = {
+            navigateToForm()
+        },
         modifier = Modifier
             .fillMaxWidth()
             .shadow(3.dp, shape)
@@ -183,16 +189,4 @@ private fun StatusPill(text: String, background: Color) {
             letterSpacing = 0.5.sp
         )
     }
-}
-
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    widthDp = 412,
-    heightDp = 917,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
-)
-@Composable
-fun ApprovedUnapprovedPreview() {
-    ApprovedUnapprovedScreen()
 }

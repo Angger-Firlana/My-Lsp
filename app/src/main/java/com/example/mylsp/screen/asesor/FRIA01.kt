@@ -58,7 +58,7 @@ fun FRIA01(
     modifier: Modifier = Modifier,
     idSkema: Int,
     apL02ViewModel: APL02ViewModel,
-    navController: NavController
+    nextForm: ()-> Unit
 ) {
     val context = LocalContext.current
     val jawabanManager = remember { JawabanManager() }
@@ -105,7 +105,7 @@ fun FRIA01(
                 )
 
 
-                SubmitButton()
+                SubmitButton(nextForm)
             }
         }?: kotlin.run {
             LoadingScreen()
@@ -453,10 +453,12 @@ private fun EvidenceSection(
 }
 
 @Composable
-private fun SubmitButton() {
+private fun SubmitButton(
+    nextForm: ()-> Unit
+) {
     Button(
         onClick = {
-            // TODO: Implement submit logic
+            nextForm()
         },
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
