@@ -1,6 +1,5 @@
-package com.example.mylsp.screen.asesi
+package com.example.mylsp.screen
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,7 +15,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.mylsp.component.ErrorCard
 import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.component.LoadingScreen
@@ -68,7 +66,7 @@ fun APL02(
                 SchemaSection(data)
                 InstructionCard()
                 UnitsSection(id, data, jawabanManager)
-                SubmitButton(apL02ViewModel, nextForm)
+                SubmitButton(apL02ViewModel, nextForm, titleButton = "Kirim Jawaban")
                 if (message.isNotEmpty()){
                     ErrorCard(
                         errorMessage = message,
@@ -426,13 +424,16 @@ private fun BuktiCheckboxItem(
 }
 
 @Composable
-private fun SubmitButton(apL02ViewModel: APL02ViewModel, nextForm: () -> Unit) {
+private fun SubmitButton(apL02ViewModel: APL02ViewModel, nextForm: () -> Unit, titleButton: String = "Kirim Jawaban", buttonUnApproved: String?= null) {
     Button(
         onClick = {
+            if(buttonUnApproved != null){
+                // val jawaban = com.example.mylsp.util.Util.jawabanApl02.value
+                // apL02ViewModel.sendApl02()
+                // Log.d("APL02", "Jawaban: $jawaban")
+            }
              nextForm()
-//            val jawaban = com.example.mylsp.util.Util.jawabanApl02.value
-//            apL02ViewModel.sendApl02()
-//            Log.d("APL02", "Jawaban: $jawaban")
+
         },
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
@@ -440,8 +441,28 @@ private fun SubmitButton(apL02ViewModel: APL02ViewModel, nextForm: () -> Unit) {
             .padding(16.dp)
     ) {
         Text(
-            text = "Kirim Jawaban",
+            text = titleButton,
             fontFamily = AppFont.Poppins
         )
+    }
+
+    if (buttonUnApproved!=null){
+        Button(
+            onClick = {
+                nextForm()
+//            val jawaban = com.example.mylsp.util.Util.jawabanApl02.value
+//            apL02ViewModel.sendApl02()
+//            Log.d("APL02", "Jawaban: $jawaban")
+            },
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = titleButton,
+                fontFamily = AppFont.Poppins
+            )
+        }
     }
 }

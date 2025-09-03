@@ -2,6 +2,7 @@ package com.example.mylsp.navigation
 
 import android.app.Application
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,7 +15,7 @@ import androidx.navigation.compose.composable
 import com.example.mylsp.screen.BarcodeScreen
 import com.example.mylsp.screen.CongratsScreen
 import com.example.mylsp.screen.ProfileScreen
-import com.example.mylsp.screen.asesi.APL02
+import com.example.mylsp.screen.APL02
 import com.example.mylsp.screen.asesi.AsesiBarcodeScanner
 import com.example.mylsp.screen.asesi.AsesiFormScreen
 import com.example.mylsp.screen.asesi.DetailAssesment
@@ -31,6 +32,8 @@ import com.example.mylsp.screen.asesor.FRIA01
 import com.example.mylsp.screen.asesor.KelengkapanDataAsesor
 import com.example.mylsp.screen.asesor.AssesmentListScreen
 import com.example.mylsp.screen.asesor.FRAK02
+import com.example.mylsp.screen.asesor.FRIA02
+import com.example.mylsp.screen.asesor.FRIA03
 import com.example.mylsp.screen.asesor.FRIA06C
 import com.example.mylsp.screen.auth.LoginScreen
 import com.example.mylsp.screen.auth.RegisterScreen
@@ -84,7 +87,6 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             LoginScreen(
                 userViewModel = userViewModel,
                 successLogin = { role ->
-
                     when (role) {
                         "assesi" -> {
                             navController.navigate("main"){
@@ -249,7 +251,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
                             popUpTo(navController.graph.startDestinationId) { inclusive = true }
                         }
                     }else if(route == "Apl02"){
-                        navController.navigate(Screen.Ak01.route)
+                        navController.navigate(Screen.Ak01.createRoute("assesi"))
                     }else{
                         navController.navigate(Screen.Main.route)
                     }
@@ -292,7 +294,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         }
         composable(Screen.DashboardAsesor.route){
             showTopBar(false)
-            showBottomBar(false)
+            showBottomBar(true)
             DashboardAsesor(navController = navController)
         }
 
@@ -320,14 +322,14 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             showTopBar(false)
             showBottomBar(false)
             // TODO: Buat screen untuk FR.IA.02 - TPO TUGAS PRAKTIK DEMONSTRASI
-            //FRIA02(navController = navController)
+            FRIA02()
         }
 
         composable(Screen.Ia03.route) {
             showTopBar(false)
             showBottomBar(false)
             // TODO: Buat screen untuk FR.IA.03 - PERTANYAAN UNTUK MENDUKUNG OBSERVASI
-            //FRIA03(navController = navController)
+            FRIA03()
         }
 
         composable(Screen.Ia06c.route) {
@@ -349,7 +351,12 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             BarcodeScreen(text = "*&KJDHASD&^#!DASDHDAS")
         }
         composable(Screen.DetailEvent.route) {
-            DetailEvent(navController = navController)
+            DetailEvent(
+                idAssesment = 1,
+                onDetailAssessi = {
+                    navController.navigate(Screen.ApprovedUnapproved.route)
+                }
+            )
         }
     }
 }

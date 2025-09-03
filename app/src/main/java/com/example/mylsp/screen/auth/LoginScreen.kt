@@ -1,6 +1,7 @@
 package com.example.mylsp.screen.auth
 
 import android.app.Application
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -57,15 +58,18 @@ fun LoginScreen(
             isLoading = false
             if (success) {
                 userViewModel.getUserByToken()
+                delay(3000)
                 val role = UserManager(context).getUserRole()
-                delay(1000)
                 role?.let{
-                    successLogin(role)
+                    successLogin(role.toString())
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 }?:run{
                     Toast.makeText(context, "Terjadi Kesalahan Saat Login Coba Lagi", Toast.LENGTH_SHORT).show()
                 }
+            }else{
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+
             }
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             viewModel.resetState()
         }
     }

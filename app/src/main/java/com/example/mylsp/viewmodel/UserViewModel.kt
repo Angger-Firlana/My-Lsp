@@ -29,6 +29,7 @@ class UserViewModel(private val application: Application):AndroidViewModel(appli
             result.fold(
                 onSuccess = { body->
                     val user = body.user
+                    Log.d("UserViewModel", "getUserByToken: $user")
                     _message.value = "Berhasil di get"
                     userManager.saveUser(
                         id = user.id.toString(),

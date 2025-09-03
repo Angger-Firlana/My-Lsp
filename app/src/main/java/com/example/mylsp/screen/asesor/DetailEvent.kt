@@ -61,7 +61,8 @@ enum class ParticipantStatus {
 @Composable
 fun DetailEvent(
     modifier: Modifier = Modifier,
-    navController: NavController
+    idAssesment: Int,
+    onDetailAssessi: (Int) -> Unit
 ) {
     val participants = listOf(
         Participant(
@@ -155,7 +156,7 @@ fun DetailEvent(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            ParticipantsList(participants = participants, navController)
+            ParticipantsList(participants = participants, onClick = {onDetailAssessi(it)})
         }
     }
 }
@@ -294,7 +295,7 @@ fun StatCard(
 }
 
 @Composable
-fun ParticipantsList(participants: List<Participant>, navController: NavController) {
+fun ParticipantsList(participants: List<Participant>, onClick: (Int) -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -302,13 +303,19 @@ fun ParticipantsList(participants: List<Participant>, navController: NavControll
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(participants) { participant ->
-            ParticipantCard(participant = participant, navController)
+            ParticipantCard(
+                participant = participant,
+                onClick = {
+                   onClick(1)
+                }
+            )
+
         }
     }
 }
 
 @Composable
-fun ParticipantCard(participant: Participant, navController: NavController) {
+fun ParticipantCard(participant: Participant, onClick: () -> Unit) {
     val (statusText, statusColor) = when (participant.status) {
         ParticipantStatus.COMPLETED -> "Selesai" to Color(0xFF4CAF50) // Hijau
         ParticipantStatus.ACTIVE -> "Sedang Ujian" to Color(0xFF2196F3) // Biru
@@ -317,7 +324,8 @@ fun ParticipantCard(participant: Participant, navController: NavController) {
 
     Card(
         onClick = {
-            navController.navigate(Screen.ApprovedUnapproved.route)        },
+            onClick()
+        },
         modifier = Modifier
             .fillMaxWidth()
             .shadow(3.dp, RoundedCornerShape(12.dp)),

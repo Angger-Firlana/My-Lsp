@@ -30,10 +30,10 @@ fun HeaderForm(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.1f)
-            .padding(start = 16.dp, end = 16.dp),
+            .padding(start = 16.dp, end = 16.dp, top = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(

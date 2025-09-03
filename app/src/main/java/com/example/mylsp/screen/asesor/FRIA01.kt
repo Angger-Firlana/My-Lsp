@@ -100,7 +100,7 @@ fun FRIA01(
                 )
 
 
-                SubmitButton(nextForm)
+                SubmitButtonIa01(nextForm)
             }
         }?: kotlin.run {
             LoadingScreen()
@@ -448,7 +448,7 @@ private fun EvidenceSection(
 }
 
 @Composable
-private fun SubmitButton(
+private fun SubmitButtonIa01(
     nextForm: ()-> Unit
 ) {
     Button(

@@ -1,8 +1,7 @@
 package com.example.mylsp.model.api
 
 data class User(
-    val user : UserDetail,
-    val message:String?
+    val user : UserDetail
 )
 
 data class UserDetail(
