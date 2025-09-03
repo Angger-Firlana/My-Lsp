@@ -52,7 +52,8 @@ fun SkemaSertifikasi(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
+                .padding(top = 8.dp, bottom = 16.dp)
         ) {
             Column {
                 labelJudulUnit?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
