@@ -43,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.mylsp.model.api.Assessment
+import com.example.mylsp.util.AssessmentManager
 import com.example.mylsp.util.UserManager
 import com.example.mylsp.viewmodel.APL01ViewModel
 import com.example.mylsp.viewmodel.AssesmentViewModel
@@ -51,11 +53,12 @@ import com.example.mylsp.viewmodel.AssesmentViewModel
 fun DetailAssesment(
     modifier: Modifier = Modifier,
     userManager: UserManager,
-    onClickKerjakan: (Int) -> Unit,
+    onClickKerjakan: (Assessment) -> Unit,
     apL01ViewModel: APL01ViewModel,
     assessmentViewModel: AssesmentViewModel,
     idAssessment: Int
 ) {
+
     val listAssessment by assessmentViewModel.listAssessment.collectAsState()
     val asesi by apL01ViewModel.formData.collectAsState()
 
@@ -230,7 +233,7 @@ fun DetailAssesment(
 
                             Button(
                                 onClick = {
-                                    onClickKerjakan(data.skema_id)
+                                    onClickKerjakan(data)
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()

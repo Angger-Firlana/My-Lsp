@@ -1,5 +1,6 @@
 package com.example.mylsp.api
 
+import com.example.mylsp.model.api.AK01SubmissionResponse
 import com.example.mylsp.model.api.Apl02
 import com.example.mylsp.model.api.Asesi
 import com.example.mylsp.model.api.AsesiRequest
@@ -85,6 +86,13 @@ interface APIService {
         @Header("Accept") accept: String = "application/json",
         @Body submissionRequest: SubmissionGroup
     ): Response<ResponseSubmission>
+
+    @POST("assesment/formak01")
+    suspend fun sendSubmissionAk01(
+        @Header("Accept") accept: String = "application/json",
+        @Part("assesment_asesi_id") assessmentAsesiId: Int ,
+        @Part attachments: List<MultipartBody.Part>
+    ):Response<AK01SubmissionResponse>
 
     //getApl01
     @GET("apl01ByUser/{id}")

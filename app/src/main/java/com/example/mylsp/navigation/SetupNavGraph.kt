@@ -42,6 +42,7 @@ import com.example.mylsp.screen.auth.LoginScreen
 import com.example.mylsp.screen.auth.RegisterScreen
 import com.example.mylsp.screen.main.MainScreen
 import com.example.mylsp.screen.main.WaitingApprovalScreen
+import com.example.mylsp.util.AssessmentManager
 import com.example.mylsp.util.UserManager
 import com.example.mylsp.viewmodel.APL01ViewModel
 import com.example.mylsp.viewmodel.APL02ViewModel
@@ -78,6 +79,8 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
     val apl01ViewModel: APL01ViewModel = viewModel(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(LocalContext.current.applicationContext as Application)
     )
+
+    val assessmentManager = AssessmentManager(context)
 
     NavHost(
         navController = navController,
@@ -160,8 +163,9 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             DetailAssesment(
                 userManager = userManager,
                 idAssessment = id.toInt(),
-                onClickKerjakan = { idSkema ->
-                    navController.navigate(Screen.Apl02.createRoute(idSkema))
+                onClickKerjakan = { assessment ->
+                    navController.navigate(Screen.Apl02.createRoute(assessment.skema_id))
+                    assessmentManager.saveAssessmentId(assessment.id)
                 },
                 apL01ViewModel = apl01ViewModel,
                 assessmentViewModel = assessmentViewModel
