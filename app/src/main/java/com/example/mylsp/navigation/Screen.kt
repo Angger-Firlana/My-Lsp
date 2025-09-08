@@ -30,9 +30,27 @@ sealed class Screen(val route: String) {
     data object Ia03: Screen("ia03")
     data object Ia06a: Screen("ia06a")
     data object Ia06c: Screen("ia06c")
+    data object WaitingAK01:Screen("waiting_ak01/{formId}/{asesiName}"){
+        fun createRoute(formId: Int, asesiName: String = "Apdal Ezhar Rahma Pangestu"): String {
+            return "waiting_ak01/$formId/$asesiName"
+        }
+    }
+
+
+
+    object PDFViewer {
+        const val route = "pdf_viewer/{pdfType}/{title}"
+
+        fun createRoute(pdfType: String, title: String = "Dokumen PDF"): String {
+            return "pdf_viewer/$pdfType/$title"
+        }
+    }
 
     data object WaitingApproval: Screen("waiting_approval/{route}/{status}"){
         fun createRoute(status: String, form: String) = "waiting_approval/$form/$status"
+    }
+    data object WaitingApprovalAlternative: Screen("waiting_approval_alternative/{route}/{status}"){
+        fun createRoute(status: String, form: String) = "waiting_approval_alternative/$form/$status"
     }
     data object AssessmentList: Screen("assessmentList")
 

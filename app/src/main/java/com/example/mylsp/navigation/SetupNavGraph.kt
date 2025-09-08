@@ -10,8 +10,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.mylsp.screen.BarcodeScreen
 import com.example.mylsp.screen.CongratsScreen
 import com.example.mylsp.screen.ProfileScreen
@@ -24,6 +26,7 @@ import com.example.mylsp.screen.asesor.FRAK01
 import com.example.mylsp.screen.asesi.FRAK04
 import com.example.mylsp.screen.asesor.FRAK05
 import com.example.mylsp.screen.asesi.FRIA06A
+import com.example.mylsp.screen.asesi.WaitingAK01Screen
 import com.example.mylsp.screen.asesor.ApprovedUnapprovedScreen
 import com.example.mylsp.screen.asesor.DashboardAsesor
 import com.example.mylsp.screen.asesor.DetailEvent
@@ -190,7 +193,51 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
                 id = id.toInt(),
                 apL02ViewModel = apL02ViewModel,
                 nextForm = {
-                    navController.navigate(Screen.WaitingApproval.createRoute("accepted", "Apl02"))
+                    navController.navigate(Screen.WaitingAK01.createRoute(formId = 1, asesiName = "Afdhal Ezhar Pangestu"))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.WaitingAK01.route,
+            arguments = listOf(
+                navArgument("formId") {
+                    type = NavType.IntType
+                    defaultValue = 1
+                },
+                navArgument("asesiName") {
+                    type = NavType.StringType
+                    defaultValue = "John Doe"
+                }
+            )
+        ) {
+            showTopBar(false)
+            showBottomBar(false)
+
+            val formId = it.arguments?.getInt("formId") ?: 1
+            val asesiName = it.arguments?.getString("asesiName") ?: "John Doe"
+
+            WaitingAK01Screen(
+                modifier = Modifier,
+                formId = formId,
+                asesiName = asesiName,
+                onNextStep = {
+                    // Lanjut ke form berikutnya (misal AK02, AK03, dll)
+                    navController.navigate(Screen.Ak04.route) {
+                        popUpTo(Screen.WaitingAK01.route) { inclusive = true }
+                    }
+                },
+                onBackToForm = {
+                    // Kembali ke form AK01 untuk edit
+                    navController.navigate(Screen.Apl02.createRoute(1)) {
+                        popUpTo(Screen.WaitingAK01.route) { inclusive = true }
+                    }
+                },
+                onBackToDashboard = {
+                    // Kembali ke dashboard utama
+                    navController.navigate(Screen.Main.route) {
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                    }
                 }
             )
         }

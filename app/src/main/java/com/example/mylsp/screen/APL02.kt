@@ -35,6 +35,7 @@ fun APL02(
     val apl02 by apL02ViewModel.apl02.collectAsState()
     val message by apL02ViewModel.message.collectAsState()
     val state by apL02ViewModel.state.collectAsState()
+    var isSubmitted by remember {mutableStateOf(false)}
 
     LaunchedEffect(Unit) {
         apL02ViewModel.getAPL02(id)
