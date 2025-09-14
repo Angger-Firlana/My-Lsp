@@ -62,6 +62,7 @@ fun DetailAssesment(
     val listAssessment by assessmentViewModel.listAssessment.collectAsState()
     val asesi by apL01ViewModel.formData.collectAsState()
 
+
     LaunchedEffect(Unit) {
         assessmentViewModel.getListAssesment()
         apL01ViewModel.fetchFormApl01Status()

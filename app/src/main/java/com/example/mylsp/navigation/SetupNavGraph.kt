@@ -26,6 +26,7 @@ import com.example.mylsp.screen.asesor.FRAK01
 import com.example.mylsp.screen.asesi.FRAK04
 import com.example.mylsp.screen.asesor.FRAK05
 import com.example.mylsp.screen.asesi.FRIA06A
+import com.example.mylsp.screen.asesi.ListFormScreen
 import com.example.mylsp.screen.asesi.WaitingAK01Screen
 import com.example.mylsp.screen.asesor.ApprovedUnapprovedScreen
 import com.example.mylsp.screen.asesor.DashboardAsesor
@@ -125,6 +126,22 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
                 }
             )
         }
+
+        composable(Screen.ListFormScreen.createRoute(1)){
+            showTopBar(false)
+            showBottomBar(false)
+            ListFormScreen(
+                navigateToForm = {
+                    if (it == Screen.AssessmentList.route){
+                        navController.navigate(it){
+                            popUpTo(Screen.ListFormScreen.route){inclusive = true}
+                        }
+                    }else{
+                        navController.navigate(it)
+                    }
+                }
+            )
+        }
         composable(Screen.Ia06a.route){
             FRIA06A(navController = navController)
         }
@@ -164,7 +181,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
                 userManager = userManager,
                 idAssessment = id.toInt(),
                 onClickKerjakan = { assessment ->
-                    navController.navigate(Screen.Apl02.createRoute(assessment.skema_id))
+                    navController.navigate(Screen.ListFormScreen.createRoute(assessment.id))
                     assessmentManager.saveAssessmentId(assessment.id)
                 },
                 apL01ViewModel = apl01ViewModel,

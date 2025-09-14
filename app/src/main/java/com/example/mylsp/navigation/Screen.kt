@@ -12,6 +12,9 @@ sealed class Screen(val route: String) {
     data object DetailAssesment: Screen("detail_assessment/{id}"){
         fun createRoute(id: Int) = "detail_assessment/$id"
     }
+    data object ListFormScreen: Screen("list_form/{id}"){
+        fun createRoute(id:Int) = "list_form/$id"
+    }
     data object Apl01: Screen("apl_01")
     data object Apl02: Screen("apl02/{id}"){
         fun createRoute(id: Int) = "apl02/$id"
