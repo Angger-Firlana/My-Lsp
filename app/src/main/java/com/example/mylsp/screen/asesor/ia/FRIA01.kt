@@ -1,5 +1,6 @@
 package com.example.mylsp.screen.asesor.ia
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,24 +42,32 @@ import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.component.LoadingScreen
 import com.example.mylsp.model.api.assesment.Apl02
 import com.example.mylsp.model.api.assesment.ElemenAPL02
+import com.example.mylsp.model.api.assesment.IA01Request
 import com.example.mylsp.model.api.assesment.KriteriaUntukKerja
 import com.example.mylsp.model.api.assesment.UnitApl02
 import com.example.mylsp.util.AppFont
+import com.example.mylsp.util.assesment.AssesmentAsesiManager
+import com.example.mylsp.util.assesment.IA01SubmissionManager
 import com.example.mylsp.util.assesment.JawabanManager
 import com.example.mylsp.viewmodel.APL02ViewModel
 import com.example.mylsp.viewmodel.AssesmentViewModel
+import com.example.mylsp.viewmodel.assesment.IA01ViewModel
 
 @Composable
 fun FRIA01(
     modifier: Modifier = Modifier,
     idAssesment: Int,
     assesmentViewModel: AssesmentViewModel,
+    ia01ViewModel: IA01ViewModel,
     apL02ViewModel: APL02ViewModel,
     nextForm: ()-> Unit
 ) {
     val assesment by assesmentViewModel.listAssessment.collectAsState()
     val context = LocalContext.current
-    val jawabanManager = remember { JawabanManager() }
+
+    val assesmentAsesiManager = AssesmentAsesiManager(context)
+    val assesmentAsesiId by remember { mutableStateOf(assesmentAsesiManager.getAssesmentId()) }
+    val iA01SubmissionManager = remember { IA01SubmissionManager(context) }
     val apl02 by apL02ViewModel.apl02.collectAsState()
     val message by apL02ViewModel.message.collectAsState()
     val pilihan = listOf("IYA", "TIDAK")
@@ -98,11 +107,18 @@ fun FRIA01(
                 UnitsSection(
                     units = apl02Data.data,
                     pilihan = pilihan,
-                    jawabanManager = jawabanManager
+
+                    iA01SubmissionManager = iA01SubmissionManager,
+                    assesmentAsesiId = assesmentAsesiId
                 )
 
 
-                SubmitButtonIa01(nextForm)
+                SubmitButtonIa01(
+                    ia01ViewModel,
+                    assesmentAsesiId,
+                    iA01SubmissionManager,
+                    nextForm
+                )
             }
         }?: kotlin.run {
             LoadingScreen()
@@ -193,18 +209,19 @@ private fun InstructionsCard() {
         }
     }
 }
-
 @Composable
 private fun UnitsSection(
     units: List<UnitApl02>?,
     pilihan: List<String>,
-    jawabanManager: JawabanManager
+    iA01SubmissionManager: IA01SubmissionManager,
+    assesmentAsesiId: Int
 ) {
     units?.forEach { unit ->
         UnitCard(
             unit = unit,
             pilihan = pilihan,
-            jawabanManager = jawabanManager
+            iA01SubmissionManager = iA01SubmissionManager,
+            assesmentAsesiId = assesmentAsesiId
         )
     }
 }
@@ -213,7 +230,8 @@ private fun UnitsSection(
 private fun UnitCard(
     unit: UnitApl02,
     pilihan: List<String>,
-    jawabanManager: JawabanManager
+    iA01SubmissionManager: IA01SubmissionManager,
+    assesmentAsesiId: Int
 ) {
     Column(
         modifier = Modifier
@@ -247,7 +265,7 @@ private fun UnitCard(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Penilaian",
+            text = "Observasi Aktivitas",
             fontFamily = AppFont.Poppins,
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
@@ -260,7 +278,10 @@ private fun UnitCard(
                 elemen = elemen,
                 index = index,
                 pilihan = pilihan,
-                jawabanManager = jawabanManager
+                iA01SubmissionManager = iA01SubmissionManager,
+                assesmentAsesiId = assesmentAsesiId,
+                kodeUnit = unit.kode_unit,
+                unitKe = unit.unit_ke
             )
         }
     }
@@ -271,7 +292,10 @@ private fun ElementCard(
     elemen: ElemenAPL02,
     index: String,
     pilihan: List<String>,
-    jawabanManager: JawabanManager
+    iA01SubmissionManager: IA01SubmissionManager,
+    assesmentAsesiId: Int,
+    kodeUnit: String,
+    unitKe: Int
 ) {
     Card(
         modifier = Modifier
@@ -313,7 +337,10 @@ private fun ElementCard(
                     kukItem = kukItem,
                     elemenIndex = elemen.elemen_index,
                     pilihan = pilihan,
-                    jawabanManager = jawabanManager
+                    assesmentAsesiId = assesmentAsesiId,
+                    kodeUnit = kodeUnit,
+                    unitKe = unitKe,
+                    submissionManager = iA01SubmissionManager
                 )
             }
         }
@@ -325,10 +352,24 @@ private fun KUKItem(
     kukItem: KriteriaUntukKerja,
     elemenIndex: Int,
     pilihan: List<String>,
-    jawabanManager: JawabanManager
+    assesmentAsesiId: Int,
+    kodeUnit: String,
+    unitKe: Int,
+    submissionManager: IA01SubmissionManager
 ) {
-    var selectedOption by remember { mutableStateOf("") }
-    var textFieldValue by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+    // Ambil jawaban KUK yang sudah tersimpan
+    val savedKuk = submissionManager.getKUKAnswer(
+        assesmentAsesiId = assesmentAsesiId,
+        unitKe = unitKe,
+        kodeUnit = kodeUnit,
+        elemenId = elemenIndex,
+        kukId = kukItem.id_kuk
+    )
+
+    var selectedOption by remember { mutableStateOf(savedKuk?.hasil_observasi ?: "") }
+    var textFieldValue by remember { mutableStateOf(savedKuk?.catatan_asesor ?: "") }
 
     Column(
         modifier = Modifier.padding(vertical = 8.dp)
@@ -342,7 +383,7 @@ private fun KUKItem(
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        // Radio Buttons
+        // Radio Buttons untuk hasil observasi
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -355,6 +396,16 @@ private fun KUKItem(
                         selected = option == selectedOption,
                         onClick = {
                             selectedOption = option
+                            // Simpan hasil observasi IA01
+                            submissionManager.saveIA01Answer(
+                                assesmentAsesiId = assesmentAsesiId,
+                                unitKe = unitKe,
+                                kodeUnit = kodeUnit,
+                                elemenId = elemenIndex,
+                                kukId = kukItem.id_kuk,
+                                hasilObservasi = option,
+                                catatanAsesor = textFieldValue
+                            )
                         }
                     )
                     Text(
@@ -370,92 +421,79 @@ private fun KUKItem(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Text Field for additional notes
+        // Text Field untuk catatan asesor
         OutlinedTextField(
             value = textFieldValue,
-            onValueChange = { textFieldValue = it },
+            onValueChange = {
+                textFieldValue = it
+                // Simpan catatan asesor
+                submissionManager.saveIA01Answer(
+                    assesmentAsesiId = assesmentAsesiId,
+                    unitKe = unitKe,
+                    kodeUnit = kodeUnit,
+                    elemenId = elemenIndex,
+                    kukId = kukItem.id_kuk,
+                    hasilObservasi = selectedOption,
+                    catatanAsesor = it
+                )
+            },
             label = {
                 Text(
-                    "Penilaian Lanjut",
+                    "Catatan Asesor",
                     fontFamily = AppFont.Poppins,
                     fontSize = 12.sp
                 )
             },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp)
-        )
-    }
-}
-
-@Composable
-private fun EvidenceSection(
-    elemenIndex: Int,
-    jawabanManager: JawabanManager
-) {
-    val buktiRelevans = listOf(
-        "Fotocopy semester 1-5",
-        "Sertifikat PKL",
-        "Portofolio",
-        "Sertifikat pelatihan"
-    )
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp)
-    ) {
-        Text(
-            text = "Bukti Relevan",
-            fontFamily = AppFont.Poppins,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 14.sp,
-            color = Color.Black,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        buktiRelevans.forEach { bukti ->
-            var checked by remember { mutableStateOf(false) }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        checked = !checked
-                        if (checked) {
-                        } else {
-                        }
-                    }
-                    .padding(vertical = 4.dp)
-            ) {
-                Checkbox(
-                    checked = checked,
-                    onCheckedChange = { isChecked ->
-                        checked = isChecked
-                        if (isChecked) {
-                        } else {
-                        }
-                    }
-                )
-                Spacer(modifier = Modifier.width(8.dp))
+            placeholder = {
                 Text(
-                    text = bukti,
+                    "Tulis catatan observasi...",
                     fontFamily = AppFont.Poppins,
                     fontSize = 12.sp,
-                    color = Color.Black
+                    color = Color.Gray
                 )
-            }
-        }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(8.dp),
+            minLines = 2
+        )
     }
 }
 
 @Composable
 private fun SubmitButtonIa01(
+    ia01ViewModel: IA01ViewModel,
+    assesmentAsesiId: Int,
+    iA01SubmissionManager: IA01SubmissionManager,
     nextForm: ()-> Unit
 ) {
+    val context = LocalContext.current
+    val ia01Submission = iA01SubmissionManager.getAllSubmissions(assesmentAsesiId)
+    val state by ia01ViewModel.state.collectAsState()
+    val message by ia01ViewModel.message.collectAsState()
+
+    LaunchedEffect(state) {
+        state?.let { success ->
+            if (success){
+                nextForm()
+            }else{
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+
+        }
+    }
     Button(
         onClick = {
-            nextForm()
+            if (ia01Submission.isNotEmpty()){
+                ia01ViewModel.SendSubmissionIA01(
+                    IA01Request(
+                        skema_id = 1,
+                        assesment_asesi_id = assesmentAsesiId,
+                        submissions = ia01Submission
+                    )
+                )
+            }else{
+                Toast.makeText(context, "Anda belum menjawab semua pertanyaan", Toast.LENGTH_SHORT).show()
+            }
         },
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier

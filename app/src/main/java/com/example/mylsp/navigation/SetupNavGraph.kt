@@ -50,6 +50,7 @@ import com.example.mylsp.viewmodel.AsesiViewModel
 import com.example.mylsp.viewmodel.AssesmentViewModel
 import com.example.mylsp.viewmodel.SkemaViewModel
 import com.example.mylsp.viewmodel.UserViewModel
+import com.example.mylsp.viewmodel.assesment.IA01ViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -78,6 +79,9 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
 
     val apl01ViewModel: APL01ViewModel = viewModel(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(LocalContext.current.applicationContext as Application)
+    )
+    val iA01ViewModel:IA01ViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
     )
 
     val assessmentManager = AssessmentManager(context)
@@ -157,6 +161,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             AssesmentListScreen(
                 modifier = Modifier,
                 assesmentViewModel = assessmentViewModel,
+                apL01ViewModel = apl01ViewModel,
                 navigateToWaitingScreen = {
                     navController.navigate(Screen.WaitingApproval.createRoute(status, Screen.AssessmentList.route)){
                         popUpTo(navController.graph.startDestinationId){
@@ -168,10 +173,9 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
                     if(role == "assesi"){
                         navController.navigate(Screen.DetailAssesment.createRoute(id))
                     }else if (role == "assesor"){
-                        navController.navigate(Screen.DetailEvent.route)
+                        navController.navigate(Screen.DetailAssesment.createRoute(id))
                     }
-                },
-                status = ""
+                }
             )
         }
         composable(Screen.DetailAssesment.route) {
@@ -300,8 +304,10 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             FRIA01(
                 idAssesment = id.toInt(),
                 apL02ViewModel = apL02ViewModel,
+                assesmentViewModel = assessmentViewModel,
+                ia01ViewModel= iA01ViewModel,
                 nextForm = {
-                    navController.navigate(Screen.Ak01.createRoute("assesor"))
+                    navController.popBackStack()
                 }
             )
         }

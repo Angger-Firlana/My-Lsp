@@ -97,7 +97,7 @@ interface APIService {
     ):Response<AK01SubmissionResponse>
 
     @POST("assesment/formia01")
-    suspend fun sendSubmissionIa01(
+    suspend fun postSubmissionIa01(
         @Header("Accept") accept: String = "application/json",
         @Body submissionRequest: IA01Request
     ):Response<IA01Response>
