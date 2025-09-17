@@ -1,18 +1,17 @@
 package com.example.mylsp.api
 
-import com.example.mylsp.model.api.AK01SubmissionResponse
-import com.example.mylsp.model.api.Apl02
+import com.example.mylsp.model.api.assesment.AK01SubmissionResponse
+import com.example.mylsp.model.api.assesment.Apl02
 import com.example.mylsp.model.api.Asesi
-import com.example.mylsp.model.api.AsesiRequest
-import com.example.mylsp.model.api.AssessmentResponse
+import com.example.mylsp.model.api.assesment.AssessmentResponse
 import com.example.mylsp.model.api.CreateAsesiResponse
-import com.example.mylsp.model.api.FormApl01Response
-import com.example.mylsp.model.api.Jurusan
+import com.example.mylsp.model.api.assesment.IA01Request
+import com.example.mylsp.model.api.assesment.IA01Response
 import com.example.mylsp.model.api.JurusanResponse
-import com.example.mylsp.model.api.LoginRequest
-import com.example.mylsp.model.api.LoginResponse
-import com.example.mylsp.model.api.RegisterRequest
-import com.example.mylsp.model.api.RegisterResponse
+import com.example.mylsp.model.api.auth.LoginRequest
+import com.example.mylsp.model.api.auth.LoginResponse
+import com.example.mylsp.model.api.auth.RegisterRequest
+import com.example.mylsp.model.api.auth.RegisterResponse
 import com.example.mylsp.model.api.ResponseSubmission
 import com.example.mylsp.model.api.Skemas
 import com.example.mylsp.model.api.SubmissionGroup
@@ -81,6 +80,9 @@ interface APIService {
     @GET("apl02/{id}")
     suspend fun getAPL02(@Path("id") id: Int): Response<Apl02>
 
+    @POST("assesment-asesi")
+    suspend fun postAssesmentAsesi()
+
     @POST("assesment/formapl02")
     suspend fun sendSubmission(
         @Header("Accept") accept: String = "application/json",
@@ -93,6 +95,12 @@ interface APIService {
         @Part("assesment_asesi_id") assessmentAsesiId: Int ,
         @Part attachments: List<MultipartBody.Part>
     ):Response<AK01SubmissionResponse>
+
+    @POST("assesment/formia01")
+    suspend fun sendSubmissionIa01(
+        @Header("Accept") accept: String = "application/json",
+        @Body submissionRequest: IA01Request
+    ):Response<IA01Response>
 
     //getApl01
     @GET("apl01ByUser/{id}")
@@ -109,4 +117,5 @@ interface APIService {
     //Skema
     @GET("schema")
     suspend fun getListSkema():Response<Skemas>
+
 }

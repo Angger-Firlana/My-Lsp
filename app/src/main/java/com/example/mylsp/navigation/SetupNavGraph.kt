@@ -2,7 +2,6 @@ package com.example.mylsp.navigation
 
 import android.app.Application
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,29 +21,29 @@ import com.example.mylsp.screen.asesi.AsesiBarcodeScanner
 import com.example.mylsp.screen.asesi.AsesiFormScreen
 import com.example.mylsp.screen.asesi.DetailAssesment
 import com.example.mylsp.screen.asesi.FRAK03
-import com.example.mylsp.screen.asesor.FRAK01
+import com.example.mylsp.screen.asesor.ak.FRAK01
 import com.example.mylsp.screen.asesi.FRAK04
-import com.example.mylsp.screen.asesor.FRAK05
+import com.example.mylsp.screen.asesor.ak.FRAK05
 import com.example.mylsp.screen.asesi.FRIA06A
 import com.example.mylsp.screen.asesi.ListFormScreen
 import com.example.mylsp.screen.asesi.WaitingAK01Screen
-import com.example.mylsp.screen.asesor.ApprovedUnapprovedScreen
+import com.example.mylsp.screen.asesor.approve.ApprovedUnapprovedScreen
 import com.example.mylsp.screen.asesor.DashboardAsesor
-import com.example.mylsp.screen.asesor.DetailEvent
-import com.example.mylsp.screen.asesor.Events
-import com.example.mylsp.screen.asesor.FRIA01
+import com.example.mylsp.screen.asesor.event.DetailEvent
+import com.example.mylsp.screen.asesor.event.Events
+import com.example.mylsp.screen.asesor.ia.FRIA01
 import com.example.mylsp.screen.asesor.KelengkapanDataAsesor
 import com.example.mylsp.screen.asesor.AssesmentListScreen
-import com.example.mylsp.screen.asesor.FRAK02
-import com.example.mylsp.screen.asesor.FRIA02
-import com.example.mylsp.screen.asesor.FRIA03
-import com.example.mylsp.screen.asesor.FRIA06C
+import com.example.mylsp.screen.asesor.ak.FRAK02
+import com.example.mylsp.screen.asesor.ia.FRIA02
+import com.example.mylsp.screen.asesor.ia.FRIA03
+import com.example.mylsp.screen.asesor.ia.FRIA06C
 import com.example.mylsp.screen.auth.LoginScreen
 import com.example.mylsp.screen.auth.RegisterScreen
 import com.example.mylsp.screen.main.MainScreen
 import com.example.mylsp.screen.main.WaitingApprovalScreen
-import com.example.mylsp.util.AssessmentManager
-import com.example.mylsp.util.UserManager
+import com.example.mylsp.util.assesment.AssessmentManager
+import com.example.mylsp.util.user.UserManager
 import com.example.mylsp.viewmodel.APL01ViewModel
 import com.example.mylsp.viewmodel.APL02ViewModel
 import com.example.mylsp.viewmodel.AsesiViewModel
@@ -299,7 +298,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             showBottomBar(false)
             val id = it.arguments?.getString("id")?: "0"
             FRIA01(
-                idSkema = id.toInt(),
+                idAssesment = id.toInt(),
                 apL02ViewModel = apL02ViewModel,
                 nextForm = {
                     navController.navigate(Screen.Ak01.createRoute("assesor"))

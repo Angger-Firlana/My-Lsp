@@ -1,10 +1,9 @@
 package com.example.mylsp.api
 
 import android.content.Context
-import com.example.mylsp.util.TokenManager
+import com.example.mylsp.util.user.TokenManager
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

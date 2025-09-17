@@ -35,7 +35,7 @@ import com.example.mylsp.component.ScannerConfig
 import com.example.mylsp.component.ScannerDefaults
 import com.example.mylsp.component.ScannerOverlay
 import com.example.mylsp.component.ScannerTheme
-import com.example.mylsp.util.BarcodeAnalyzer
+import com.example.mylsp.util.barcode.BarcodeAnalyzer
 import kotlinx.coroutines.delay
 
 @Composable

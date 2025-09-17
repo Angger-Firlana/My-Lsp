@@ -1,7 +1,6 @@
 package com.example.mylsp.screen.auth
 
 import android.app.Application
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -19,16 +18,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.example.mylsp.R
 import com.example.mylsp.component.LoadingScreen
-import com.example.mylsp.model.api.LoginRequest
-import com.example.mylsp.repository.AuthRepository
+import com.example.mylsp.model.api.auth.LoginRequest
 import com.example.mylsp.util.AppFont
-import com.example.mylsp.util.UserManager
+import com.example.mylsp.util.user.UserManager
 import com.example.mylsp.viewmodel.AuthViewModel
 import com.example.mylsp.viewmodel.UserViewModel
 import kotlinx.coroutines.delay
@@ -159,7 +155,8 @@ fun LoginScreen(
                         LoginRequest(
                             input = username,
                             password = password
-                    ))
+                    )
+                    )
                 },
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()

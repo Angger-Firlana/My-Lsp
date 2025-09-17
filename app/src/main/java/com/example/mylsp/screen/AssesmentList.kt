@@ -54,9 +54,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mylsp.model.api.Assessment
+import com.example.mylsp.model.api.assesment.Assessment
 import com.example.mylsp.util.AppFont
-import com.example.mylsp.util.UserManager
+import com.example.mylsp.util.user.UserManager
 import com.example.mylsp.viewmodel.AssesmentViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

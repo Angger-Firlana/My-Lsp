@@ -18,9 +18,11 @@ import androidx.compose.ui.unit.sp
 import com.example.mylsp.component.ErrorCard
 import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.component.LoadingScreen
-import com.example.mylsp.model.api.*
+import com.example.mylsp.model.api.assesment.Apl02
+import com.example.mylsp.model.api.assesment.ElemenAPL02
+import com.example.mylsp.model.api.assesment.UnitApl02
 import com.example.mylsp.util.AppFont
-import com.example.mylsp.util.JawabanManager
+import com.example.mylsp.util.assesment.JawabanManager
 import com.example.mylsp.viewmodel.APL02ViewModel
 
 @Composable

@@ -1,6 +1,5 @@
 package com.example.mylsp.screen
 
-import android.media.session.MediaSession.Token
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -50,7 +49,6 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -62,8 +60,8 @@ import com.example.mylsp.component.LoadingScreen
 import com.example.mylsp.model.api.UserDetail
 import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
-import com.example.mylsp.util.TokenManager
-import com.example.mylsp.util.UserManager
+import com.example.mylsp.util.user.TokenManager
+import com.example.mylsp.util.user.UserManager
 import kotlinx.coroutines.delay
 
 @Composable

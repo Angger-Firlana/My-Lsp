@@ -25,7 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.mylsp.component.BottomPillNav
 import com.example.mylsp.component.TopAppBar
 import com.example.mylsp.screen.main.ItemBar
-import com.example.mylsp.util.UserManager
+import com.example.mylsp.util.user.UserManager
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

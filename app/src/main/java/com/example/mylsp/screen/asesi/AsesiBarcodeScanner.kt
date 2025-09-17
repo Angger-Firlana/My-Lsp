@@ -15,11 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mylsp.component.HeaderForm
-import com.example.mylsp.component.LoadingScreen
 import com.example.mylsp.screen.BarcodeScannerScreen
 import com.example.mylsp.util.AppFont
-import com.example.mylsp.util.RequestCameraPermission
-import kotlinx.coroutines.launch
+import com.example.mylsp.util.camera.RequestCameraPermission
 
 @Composable
 fun AsesiBarcodeScanner(modifier: Modifier = Modifier, navController: NavController) {
