@@ -222,7 +222,7 @@ fun ProfileScreen(modifier: Modifier, navController: NavController) {
 
 
                 val actions = listOf(
-                    ItemProfile("Data Diri Anda (APL01)",Icons.Default.ExitToApp, Color(0xFFF44336), "apl_01"),
+                    ItemProfile("Data Diri Anda (APL01)",Icons.Default.ExitToApp, Color(0xFFF44336), Screen.Apl01.route),
                     ItemProfile("Edit Profil", Icons.Default.Edit, Color(0xFF4CAF50), "editProfil"),
                     ItemProfile("Setelan",Icons.Default.Settings, Color(0xFF2196F3), "setting"),
                     ItemProfile("Bantuan dan Support", Icons.Default.Help, Color(0xFFFF9800), "helpSupport"),
@@ -231,55 +231,109 @@ fun ProfileScreen(modifier: Modifier, navController: NavController) {
                 )
 
                 actions.forEach { (title, icon, color, route) ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.surface,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .clickable {
-                                when (route) {
-                                    "logout" -> {
-                                        showLogout = true
-                                    }
+                    if (userManager.getUserRole() == "assesor"){
+                        if (route != Screen.Apl01.route){
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                                    .background(
+                                        color = MaterialTheme.colorScheme.surface,
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                                    .clickable {
+                                        when (route) {
+                                            "logout" -> {
+                                                showLogout = true
+                                            }
 
-                                    else -> navController.navigate(route)
+                                            else -> navController.navigate(route)
+                                        }
+                                    }
+                                    .padding(16.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = title,
+                                        tint = color,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+
+                                    Spacer(modifier = Modifier.width(16.dp))
+
+                                    Text(
+                                        text = title,
+                                        fontFamily = AppFont.Poppins,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 16.sp,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier.weight(1f)
+                                    )
+
+                                    Icon(
+                                        imageVector = Icons.Default.ChevronRight,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                                        modifier = Modifier.size(20.dp)
+                                    )
                                 }
                             }
-                            .padding(16.dp)
-                    ) {
+                        }
 
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
+                    }else{
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.surface,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .clickable {
+                                    when (route) {
+                                        "logout" -> {
+                                            showLogout = true
+                                        }
+
+                                        else -> navController.navigate(route)
+                                    }
+                                }
+                                .padding(16.dp)
                         ) {
-                            Icon(
-                                imageVector = icon,
-                                contentDescription = title,
-                                tint = color,
-                                modifier = Modifier.size(24.dp)
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = title,
+                                    tint = color,
+                                    modifier = Modifier.size(24.dp)
+                                )
 
-                            Spacer(modifier = Modifier.width(16.dp))
+                                Spacer(modifier = Modifier.width(16.dp))
 
-                            Text(
-                                text = title,
-                                fontFamily = AppFont.Poppins,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.weight(1f)
-                            )
+                                Text(
+                                    text = title,
+                                    fontFamily = AppFont.Poppins,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.weight(1f)
+                                )
 
-                            Icon(
-                                imageVector = Icons.Default.ChevronRight,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-                                modifier = Modifier.size(20.dp)
-                            )
+                                Icon(
+                                    imageVector = Icons.Default.ChevronRight,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
                         }
                     }
+
                 }
             }
 

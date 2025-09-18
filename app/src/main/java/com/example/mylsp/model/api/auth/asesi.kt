@@ -1,5 +1,6 @@
 package com.example.mylsp.model.api
 
+import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
@@ -26,7 +27,25 @@ data class Asesi(
     val fax_kantor: String?,
     val email_kantor: String?,
     val status:String,
-    val user: UserDetail
+    val user: UserDetail,
+    val attachments: List<Attachment>?
+)
+
+data class Attachment(
+    val id: Int,
+    @SerializedName("form_apl01_id")
+    val formApl01Id: Int,
+    @SerializedName("nama_dokumen")
+    val namaDokumen: String,
+    @SerializedName("file_path")
+    val filePath: String,
+    val description: String,
+    @SerializedName("created_at")
+    val createdAt: String,
+    @SerializedName("updated_at")
+    val updatedAt: String,
+    @SerializedName("view_url")
+    val viewUrl: String
 )
 
 data class AsesiRequest(

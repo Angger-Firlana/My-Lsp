@@ -4,6 +4,10 @@ import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModelProvider
@@ -13,6 +17,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.mylsp.model.api.Asesi
 import com.example.mylsp.screen.BarcodeScreen
 import com.example.mylsp.screen.CongratsScreen
 import com.example.mylsp.screen.ProfileScreen
@@ -50,6 +55,7 @@ import com.example.mylsp.viewmodel.AsesiViewModel
 import com.example.mylsp.viewmodel.AssesmentViewModel
 import com.example.mylsp.viewmodel.SkemaViewModel
 import com.example.mylsp.viewmodel.UserViewModel
+import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
 import com.example.mylsp.viewmodel.assesment.IA01ViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -57,7 +63,13 @@ import com.example.mylsp.viewmodel.assesment.IA01ViewModel
 fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: NavHostController, startDestination: String, showBottomBar: (Boolean) -> Unit, showTopBar: (Boolean) -> Unit) {
     val context = LocalContext.current
 
+    var currentAsesiInAssesorCheck by remember { mutableStateOf<Asesi?>(null) }
+
     val skemaViewModel: SkemaViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
+    )
+
+    val assesmentAsesiViewModel: AssesmentAsesiViewModel = viewModel(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
     )
 
@@ -173,7 +185,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
                     if(role == "assesi"){
                         navController.navigate(Screen.DetailAssesment.createRoute(id))
                     }else if (role == "assesor"){
-                        navController.navigate(Screen.DetailAssesment.createRoute(id))
+                        navController.navigate(Screen.DetailEvent.createRoute(id))
                     }
                 }
             )
@@ -215,6 +227,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             val id = it.arguments?.getString("id")?: "0"
             APL02(
                 id = id.toInt(),
+                userManager = userManager,
                 apL02ViewModel = apL02ViewModel,
                 nextForm = {
                     navController.navigate(Screen.WaitingAK01.createRoute(formId = 1, asesiName = "Afdhal Ezhar Pangestu"))
@@ -380,14 +393,18 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         composable(Screen.ApprovedUnapproved.route) {
             showTopBar(false)
             showBottomBar(false)
-            ApprovedUnapprovedScreen(
-                modifier = Modifier,
-                // Bisa ambil userName dari UserManager atau parameter lain
-                userName = userManager.getUserName() ?: "User",
-                navigateToForm = {
-                    navController.navigate(it)
-                }
-            )
+            currentAsesiInAssesorCheck?.let { asesi ->
+                ApprovedUnapprovedScreen(
+                    modifier = Modifier,
+                    // Bisa ambil userName dari UserManager atau parameter lain
+                    asesi = asesi,
+                    assesmentAsesiId = 1,
+                    navigateToForm = {
+                        navController.navigate(it)
+                    }
+                )
+            }
+
         }
 
         // Tambahkan juga route untuk form-form yang belum ada composable
@@ -424,9 +441,14 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             BarcodeScreen(text = "*&KJDHASD&^#!DASDHDAS")
         }
         composable(Screen.DetailEvent.route) {
+            val id = it.arguments?.getString("id")?: "0"
             DetailEvent(
-                idAssesment = 1,
-                onDetailAssessi = {
+                idAssesment = id.toInt(),
+                userManager = userManager,
+                assessmentViewModel = assessmentViewModel,
+                assesmentAsesiViewModel = assesmentAsesiViewModel,
+                onDetailAssessi = { idAssesmentAsesi, asesi ->
+                    currentAsesiInAssesorCheck = asesi
                     navController.navigate(Screen.ApprovedUnapproved.route)
                 }
             )

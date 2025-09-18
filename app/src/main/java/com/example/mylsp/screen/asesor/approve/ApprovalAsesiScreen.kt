@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mylsp.model.api.Asesi
 import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
 
@@ -32,8 +33,9 @@ data class ApprovalItem(
 
 @Composable
 fun ApprovedUnapprovedScreen(
-    userName: String = "Afdhal Ezhar Rahma Pangestu",
     modifier: Modifier = Modifier,
+    asesi:Asesi,
+    assesmentAsesiId:Int,
     navigateToForm: (String) -> Unit
 ) {
     // Gradient full-bleed
@@ -75,7 +77,7 @@ fun ApprovedUnapprovedScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = userName,
+                text = asesi.nama_lengkap?:"Asesi",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = AppFont.Poppins,

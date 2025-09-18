@@ -1,5 +1,6 @@
 package com.example.mylsp.screen
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -23,12 +24,14 @@ import com.example.mylsp.model.api.assesment.ElemenAPL02
 import com.example.mylsp.model.api.assesment.UnitApl02
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.assesment.JawabanManager
+import com.example.mylsp.util.user.UserManager
 import com.example.mylsp.viewmodel.APL02ViewModel
 
 @Composable
 fun APL02(
     modifier: Modifier = Modifier,
     id: Int,
+    userManager: UserManager,
     apL02ViewModel: APL02ViewModel,
     nextForm: () -> Unit
 ) {
@@ -69,7 +72,13 @@ fun APL02(
                 SchemaSection(data)
                 InstructionCard()
                 UnitsSection(id, data, jawabanManager)
-                SubmitButton(apL02ViewModel, nextForm, titleButton = "Kirim Jawaban")
+                if (userManager.getUserRole() == "assesi"){
+                    SubmitButton(apL02ViewModel, nextForm, titleButton = "Kirim Jawaban")
+
+                }else{
+                    SubmitButton(apL02ViewModel, nextForm, titleButton = "Setuju", buttonUnApproved = "Tidak Setuju")
+
+                }
                 if (message.isNotEmpty()){
                     ErrorCard(
                         errorMessage = message,
@@ -431,9 +440,9 @@ private fun SubmitButton(apL02ViewModel: APL02ViewModel, nextForm: () -> Unit, t
     Button(
         onClick = {
             if(buttonUnApproved != null){
-                // val jawaban = com.example.mylsp.util.Util.jawabanApl02.value
-                // apL02ViewModel.sendApl02()
-                // Log.d("APL02", "Jawaban: $jawaban")
+                 val jawaban = com.example.mylsp.util.Util.jawabanApl02.value
+                 apL02ViewModel.sendApl02()
+                 Log.d("APL02", "Jawaban: $jawaban")
             }
              nextForm()
 
@@ -460,10 +469,13 @@ private fun SubmitButton(apL02ViewModel: APL02ViewModel, nextForm: () -> Unit, t
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(vertical = 16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Red
+            )
         ) {
             Text(
-                text = titleButton,
+                text = buttonUnApproved,
                 fontFamily = AppFont.Poppins
             )
         }

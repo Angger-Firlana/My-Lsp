@@ -2,6 +2,7 @@ package com.example.mylsp.screen.asesor
 
 import android.os.Build
 import android.util.Log
+import android.widget.Space
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Button
@@ -62,6 +64,7 @@ import androidx.compose.ui.unit.sp
 import com.example.mylsp.model.api.assesment.Assessment
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.assesment.AssesmentAsesiManager
+import com.example.mylsp.util.user.AsesiManager
 import com.example.mylsp.util.user.UserManager
 import com.example.mylsp.viewmodel.APL01ViewModel
 import com.example.mylsp.viewmodel.AssesmentViewModel
@@ -79,6 +82,7 @@ fun AssesmentListScreen(
     navigateToAssesment: (String, Int) -> Unit
 ) {
     val context = LocalContext.current
+    val asesiManager = AsesiManager(context)
     val assesmentAsesiManager = AssesmentAsesiManager(context)
     val asesi by apL01ViewModel.formData.collectAsState()
     val loading by apL01ViewModel.loading.collectAsState()
@@ -103,252 +107,415 @@ fun AssesmentListScreen(
         color = MaterialTheme.colorScheme.background
     ) {
         // Validasi null untuk asesi
-        if(loading == true) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+        if (userManager.getUserRole() == "assesor"){
+            // Main content ketika asesi tersedia dan status valid
+            Box(modifier = Modifier.fillMaxSize()) {
+                // Rounded Header with Tertiary Color
+                Card(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .height(280.dp)
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary
+                    ),
+                    elevation = CardDefaults.cardElevation(6.dp)
                 ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(48.dp),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "Memuat data...",
-                        fontFamily = AppFont.Poppins,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        } else {
-            asesi?.let { asesi ->
-                if(asesi.status == "pending" || asesi.status == ""){
-                    navigateToWaitingScreen()
-                } else {
-                    // Main content ketika asesi tersedia dan status valid
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        // Rounded Header with Tertiary Color
-                        Card(
-                            modifier = Modifier
-                                .align(Alignment.TopCenter)
-                                .height(280.dp)
-                                .fillMaxWidth(),
-                            shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.tertiary
-                            ),
-                            elevation = CardDefaults.cardElevation(6.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .statusBarsPadding()
-                                    .padding(20.dp)
-                            ) {
-                                Column {
-                                    // Title section - more compact
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .statusBarsPadding()
+                            .padding(20.dp)
+                    ) {
+                        Column {
+                            // Title section - more compact
+                            Text(
+                                text = "Event Terjadwal",
+                                fontFamily = AppFont.Poppins,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 24.sp,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+
+                            Text(
+                                text = "Pilih event yang ingin Anda ikuti",
+                                fontFamily = AppFont.Poppins,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Simplified Search Bar
+                            OutlinedTextField(
+                                value = search,
+                                onValueChange = { search = it },
+                                modifier = Modifier.fillMaxWidth(),
+                                placeholder = {
                                     Text(
-                                        text = "Event Terjadwal",
-                                        fontFamily = AppFont.Poppins,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 24.sp,
-                                        color = MaterialTheme.colorScheme.onPrimary
+                                        "Cari event...",
+                                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
+                                        fontSize = 14.sp
                                     )
-
-                                    Text(
-                                        text = "Pilih event yang ingin Anda ikuti",
-                                        fontFamily = AppFont.Poppins,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 14.sp,
-                                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
-                                        modifier = Modifier.padding(top = 4.dp)
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Search,
+                                        contentDescription = "Search",
+                                        tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                                        modifier = Modifier.size(20.dp)
                                     )
-
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    // Simplified Search Bar
-                                    OutlinedTextField(
-                                        value = search,
-                                        onValueChange = { search = it },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        placeholder = {
-                                            Text(
-                                                "Cari event...",
-                                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
-                                                fontSize = 14.sp
-                                            )
-                                        },
-                                        leadingIcon = {
+                                },
+                                trailingIcon = {
+                                    Box {
+                                        IconButton(onClick = { expanded = true }) {
                                             Icon(
-                                                Icons.Default.Search,
-                                                contentDescription = "Search",
-                                                tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                                                Icons.Default.FilterList,
+                                                contentDescription = "Filter",
+                                                tint = if (selectedFilter != "Semua Event")
+                                                    MaterialTheme.colorScheme.onPrimary else
+                                                    MaterialTheme.colorScheme.onPrimary.copy(
+                                                        alpha = 0.7f
+                                                    ),
                                                 modifier = Modifier.size(20.dp)
                                             )
-                                        },
-                                        trailingIcon = {
-                                            Box {
-                                                IconButton(onClick = { expanded = true }) {
-                                                    Icon(
-                                                        Icons.Default.FilterList,
-                                                        contentDescription = "Filter",
-                                                        tint = if (selectedFilter != "Semua Event")
-                                                            MaterialTheme.colorScheme.onPrimary else
-                                                            MaterialTheme.colorScheme.onPrimary.copy(
-                                                                alpha = 0.7f
-                                                            ),
-                                                        modifier = Modifier.size(20.dp)
-                                                    )
-                                                }
+                                        }
 
-                                                DropdownMenu(
-                                                    expanded = expanded,
-                                                    onDismissRequest = { expanded = false }
-                                                ) {
-                                                    filterOptions.forEach { option ->
-                                                        DropdownMenuItem(
-                                                            text = {
-                                                                Text(
-                                                                    option,
-                                                                    fontSize = 14.sp,
-                                                                    fontFamily = AppFont.Poppins
-                                                                )
-                                                            },
-                                                            onClick = {
-                                                                selectedFilter = option
-                                                                expanded = false
-                                                            }
+                                        DropdownMenu(
+                                            expanded = expanded,
+                                            onDismissRequest = { expanded = false }
+                                        ) {
+                                            filterOptions.forEach { option ->
+                                                DropdownMenuItem(
+                                                    text = {
+                                                        Text(
+                                                            option,
+                                                            fontSize = 14.sp,
+                                                            fontFamily = AppFont.Poppins
                                                         )
+                                                    },
+                                                    onClick = {
+                                                        selectedFilter = option
+                                                        expanded = false
                                                     }
-                                                }
+                                                )
                                             }
-                                        },
-                                        colors = OutlinedTextFieldDefaults.colors(
-                                            focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
-                                            unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(
-                                                alpha = 0.7f
-                                            ),
-                                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                                            cursorColor = MaterialTheme.colorScheme.primary,
-                                            focusedContainerColor = Color.White,
-                                            unfocusedContainerColor = Color.White.copy(alpha = 0.95f)
-                                        ),
-                                        shape = RoundedCornerShape(12.dp),
-                                        singleLine = true
-                                    )
-
-                                    // Compact filter indicator
-                                    if (selectedFilter != "Semua Event") {
-                                        Text(
-                                            text = "• $selectedFilter",
-                                            fontFamily = AppFont.Poppins,
-                                            fontSize = 11.sp,
-                                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
-                                            modifier = Modifier.padding(top = 4.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        // Event List
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 16.dp),
-                            contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                                top = 200.dp,
-                                bottom = 20.dp
-                            ),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            items(assesments.size) {
-                                val assesment = assesments[it]
-                                AssessmentCard(
-                                    assessment = assesment,
-                                    onCardClick = {
-                                        val role = userManager.getUserRole()
-                                        if (role != null) {
-                                            navigateToAssesment(role, assesment.id)
-                                        } else {
-                                            Toast.makeText(
-                                                context,
-                                                "Terjadi kesalahan silahkan coba lagi",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
                                         }
                                     }
+                                },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(
+                                        alpha = 0.7f
+                                    ),
+                                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                    cursorColor = MaterialTheme.colorScheme.primary,
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White.copy(alpha = 0.95f)
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true
+                            )
+
+                            // Compact filter indicator
+                            if (selectedFilter != "Semua Event") {
+                                Text(
+                                    text = "• $selectedFilter",
+                                    fontFamily = AppFont.Poppins,
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
+                                    modifier = Modifier.padding(top = 4.dp)
                                 )
                             }
                         }
                     }
                 }
-            } ?: run {
-                // Tampilan jika asesi null (belum mengisi APL01 atau profil)
+
+                // Event List
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                        top = 200.dp,
+                        bottom = 20.dp
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(assesments.size) {
+                        val assesment = assesments[it]
+                        AssessmentCard(
+                            assessment = assesment,
+                            onCardClick = {
+                                val role = userManager.getUserRole()
+                                if (role != null) {
+                                    navigateToAssesment(role, assesment.id)
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Terjadi kesalahan silahkan coba lagi",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+        }else{
+            if(loading == true) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(24.dp)
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Person,
-                            contentDescription = "Lengkapi Profil",
-                            modifier = Modifier.size(64.dp),
-                            tint = MaterialTheme.colorScheme.primary
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(48.dp),
+                            color = MaterialTheme.colorScheme.primary
                         )
-
                         Spacer(modifier = Modifier.height(16.dp))
-
                         Text(
-                            text = "Lengkapi Profil Terlebih Dahulu",
-                            fontFamily = AppFont.Poppins,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = "Silakan lengkapi profil dan isi formulir APL01 sebelum mengikuti event asesmen",
+                            text = "Memuat data...",
                             fontFamily = AppFont.Poppins,
                             fontSize = 14.sp,
-                            textAlign = TextAlign.Center,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                    }
+                }
+            } else {
+                asesi?.let { asesi ->
+                    if(asesi.status == "pending" || asesi.status == ""){
+                        navigateToWaitingScreen()
+                    } else {
+                        asesiManager.saveAsesi(asesi)
+                        // Main content ketika asesi tersedia dan status valid
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            // Rounded Header with Tertiary Color
+                            Card(
+                                modifier = Modifier
+                                    .align(Alignment.TopCenter)
+                                    .height(280.dp)
+                                    .fillMaxWidth(),
+                                shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.tertiary
+                                ),
+                                elevation = CardDefaults.cardElevation(6.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .statusBarsPadding()
+                                        .padding(20.dp)
+                                ) {
+                                    Column {
+                                        // Title section - more compact
+                                        Text(
+                                            text = "Event Terjadwal",
+                                            fontFamily = AppFont.Poppins,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 24.sp,
+                                            color = MaterialTheme.colorScheme.onPrimary
+                                        )
 
-                        Spacer(modifier = Modifier.height(24.dp))
+                                        Text(
+                                            text = "Pilih event yang ingin Anda ikuti",
+                                            fontFamily = AppFont.Poppins,
+                                            fontWeight = FontWeight.Normal,
+                                            fontSize = 14.sp,
+                                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
+                                            modifier = Modifier.padding(top = 4.dp)
+                                        )
 
-                        Button(
-                            onClick = {
-                                // Navigasi ke halaman pengisian APL01 atau profil
-                                // Anda perlu menambahkan fungsi navigasi yang sesuai
-                            },
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            )
+                                        Spacer(modifier = Modifier.height(16.dp))
+
+                                        // Simplified Search Bar
+                                        OutlinedTextField(
+                                            value = search,
+                                            onValueChange = { search = it },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            placeholder = {
+                                                Text(
+                                                    "Cari event...",
+                                                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
+                                                    fontSize = 14.sp
+                                                )
+                                            },
+                                            leadingIcon = {
+                                                Icon(
+                                                    Icons.Default.Search,
+                                                    contentDescription = "Search",
+                                                    tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
+                                                    modifier = Modifier.size(20.dp)
+                                                )
+                                            },
+                                            trailingIcon = {
+                                                Box {
+                                                    IconButton(onClick = { expanded = true }) {
+                                                        Icon(
+                                                            Icons.Default.FilterList,
+                                                            contentDescription = "Filter",
+                                                            tint = if (selectedFilter != "Semua Event")
+                                                                MaterialTheme.colorScheme.onPrimary else
+                                                                MaterialTheme.colorScheme.onPrimary.copy(
+                                                                    alpha = 0.7f
+                                                                ),
+                                                            modifier = Modifier.size(20.dp)
+                                                        )
+                                                    }
+
+                                                    DropdownMenu(
+                                                        expanded = expanded,
+                                                        onDismissRequest = { expanded = false }
+                                                    ) {
+                                                        filterOptions.forEach { option ->
+                                                            DropdownMenuItem(
+                                                                text = {
+                                                                    Text(
+                                                                        option,
+                                                                        fontSize = 14.sp,
+                                                                        fontFamily = AppFont.Poppins
+                                                                    )
+                                                                },
+                                                                onClick = {
+                                                                    selectedFilter = option
+                                                                    expanded = false
+                                                                }
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            colors = OutlinedTextFieldDefaults.colors(
+                                                focusedBorderColor = MaterialTheme.colorScheme.onPrimary,
+                                                unfocusedBorderColor = MaterialTheme.colorScheme.onPrimary.copy(
+                                                    alpha = 0.7f
+                                                ),
+                                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                                cursorColor = MaterialTheme.colorScheme.primary,
+                                                focusedContainerColor = Color.White,
+                                                unfocusedContainerColor = Color.White.copy(alpha = 0.95f)
+                                            ),
+                                            shape = RoundedCornerShape(12.dp),
+                                            singleLine = true
+                                        )
+
+                                        // Compact filter indicator
+                                        if (selectedFilter != "Semua Event") {
+                                            Text(
+                                                text = "• $selectedFilter",
+                                                fontFamily = AppFont.Poppins,
+                                                fontSize = 11.sp,
+                                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
+                                                modifier = Modifier.padding(top = 4.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Event List
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 16.dp),
+                                contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                                    top = 200.dp,
+                                    bottom = 20.dp
+                                ),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                items(assesments.size) {
+                                    val assesment = assesments[it]
+                                    AssessmentCard(
+                                        assessment = assesment,
+                                        onCardClick = {
+                                            val role = userManager.getUserRole()
+                                            if (role != null) {
+                                                navigateToAssesment(role, assesment.id)
+                                            } else {
+                                                Toast.makeText(
+                                                    context,
+                                                    "Terjadi kesalahan silahkan coba lagi",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                } ?: run {
+                    // Tampilan jika asesi null (belum mengisi APL01 atau profil)
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(24.dp)
                         ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Person,
+                                contentDescription = "Lengkapi Profil",
+                                modifier = Modifier.size(64.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
                             Text(
-                                text = "Lengkapi Profil Sekarang",
+                                text = "Lengkapi Profil Terlebih Dahulu",
+                                fontFamily = AppFont.Poppins,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                textAlign = TextAlign.Center,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = "Silakan lengkapi profil dan isi formulir APL01 sebelum mengikuti event asesmen",
                                 fontFamily = AppFont.Poppins,
                                 fontSize = 14.sp,
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                                textAlign = TextAlign.Center,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            Button(
+                                onClick = {
+                                    // Navigasi ke halaman pengisian APL01 atau profil
+                                    // Anda perlu menambahkan fungsi navigasi yang sesuai
+                                },
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                )
+                            ) {
+                                Text(
+                                    text = "Lengkapi Profil Sekarang",
+                                    fontFamily = AppFont.Poppins,
+                                    fontSize = 14.sp,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                                )
+                            }
                         }
                     }
                 }
             }
         }
+
     }
 }
 
@@ -361,13 +528,9 @@ fun AssessmentCard(
 ) {
     val judulSkema = assessment.schema.judul_skema
     val tanggalAssesment = assessment.tanggal_assesment
+    val assesor = assessment.assesor
     val nomorSkema = assessment.schema.nomor_skema
     val jurusanId = assessment.schema.jurusan_id
-
-    // contoh placeholder (kalau nanti backend nambah field, tinggal ganti)
-    val totalUnits = 10
-    val totalElements = 20
-    val totalKuk = 30
 
     val dateSkema = LocalDate.parse(tanggalAssesment)
     val tanggalSkema = dateSkema.format(
@@ -426,6 +589,15 @@ fun AssessmentCard(
                     EventDetailRow(
                         icon = Icons.Default.LocationOn,
                         text = tempatAssesment,
+                        iconTint = MaterialTheme.colorScheme.tertiary,
+                        fontSize = 13.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    EventDetailRow(
+                        icon = Icons.Default.Person,
+                        text = assesor.nama_lengkap,
                         iconTint = MaterialTheme.colorScheme.tertiary,
                         fontSize = 13.sp
                     )

@@ -16,6 +16,9 @@ import com.example.mylsp.model.api.ResponseSubmission
 import com.example.mylsp.model.api.Skemas
 import com.example.mylsp.model.api.SubmissionGroup
 import com.example.mylsp.model.api.User
+import com.example.mylsp.model.api.asesi.AssesmentAsesiResponse
+import com.example.mylsp.model.api.asesi.PostAssesmentAsesiReq
+import com.example.mylsp.model.api.asesi.PostAssesmentAsesiResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -81,7 +84,13 @@ interface APIService {
     suspend fun getAPL02(@Path("id") id: Int): Response<Apl02>
 
     @POST("assesment-asesi")
-    suspend fun postAssesmentAsesi()
+    suspend fun postAssesmentAsesi(
+        @Header("Accept") accept: String = "application/json",
+        @Body request: PostAssesmentAsesiReq
+    ):Response<PostAssesmentAsesiResponse>
+
+    @GET("assesment-asesi/assesor/{id}")
+    suspend fun getAssesmentAsesiByAssesment(@Path("id") id: Int): Response<AssesmentAsesiResponse>
 
     @POST("assesment/formapl02")
     suspend fun sendSubmission(

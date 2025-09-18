@@ -16,6 +16,9 @@ import androidx.compose.material.icons.filled.DonutLarge
 import androidx.compose.material.icons.filled.PeopleOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,7 +36,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mylsp.R
+import com.example.mylsp.model.api.Asesi
+import com.example.mylsp.model.api.asesi.AssesmentAsesi
 import com.example.mylsp.util.AppFont
+import com.example.mylsp.util.user.UserManager
+import com.example.mylsp.viewmodel.AssesmentViewModel
+import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
 
 data class Participant(
     val name: String,
@@ -54,104 +62,95 @@ enum class ParticipantStatus {
 @Composable
 fun DetailEvent(
     modifier: Modifier = Modifier,
+    userManager: UserManager,
+    assessmentViewModel: AssesmentViewModel,
+    assesmentAsesiViewModel: AssesmentAsesiViewModel,
     idAssesment: Int,
-    onDetailAssessi: (Int) -> Unit
+    onDetailAssessi: (Int, Asesi) -> Unit
 ) {
-    val participants = listOf(
-        Participant(
-            "Ashlan Usfar Rahmi", "12345", "08.07", "",
-            "FR APL 02", ParticipantStatus.PENDING, 0.4f
-        ),
-        Participant(
-            "Anggita Priscilla", "12346", "08.07", "12.01",
-            "FR APL 03", ParticipantStatus.COMPLETED, 0.9f
-        ),
-        Participant(
-            "Arya Satya Armand Rai", "12347", "08.07", "",
-            "FR APL 01", ParticipantStatus.ACTIVE, 0.0f
-        ),
-        Participant(
-            "Azka Shafila Akbad", "12348", "08.07", "",
-            "FR APL 02", ParticipantStatus.PENDING, 0.6f
-        ),
-        Participant(
-            "Raffi Khairulna", "12349", "08.07", "",
-            "FR APL 01", ParticipantStatus.PENDING, 0.3f
-        ),
-        Participant(
-            "Muhammad Rizkianussh", "12350", "08.07", "",
-            "FR APL 02", ParticipantStatus.ACTIVE, 0.7f
-        )
-    )
-
     val gradientColors = listOf(
         Color(0xFFFE9C54), // Orange terang (FE9C54 dari color stops)
         Color(0xFFFFFFFF), // Orange medium
     )
+    val listAssessment by assessmentViewModel.listAssessment.collectAsState()
+    val listAsesi by assesmentAsesiViewModel.listAsesi.collectAsState()
+    LaunchedEffect(Unit) {
+        assessmentViewModel.getListAssesment()
+        assesmentAsesiViewModel.getListAsesiByAssesment(idAssesment)
+    }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = gradientColors
-                )
-            )
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            HeaderSection(
-                title = "Prof. Arul Maulido Singo, M.kom.",
-                subTitle = "K3 RPL"
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Text(
-                "USK RPL - Pemrograman Dasar",
-                fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.background,
-                fontFamily = AppFont.Poppins,
-                fontWeight = FontWeight.Bold,
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            StatsSection()
-
-            Spacer(modifier = Modifier.height(10.dp))
-
+    if (listAssessment.isNotEmpty()){
+        val assesment = listAssessment.find { it.id == idAssesment }
+        assesment?.let {
             Box(
                 modifier = Modifier
-                    .background(color = Color.Gray)
-                    .width(400.dp)
-                    .height(3.dp)
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp),
-                contentAlignment = Alignment.CenterStart
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = gradientColors
+                        )
+                    )
             ) {
-                Text(
-                    "Asesi",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = AppFont.Poppins,
-                    color = Color(0xFF085A70)
-                )
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    HeaderSection(
+                        title = userManager.getUserName()?: "",
+                        subTitle = "K3 RPL"
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(
+                        assesment.schema.judul_skema,
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.background,
+                        fontFamily = AppFont.Poppins,
+                        fontWeight = FontWeight.Bold,
+                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    StatsSection()
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .background(color = Color.Gray)
+                            .width(400.dp)
+                            .height(3.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        Text(
+                            "Asesi",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = AppFont.Poppins,
+                            color = Color(0xFF085A70)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    ParticipantsList(participants = listAsesi, onClick = { id, asesi -> onDetailAssessi(id, asesi)})
+                }
             }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            ParticipantsList(participants = participants, onClick = {onDetailAssessi(it)})
         }
     }
+
+
+
+
 }
 
 @Composable
@@ -288,7 +287,7 @@ fun StatCard(
 }
 
 @Composable
-fun ParticipantsList(participants: List<Participant>, onClick: (Int) -> Unit) {
+fun ParticipantsList(participants: List<AssesmentAsesi>, onClick: (Int, Asesi) -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -299,7 +298,7 @@ fun ParticipantsList(participants: List<Participant>, onClick: (Int) -> Unit) {
             ParticipantCard(
                 participant = participant,
                 onClick = {
-                   onClick(1)
+                   onClick(participant.id, participant.asesi)
                 }
             )
 
@@ -308,16 +307,11 @@ fun ParticipantsList(participants: List<Participant>, onClick: (Int) -> Unit) {
 }
 
 @Composable
-fun ParticipantCard(participant: Participant, onClick: () -> Unit) {
-    val (statusText, statusColor) = when (participant.status) {
-        ParticipantStatus.COMPLETED -> "Selesai" to Color(0xFF4CAF50) // Hijau
-        ParticipantStatus.ACTIVE -> "Sedang Ujian" to Color(0xFF2196F3) // Biru
-        ParticipantStatus.PENDING -> "Belum Mulai" to Color(0xFF707070) // Abu-abu
-    }
+fun ParticipantCard(participant: AssesmentAsesi, onClick: (Int) -> Unit) {
 
     Card(
         onClick = {
-            onClick()
+            onClick(participant.id)
         },
         modifier = Modifier
             .fillMaxWidth()
@@ -340,14 +334,14 @@ fun ParticipantCard(participant: Participant, onClick: () -> Unit) {
             ) {
                 Column {
                     Text(
-                        text = participant.name,
+                        text = participant.asesi.nama_lengkap?: "Nama Asesi",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black,
                         fontFamily = AppFont.Poppins
                     )
                     Text(
-                        text = "NIS: ${participant.nis}",
+                        text = "NIK: ${participant.asesi.no_ktp}",
                         fontSize = 12.sp,
                         color = Color.Gray,
                         fontFamily = AppFont.Poppins
@@ -358,13 +352,13 @@ fun ParticipantCard(participant: Participant, onClick: () -> Unit) {
                 Box(
                     modifier = Modifier
                         .background(
-                            color = statusColor,
+                            color = Color.Green,
                             shape = RoundedCornerShape(50)
                         )
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
-                        text = statusText,
+                        text = "Sedangkan Mengerjakan",
                         fontSize = 10.sp,
                         color = Color.White,
                         fontFamily = AppFont.Poppins
@@ -381,15 +375,15 @@ fun ParticipantCard(participant: Participant, onClick: () -> Unit) {
             ) {
                 Column {
                     Text("Waktu mulai", fontSize = 10.sp, color = Color.Gray, fontFamily = AppFont.Poppins)
-                    Text(participant.startedAt, fontSize = 12.sp, color = Color.Black, fontFamily = AppFont.Poppins)
+                    Text("", fontSize = 12.sp, color = Color.Black, fontFamily = AppFont.Poppins)
                 }
                 Column {
                     Text("Waktu selesai", fontSize = 10.sp, color = Color.Gray, fontFamily = AppFont.Poppins)
-                    Text(participant.endAt, fontSize = 12.sp, color = Color.Black, fontFamily = AppFont.Poppins)
+                    Text("", fontSize = 12.sp, color = Color.Black, fontFamily = AppFont.Poppins)
                 }
                 Column {
                     Text("Bagian saat ini", fontSize = 10.sp, color = Color.Gray, fontFamily = AppFont.Poppins)
-                    Text(participant.part, fontSize = 12.sp, color = Color.Black, fontFamily = AppFont.Poppins)
+                    Text("", fontSize = 12.sp, color = Color.Black, fontFamily = AppFont.Poppins)
                 }
             }
 
@@ -402,7 +396,7 @@ fun ParticipantCard(participant: Participant, onClick: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 LinearProgressIndicator(
-                    progress = { participant.progress },
+                    progress = { 100f },
                     modifier = Modifier
                         .weight(1f)
                         .height(8.dp)
@@ -412,7 +406,7 @@ fun ParticipantCard(participant: Participant, onClick: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "${(participant.progress * 100).toInt()}%",
+                    text = "${(100f * 100).toInt()}%",
                     fontSize = 12.sp,
                     color = Color.Black,
                     fontFamily = AppFont.Poppins
