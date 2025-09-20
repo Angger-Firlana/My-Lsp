@@ -4,3 +4,4 @@ data class AssesmentAsesi(
     val assesment_id: Int,
     val asesi_id: Int
 )
+

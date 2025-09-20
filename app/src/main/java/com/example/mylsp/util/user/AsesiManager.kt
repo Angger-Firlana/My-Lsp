@@ -1,9 +1,10 @@
 package com.example.mylsp.util.user
 
 import android.content.Context
+import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import com.example.mylsp.model.api.Asesi
+import com.example.mylsp.model.api.Apl01
 import com.google.gson.Gson
 
 class AsesiManager(context: Context) {
@@ -18,25 +19,35 @@ class AsesiManager(context: Context) {
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
-    private fun getKey(asesiId: Int) = "asesi_$asesiId"
-
-    fun saveAsesi(asesi: Asesi) {
-        val json = gson.toJson(asesi)
-        sharedPrefs.edit().putString(getKey(asesi.id), json).apply()
+    fun setId(asesiId: Int){
+        sharedPrefs.edit {
+            putInt("asesi_id", asesiId)
+        }
     }
 
-    fun getAsesi(asesiId: Int): Asesi? {
+    fun getId():Int{
+        return sharedPrefs.getInt("asesi_id", 0)
+    }
+
+    private fun getKey(asesiId: Int) = "asesi_$asesiId"
+
+    fun saveAsesi(apl01: Apl01, asesiId: Int) {
+        val json = gson.toJson(apl01)
+        sharedPrefs.edit { putString(getKey(asesiId), json) }
+    }
+
+    fun getAsesi(asesiId: Int): Apl01? {
         val json = sharedPrefs.getString(getKey(asesiId), null)
-        return if (json != null) gson.fromJson(json, Asesi::class.java) else null
+        return if (json != null) gson.fromJson(json, Apl01::class.java) else null
     }
 
     fun deleteAsesi(asesiId: Int) {
         sharedPrefs.edit().remove(getKey(asesiId)).apply()
     }
 
-    fun getAllAsesi(): List<Asesi> {
+    fun getAllAsesi(): List<Apl01> {
         return sharedPrefs.all.mapNotNull { (_, value) ->
-            (value as? String)?.let { gson.fromJson(it, Asesi::class.java) }
+            (value as? String)?.let { gson.fromJson(it, Apl01::class.java) }
         }
     }
 }

@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mylsp.model.api.Asesi
+import com.example.mylsp.model.api.Apl01
 import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
 
@@ -34,7 +34,7 @@ data class ApprovalItem(
 @Composable
 fun ApprovedUnapprovedScreen(
     modifier: Modifier = Modifier,
-    asesi:Asesi,
+    apl01:Apl01,
     assesmentAsesiId:Int,
     navigateToForm: (String) -> Unit
 ) {
@@ -77,7 +77,7 @@ fun ApprovedUnapprovedScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = asesi.nama_lengkap?:"Asesi",
+                text = apl01.nama_lengkap?:"Asesi",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = AppFont.Poppins,

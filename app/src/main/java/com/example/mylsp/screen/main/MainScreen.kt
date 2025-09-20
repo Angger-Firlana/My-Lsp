@@ -1,5 +1,6 @@
 package com.example.mylsp.screen.main
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.NavigateNext
 import androidx.compose.material.icons.filled.ViewList
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,6 +26,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +45,10 @@ import androidx.navigation.NavController
 import com.example.mylsp.R
 import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
+import com.example.mylsp.util.user.AsesiManager
+import com.example.mylsp.util.user.UserManager
+import com.example.mylsp.viewmodel.AsesiViewModel
+import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
 
 data class ItemBar(
     val icon: ImageVector,
@@ -54,8 +62,17 @@ data class ItemBanner(
 )
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun MainScreen(
+    modifier: Modifier = Modifier,
+    asesiViewModel: AsesiViewModel,
+    assesmentAsesiViewModel: AssesmentAsesiViewModel,
+    navController: NavController
+) {
     val context = LocalContext.current
+    val asesi by asesiViewModel.asesi.collectAsState()
+    val asesiManager = AsesiManager(context)
+    val userManager = UserManager(context)
+
 
     val banners = listOf(
         ItemBanner(R.drawable.banner1, "Selamat Datang Di MyLsp"),
@@ -64,7 +81,13 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavController) {
     )
     val pagerState = rememberPagerState { banners.size }
     var currentBanner by remember { mutableStateOf(0) }
+    val assesmentAsesi by assesmentAsesiViewModel.assesmentAsesi.collectAsState()
 
+    LaunchedEffect(Unit) {
+        asesiViewModel.getDataAsesiByUser(userManager.getUserId()?.toInt()?:"0".toInt())
+        assesmentAsesiViewModel.getAssesmentAsesiByAsesi(asesi?.id?:0)
+        Log.d("test", asesiManager.getId().toString())
+    }
     Box(Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -121,27 +144,53 @@ fun MainScreen(modifier: Modifier = Modifier, navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = { navController.navigate(Screen.AssessmentList.route) },
-                shape = MaterialTheme.shapes.large,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                elevation = ButtonDefaults.buttonElevation(4.dp),
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ViewList, // ganti icon sesuai kebutuhan
-                    contentDescription = "List Skema",
-                    modifier = Modifier.padding(end = 8.dp)
-                )
-                Text(
-                    "List Skema",
-                    fontFamily = AppFont.Poppins,
-                    fontSize = 16.sp
-                )
+            if(assesmentAsesi == null){
+                Button(
+                    onClick = { navController.navigate(Screen.AssessmentList.route) },
+                    shape = MaterialTheme.shapes.large,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(4.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ViewList, // ganti icon sesuai kebutuhan
+                        contentDescription = "List Assesment",
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Text(
+                        "List Skema",
+                        fontFamily = AppFont.Poppins,
+                        fontSize = 16.sp
+                    )
+                }
+            }else{
+                Button(
+                    onClick = { navController.navigate(Screen.ListFormScreen.route) },
+                    shape = MaterialTheme.shapes.large,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onTertiary
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(4.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.NavigateNext, // ganti icon sesuai kebutuhan
+                        contentDescription = "List Assesment",
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Text(
+                        "Lanjutkan Assesment",
+                        fontFamily = AppFont.Poppins,
+                        fontSize = 16.sp
+                    )
+                }
             }
+
+
 
         }
     }

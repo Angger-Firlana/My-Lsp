@@ -2,8 +2,9 @@ package com.example.mylsp.repository.auth
 
 import android.content.Context
 import com.example.mylsp.api.APIClient
-import com.example.mylsp.model.api.Asesi
+import com.example.mylsp.model.api.Apl01
 import com.example.mylsp.model.api.AsesiRequest
+import com.example.mylsp.model.api.AsesiResponse
 import com.example.mylsp.model.api.CreateAsesiResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -61,9 +62,9 @@ class AsesiRepository(context: Context) {
         }
     }
 
-    suspend fun getDataAsesi():Result<Asesi>{
+    suspend fun getDataAsesis():Result<AsesiResponse>{
         return try {
-            val response = api.getDataAsesi()
+            val response = api.getAssesis()
             if (response.isSuccessful){
                 val body = response.body()
                 if (body != null){
@@ -80,7 +81,7 @@ class AsesiRepository(context: Context) {
         }
     }
 
-    suspend fun getApl01ByUser(id:Int):Result<Asesi>{
+    suspend fun getApl01ByUser(id:Int):Result<Apl01>{
         return try {
             val response = api.getApl01ByUser(id)
             if (response.isSuccessful) {

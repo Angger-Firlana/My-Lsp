@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
-import com.example.mylsp.model.api.Asesi
+import com.example.mylsp.model.api.Apl01
 import com.example.mylsp.repository.assesment.APL01Repository
 import com.example.mylsp.util.user.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +16,7 @@ class APL01ViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = APL01Repository(application)
 
-    private val _formData = MutableStateFlow<Asesi?>(null)
+    private val _formData = MutableStateFlow<Apl01?>(null)
     val formData = _formData.asStateFlow()
 
     private val _message = MutableStateFlow("")

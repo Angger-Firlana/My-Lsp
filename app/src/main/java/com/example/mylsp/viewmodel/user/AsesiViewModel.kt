@@ -4,8 +4,10 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mylsp.model.api.Apl01
 import com.example.mylsp.model.api.Asesi
 import com.example.mylsp.model.api.AsesiRequest
+import com.example.mylsp.model.api.AsesiResponse
 import com.example.mylsp.repository.auth.AsesiRepository
 import com.example.mylsp.util.user.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +23,9 @@ class AsesiViewModel(application: Application):AndroidViewModel(application) {
 
     private val _state = MutableStateFlow<Boolean?>(null)
     val state = _state.asStateFlow()
+
+    private val _asesis = MutableStateFlow<List<Asesi>>(emptyList())
+    val asesis = _asesis.asStateFlow()
 
     private val _asesi = MutableStateFlow<Asesi?>(null)
     val asesi = _asesi.asStateFlow()
@@ -42,12 +47,12 @@ class AsesiViewModel(application: Application):AndroidViewModel(application) {
         }
     }
 
-    fun getDataAsesi(){
+    fun getDataAsesis(){
         viewModelScope.launch {
-            val result = repository.getDataAsesi()
+            val result = repository.getDataAsesis()
             result.fold(
                 onSuccess ={ body ->
-                    _asesi.value = body
+                    _asesis.value = body.data
                 },
                 onFailure = { error ->
                     _message.value = error.message?: "Error Unknown"
@@ -56,13 +61,12 @@ class AsesiViewModel(application: Application):AndroidViewModel(application) {
         }
     }
 
-    fun getDataApl01ByUser(){
+    fun getDataAsesiByUser(id:Int){
         viewModelScope.launch {
-            val id = userManager.getUserId()?.toInt()?: 0
-            val result = repository.getApl01ByUser(id)
+            val result = repository.getDataAsesis()
             result.fold(
-                onSuccess = { body ->
-                    _asesi.value = body
+                onSuccess ={ body ->
+                    _asesi.value = body.data.find { it.user_id == id}
                 },
                 onFailure = { error ->
                     _message.value = error.message?: "Error Unknown"

@@ -36,7 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mylsp.R
-import com.example.mylsp.model.api.Asesi
+import com.example.mylsp.model.api.Apl01
 import com.example.mylsp.model.api.asesi.AssesmentAsesi
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.user.UserManager
@@ -66,7 +66,7 @@ fun DetailEvent(
     assessmentViewModel: AssesmentViewModel,
     assesmentAsesiViewModel: AssesmentAsesiViewModel,
     idAssesment: Int,
-    onDetailAssessi: (Int, Asesi) -> Unit
+    onDetailAssessi: (Int, Apl01) -> Unit
 ) {
     val gradientColors = listOf(
         Color(0xFFFE9C54), // Orange terang (FE9C54 dari color stops)
@@ -287,7 +287,7 @@ fun StatCard(
 }
 
 @Composable
-fun ParticipantsList(participants: List<AssesmentAsesi>, onClick: (Int, Asesi) -> Unit) {
+fun ParticipantsList(participants: List<AssesmentAsesi>, onClick: (Int, Apl01) -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -298,7 +298,7 @@ fun ParticipantsList(participants: List<AssesmentAsesi>, onClick: (Int, Asesi) -
             ParticipantCard(
                 participant = participant,
                 onClick = {
-                   onClick(participant.id, participant.asesi)
+                   onClick(participant.id, participant.apl01)
                 }
             )
 
@@ -334,14 +334,14 @@ fun ParticipantCard(participant: AssesmentAsesi, onClick: (Int) -> Unit) {
             ) {
                 Column {
                     Text(
-                        text = participant.asesi.nama_lengkap?: "Nama Asesi",
+                        text = participant.apl01.nama_lengkap?: "Nama Asesi",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black,
                         fontFamily = AppFont.Poppins
                     )
                     Text(
-                        text = "NIK: ${participant.asesi.no_ktp}",
+                        text = "NIK: ${participant.apl01.no_ktp}",
                         fontSize = 12.sp,
                         color = Color.Gray,
                         fontFamily = AppFont.Poppins

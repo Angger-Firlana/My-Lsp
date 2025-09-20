@@ -1,6 +1,6 @@
 package com.example.mylsp.model.api.asesi
 
-import com.example.mylsp.model.api.Asesi
+import com.example.mylsp.model.api.Apl01
 
 data class PostAssesmentAsesiReq(
     val assesment_id: Int,
@@ -19,11 +19,11 @@ data class AssesmentAsesi(
     val assesi_id: Int,
     val created_at: String,
     val updated_at: String,
-    val asesi:Asesi
+    val apl01:Apl01
 )
 
 data class PostAssesmentAsesiResponse(
     val success: Boolean,
     val message: String,
-    val data: AssesmentAsesi
+    val data: AssesmentAsesi? = null
 )

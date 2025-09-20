@@ -2,7 +2,8 @@ package com.example.mylsp.api
 
 import com.example.mylsp.model.api.assesment.AK01SubmissionResponse
 import com.example.mylsp.model.api.assesment.Apl02
-import com.example.mylsp.model.api.Asesi
+import com.example.mylsp.model.api.Apl01
+import com.example.mylsp.model.api.AsesiResponse
 import com.example.mylsp.model.api.assesment.AssessmentResponse
 import com.example.mylsp.model.api.CreateAsesiResponse
 import com.example.mylsp.model.api.assesment.IA01Request
@@ -78,7 +79,7 @@ interface APIService {
     suspend fun getAssesments(): Response<AssessmentResponse>
 
     @GET("approvement/assesment/formapl01/{id}")
-    suspend fun getFormApl01Status(@Path("id") id:Int): Response<Asesi>
+    suspend fun getFormApl01Status(@Path("id") id:Int): Response<Apl01>
 
     @GET("apl02/{id}")
     suspend fun getAPL02(@Path("id") id: Int): Response<Apl02>
@@ -88,6 +89,12 @@ interface APIService {
         @Header("Accept") accept: String = "application/json",
         @Body request: PostAssesmentAsesiReq
     ):Response<PostAssesmentAsesiResponse>
+
+    @GET("assesi")
+    suspend fun getAssesis():Response<AsesiResponse>
+
+    @GET("assesment-asesi/byAsesi/{id}")
+    suspend fun getAssesmentAsesiByAsesi(@Path("id") id: Int): Response<PostAssesmentAsesiResponse>
 
     @GET("assesment-asesi/assesor/{id}")
     suspend fun getAssesmentAsesiByAssesment(@Path("id") id: Int): Response<AssesmentAsesiResponse>
@@ -113,7 +120,7 @@ interface APIService {
 
     //getApl01
     @GET("apl01ByUser/{id}")
-    suspend fun getApl01ByUser(@Path("id") id: Int): Response<Asesi>
+    suspend fun getApl01ByUser(@Path("id") id: Int): Response<Apl01>
 
     //Jurusan
     @GET("jurusan")
@@ -121,7 +128,7 @@ interface APIService {
 
     //Asesi
     @GET("asesi")
-    suspend fun getDataAsesi():Response<Asesi>
+    suspend fun getDataAsesi():Response<Apl01>
 
     //Skema
     @GET("schema")

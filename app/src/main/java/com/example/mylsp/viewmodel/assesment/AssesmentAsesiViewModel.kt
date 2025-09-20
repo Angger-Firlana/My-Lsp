@@ -1,9 +1,9 @@
 package com.example.mylsp.viewmodel.assesment
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mylsp.model.api.Asesi
 import com.example.mylsp.model.api.asesi.AssesmentAsesi
 import com.example.mylsp.model.api.asesi.PostAssesmentAsesiReq
 import com.example.mylsp.repository.assesment.AssesmentAsesiRepository
@@ -17,6 +17,9 @@ class AssesmentAsesiViewModel(application: Application):AndroidViewModel(applica
     private val _listAsesiAssesment = MutableStateFlow<List<AssesmentAsesi>>(emptyList())
     val listAsesi = _listAsesiAssesment.asStateFlow()
 
+    private val _assesmentAsesi = MutableStateFlow<AssesmentAsesi?>(null)
+    val assesmentAsesi = _assesmentAsesi.asStateFlow()
+
     private val _state = MutableStateFlow<Boolean?>(null)
     val state = _state.asStateFlow()
 
@@ -28,6 +31,21 @@ class AssesmentAsesiViewModel(application: Application):AndroidViewModel(applica
                     _listAsesiAssesment.value = it.data
                 },
                 onFailure = {
+
+                }
+            )
+        }
+    }
+
+    fun getAssesmentAsesiByAsesi(asesiId:Int){
+        viewModelScope.launch {
+            val result = repository.getAssesmentAsesiByAsesi(asesiId)
+            result.fold(
+                onSuccess = { response ->
+                    _assesmentAsesi.value = response.data
+                },
+                onFailure = {
+                    Log.e("AssesmentAsesiViewModel", "Error: ${it.message}")
 
                 }
             )
@@ -48,6 +66,7 @@ class AssesmentAsesiViewModel(application: Application):AndroidViewModel(applica
                 },
                 onFailure = {
                     _state.value = false
+                    Log.e("AssesmentAsesiViewModel", "Error: ${it.message}")
                 }
             )
         }

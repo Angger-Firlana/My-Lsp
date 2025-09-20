@@ -21,8 +21,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mylsp.model.api.asesi.AssesmentAsesi
 import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
+import com.example.mylsp.util.user.AsesiManager
 
 
 data class ApprovalItem(
@@ -35,10 +37,12 @@ data class ApprovalItem(
 
 @Composable
 fun ListFormScreen(
-    userName: String = "Afdhal Ezhar Rahma Pangestu",
+    asesiManager: AsesiManager,
     modifier: Modifier = Modifier,
     navigateToForm: (String) -> Unit
 ) {
+
+    val asesi = asesiManager.getAsesi(asesiManager.getId())
     // Gradient full-bleed
     val bgGradient = Brush.verticalGradient(
         colors = listOf(
@@ -78,7 +82,7 @@ fun ListFormScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = userName,
+                text = asesi?.nama_lengkap?: "Asesi",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = AppFont.Poppins,

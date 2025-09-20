@@ -1,5 +1,6 @@
 package com.example.mylsp.screen.asesi
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,11 +31,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,20 +45,33 @@ import com.example.mylsp.model.api.assesment.Assessment
 import com.example.mylsp.util.user.UserManager
 import com.example.mylsp.viewmodel.APL01ViewModel
 import com.example.mylsp.viewmodel.AssesmentViewModel
+import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
 
 @Composable
 fun DetailAssesment(
     modifier: Modifier = Modifier,
     userManager: UserManager,
-    onClickKerjakan: (Assessment) -> Unit,
+    onClickKerjakan: (Int) -> Unit,
     apL01ViewModel: APL01ViewModel,
+    assesmentAsesiViewModel: AssesmentAsesiViewModel,
     assessmentViewModel: AssesmentViewModel,
     idAssessment: Int
 ) {
-
+    val context = LocalContext.current
     val listAssessment by assessmentViewModel.listAssessment.collectAsState()
     val asesi by apL01ViewModel.formData.collectAsState()
+    val stateDaftar by assesmentAsesiViewModel.state.collectAsState()
 
+    LaunchedEffect(stateDaftar) {
+        stateDaftar?.let { success ->
+            if (success){
+                onClickKerjakan(idAssessment)
+            }else{
+                Toast.makeText(context, "Gagal daftar assesment", Toast.LENGTH_SHORT).show()
+            }
+            assesmentAsesiViewModel.clearState()
+        }
+    }
 
     LaunchedEffect(Unit) {
         assessmentViewModel.getListAssesment()
@@ -228,7 +244,10 @@ fun DetailAssesment(
 
                             Button(
                                 onClick = {
-                                    onClickKerjakan(data)
+                                    assesmentAsesiViewModel.daftarAssesment(
+                                        assesmentId = data.id,
+                                        assesiId = asesi?.id?: 0
+                                    )
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()

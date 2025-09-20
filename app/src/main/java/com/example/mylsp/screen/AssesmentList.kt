@@ -67,6 +67,7 @@ import com.example.mylsp.util.assesment.AssesmentAsesiManager
 import com.example.mylsp.util.user.AsesiManager
 import com.example.mylsp.util.user.UserManager
 import com.example.mylsp.viewmodel.APL01ViewModel
+import com.example.mylsp.viewmodel.AsesiViewModel
 import com.example.mylsp.viewmodel.AssesmentViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -76,6 +77,7 @@ import java.util.Locale
 @Composable
 fun AssesmentListScreen(
     modifier: Modifier = Modifier,
+    asesiViewModel: AsesiViewModel,
     assesmentViewModel: AssesmentViewModel,
     apL01ViewModel: APL01ViewModel,
     navigateToWaitingScreen: ()-> Unit,
@@ -85,6 +87,7 @@ fun AssesmentListScreen(
     val asesiManager = AsesiManager(context)
     val assesmentAsesiManager = AssesmentAsesiManager(context)
     val asesi by apL01ViewModel.formData.collectAsState()
+    val assesi by asesiViewModel.asesi.collectAsState()
     val loading by apL01ViewModel.loading.collectAsState()
     val userManager = UserManager(context)
     var search by remember { mutableStateOf("") }
@@ -99,6 +102,7 @@ fun AssesmentListScreen(
         Log.d("User", "")
         assesmentViewModel.getListAssesment()
         apL01ViewModel.fetchFormApl01Status()
+        asesiViewModel.getDataAsesiByUser(userManager.getUserId()?.toInt()?:0)
         assesmentAsesiManager.clear()
     }
 
@@ -293,8 +297,10 @@ fun AssesmentListScreen(
                     if(asesi.status == "pending" || asesi.status == ""){
                         navigateToWaitingScreen()
                     } else {
-                        asesiManager.saveAsesi(asesi)
-                        // Main content ketika asesi tersedia dan status valid
+                        asesiManager.setId(assesi?.id?:0)
+                        Log.d("asesi_id", asesi.id.toString())
+                        asesiManager.saveAsesi(asesi, assesi?.id?:0)
+                        // Main content ke-tika asesi tersedia dan status valid
                         Box(modifier = Modifier.fillMaxSize()) {
                             // Rounded Header with Tertiary Color
                             Card(

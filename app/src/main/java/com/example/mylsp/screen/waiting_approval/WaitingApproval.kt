@@ -1,4 +1,4 @@
-package com.example.mylsp.screen.main
+package com.example.mylsp.screen.waiting_approval
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

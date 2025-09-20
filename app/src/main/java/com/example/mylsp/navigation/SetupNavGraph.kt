@@ -17,7 +17,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.mylsp.model.api.Asesi
+import com.example.mylsp.model.api.Apl01
 import com.example.mylsp.screen.BarcodeScreen
 import com.example.mylsp.screen.CongratsScreen
 import com.example.mylsp.screen.ProfileScreen
@@ -46,8 +46,9 @@ import com.example.mylsp.screen.asesor.ia.FRIA06C
 import com.example.mylsp.screen.auth.LoginScreen
 import com.example.mylsp.screen.auth.RegisterScreen
 import com.example.mylsp.screen.main.MainScreen
-import com.example.mylsp.screen.main.WaitingApprovalScreen
+import com.example.mylsp.screen.waiting_approval.WaitingApprovalScreen
 import com.example.mylsp.util.assesment.AssessmentManager
+import com.example.mylsp.util.user.AsesiManager
 import com.example.mylsp.util.user.UserManager
 import com.example.mylsp.viewmodel.APL01ViewModel
 import com.example.mylsp.viewmodel.APL02ViewModel
@@ -63,7 +64,7 @@ import com.example.mylsp.viewmodel.assesment.IA01ViewModel
 fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: NavHostController, startDestination: String, showBottomBar: (Boolean) -> Unit, showTopBar: (Boolean) -> Unit) {
     val context = LocalContext.current
 
-    var currentAsesiInAssesorCheck by remember { mutableStateOf<Asesi?>(null) }
+    var currentApl01InAssesorCheck by remember { mutableStateOf<Apl01?>(null) }
 
     val skemaViewModel: SkemaViewModel = viewModel(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
@@ -97,6 +98,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
     )
 
     val assessmentManager = AssessmentManager(context)
+    val asesiManager = AsesiManager(context)
 
     NavHost(
         navController = navController,
@@ -142,17 +144,19 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             )
         }
 
-        composable(Screen.ListFormScreen.createRoute(1)){
+        composable(Screen.ListFormScreen.route){
+            val id = it.arguments?.getString("id")?: "0"
             showTopBar(false)
             showBottomBar(false)
             ListFormScreen(
-                navigateToForm = {
-                    if (it == Screen.AssessmentList.route){
-                        navController.navigate(it){
+                asesiManager = asesiManager,
+                navigateToForm = { route ->
+                    if (route == Screen.AssessmentList.route){
+                        navController.navigate(route){
                             popUpTo(Screen.ListFormScreen.route){inclusive = true}
                         }
                     }else{
-                        navController.navigate(it)
+                        navController.navigate(route   )
                     }
                 }
             )
@@ -172,6 +176,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             val status = it.arguments?.getString("status")?: "pending"
             AssesmentListScreen(
                 modifier = Modifier,
+                asesiViewModel = asesiViewModel,
                 assesmentViewModel = assessmentViewModel,
                 apL01ViewModel = apl01ViewModel,
                 navigateToWaitingScreen = {
@@ -195,9 +200,10 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             DetailAssesment(
                 userManager = userManager,
                 idAssessment = id.toInt(),
+                assesmentAsesiViewModel = assesmentAsesiViewModel,
                 onClickKerjakan = { assessment ->
-                    navController.navigate(Screen.ListFormScreen.createRoute(assessment.id))
-                    assessmentManager.saveAssessmentId(assessment.id)
+                    navController.navigate(Screen.ListFormScreen.createRoute(assessment))
+                    assessmentManager.saveAssessmentId(assessment)
                 },
                 apL01ViewModel = apl01ViewModel,
                 assessmentViewModel = assessmentViewModel
@@ -372,7 +378,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         composable(Screen.Main.route) {
             showTopBar(true)
             showBottomBar(true)
-            MainScreen(modifier = Modifier, navController = navController)
+            MainScreen(modifier = Modifier, asesiViewModel = asesiViewModel, assesmentAsesiViewModel = assesmentAsesiViewModel, navController = navController)
         }
         composable(Screen.Events.route) {
             showBottomBar(false)
@@ -393,11 +399,11 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         composable(Screen.ApprovedUnapproved.route) {
             showTopBar(false)
             showBottomBar(false)
-            currentAsesiInAssesorCheck?.let { asesi ->
+            currentApl01InAssesorCheck?.let { asesi ->
                 ApprovedUnapprovedScreen(
                     modifier = Modifier,
                     // Bisa ambil userName dari UserManager atau parameter lain
-                    asesi = asesi,
+                    apl01 = asesi,
                     assesmentAsesiId = 1,
                     navigateToForm = {
                         navController.navigate(it)
@@ -448,7 +454,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
                 assessmentViewModel = assessmentViewModel,
                 assesmentAsesiViewModel = assesmentAsesiViewModel,
                 onDetailAssessi = { idAssesmentAsesi, asesi ->
-                    currentAsesiInAssesorCheck = asesi
+                    currentApl01InAssesorCheck = asesi
                     navController.navigate(Screen.ApprovedUnapproved.route)
                 }
             )

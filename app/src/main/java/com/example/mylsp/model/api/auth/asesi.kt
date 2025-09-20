@@ -9,6 +9,29 @@ data class Asesi(
     val user_id: Int?,
     val nama_lengkap: String?,
     val no_ktp: String?,
+    val tempat_lahir: String?,
+    val tanggal_lahir: String?,
+    val alamat: String?,
+    val kode_pos: String?,
+    val no_telepon: String?,
+    val email: String?,
+    val kualifikasi_pendidikan: String?,
+    val nama_institusi: String?,
+    val user:User,
+    val jurusan: Jurusan
+)
+
+data class AsesiResponse(
+    val success: Boolean,
+    val message: String,
+    val data: List<Asesi>
+)
+
+data class Apl01(
+    val id: Int,
+    val user_id: Int?,
+    val nama_lengkap: String?,
+    val no_ktp: String?,
     val tgl_lahir: String?,
     val tempat_lahir: String?,
     val jenis_kelamin:String?,
