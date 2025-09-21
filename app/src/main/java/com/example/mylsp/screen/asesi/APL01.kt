@@ -18,6 +18,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -33,6 +35,7 @@ import com.example.mylsp.model.api.AttachmentRequest
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.viewmodel.APL01ViewModel
 import com.example.mylsp.viewmodel.AsesiViewModel
+import com.example.mylsp.viewmodel.SkemaViewModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -59,8 +62,123 @@ fun SectionHeader(title: String) {
 }
 
 @Composable
+fun TujuanAsesmenSection(
+    selectedTujuan: String,
+    customTujuan: String,
+    showCustom: Boolean,
+    onTujuanSelected: (String) -> Unit,
+    onCustomTujuanChange: (String) -> Unit,
+    onShowCustomChange: (Boolean) -> Unit
+) {
+    val tujuanOptions = listOf(
+        "Sertifikasi",
+        "Pengakuan Kompetensi Terkini (PKT)",
+        "Rekognisi Pembelajaran Lampau (RPL)"
+    )
+
+    Column {
+        Text(
+            text = "Tujuan Asesmen",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+
+        // Radio buttons for predefined options
+        tujuanOptions.forEach { option ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        onTujuanSelected(option)
+                        onShowCustomChange(false)
+                    }
+                    .padding(vertical = 4.dp)
+            ) {
+                RadioButton(
+                    selected = selectedTujuan == option && !showCustom,
+                    onClick = {
+                        onTujuanSelected(option)
+                        onShowCustomChange(false)
+                    },
+                    colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.primary)
+                )
+                Text(
+                    text = option,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+        }
+
+        // "Lainnya" option
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onShowCustomChange(true)
+                    onTujuanSelected("")
+                }
+                .padding(vertical = 4.dp)
+        ) {
+            RadioButton(
+                selected = showCustom,
+                onClick = {
+                    onShowCustomChange(true)
+                    onTujuanSelected("")
+                },
+                colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.primary)
+            )
+            Text(
+                text = "Lainnya",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+
+        // Custom input field when "Lainnya" is selected
+        if (showCustom) {
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = customTujuan,
+                onValueChange = onCustomTujuanChange,
+                placeholder = {
+                    Text(
+                        "Tuliskan tujuan asesmen lainnya...",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 14.sp
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 32.dp), // Align with radio button text
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                ),
+                shape = RoundedCornerShape(12.dp),
+                minLines = 2,
+                textStyle = LocalTextStyle.current.copy(
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun AsesiFormScreen(
     viewModel: AsesiViewModel,
+    skemaViewModel: SkemaViewModel,
     apl01ViewModel: APL01ViewModel,
     successSendingData: ()-> Unit,
     ifStatusPending: (String) -> Unit
@@ -70,7 +188,16 @@ fun AsesiFormScreen(
     val message by viewModel.message.collectAsState()
     val asesi by apl01ViewModel.formData.collectAsState()
     val loading by apl01ViewModel.loading.collectAsState()
+    var dropSkema by remember { mutableStateOf(false) }
+    var skemaTitle by remember { mutableStateOf("") }
+    var skemaId by remember { mutableStateOf(0) }
 
+    // Tujuan Asesmen state variables
+    var tujuanAsesmen by remember { mutableStateOf("") }
+    var customTujuanAsesmen by remember { mutableStateOf("") }
+    var showCustomTujuan by remember { mutableStateOf(false) }
+
+    val skemas by skemaViewModel.skemas.collectAsState()
     var namaLengkap by remember { mutableStateOf("Budi Santoso") }
     var nik by remember { mutableStateOf("3201010101010001") }
     var tanggalLahir by remember { mutableStateOf("1998-05-05") }
@@ -140,7 +267,7 @@ fun AsesiFormScreen(
 
     LaunchedEffect(Unit) {
         apl01ViewModel.fetchFormApl01Status()
-
+        skemaViewModel.getListSkema()
     }
 
     LaunchedEffect(state) {
@@ -275,6 +402,120 @@ fun AsesiFormScreen(
                     ModernTextField(value = faxKantor, onValueChange = { faxKantor = it }, placeholder = "Fax Kantor", label = "Fax Kantor")
                     Spacer(Modifier.height(16.dp))
                     ModernTextField(value = emailKantor, onValueChange = { emailKantor = it }, placeholder = "Email Kantor", label = "Email Kantor")
+                    Spacer(Modifier.height(16.dp))
+
+                    ExposedDropdownMenuBox(
+                        expanded = dropSkema,
+                        onExpandedChange = { dropSkema = !dropSkema }
+                    ) {
+                        OutlinedTextField(
+                            value = skemaTitle,
+                            onValueChange = { },
+                            readOnly = true,
+                            label = {
+                                Text(
+                                    text = "Select Skema",
+                                    fontFamily = AppFont.Poppins
+                                )
+                            },
+                            placeholder = {
+                                Text(
+                                    text = "Pilih Skema",
+                                    fontFamily = AppFont.Poppins,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                )
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = if (dropSkema) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                    contentDescription = if (dropSkema) "Collapse" else "Expand",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                            ),
+                            textStyle = TextStyle(
+                                fontFamily = AppFont.Poppins,
+                                fontSize = 16.sp
+                            )
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = dropSkema,
+                            onDismissRequest = { dropSkema = false },
+                            modifier = Modifier.background(
+                                color = MaterialTheme.colorScheme.surface,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                        ) {
+                            if (skemas.isEmpty()) {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = "No jurusan available",
+                                            fontFamily = AppFont.Poppins,
+                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                            fontSize = 14.sp
+                                        )
+                                    },
+                                    onClick = { },
+                                    enabled = false
+                                )
+                            } else {
+                                skemas.forEach { skema ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(
+                                                text = "${skema.judul_skema}(${skema.jurusan.nama_jurusan})",
+                                                fontFamily = AppFont.Poppins,
+                                                fontSize = 16.sp,
+                                                color = if (skemaTitle == skema.judul_skema) {
+                                                    MaterialTheme.colorScheme.primary
+                                                } else {
+                                                    MaterialTheme.colorScheme.onSurface
+                                                }
+                                            )
+                                        },
+                                        onClick = {
+                                            skemaTitle = skema.judul_skema
+                                            skemaId = skema.id
+                                            dropSkema = false
+                                        },
+                                        leadingIcon = if (skemaTitle == skema.judul_skema) {
+                                            {
+                                                Icon(
+                                                    imageVector = Icons.Default.Check,
+                                                    contentDescription = "Selected",
+                                                    tint = MaterialTheme.colorScheme.primary,
+                                                    modifier = Modifier.size(20.dp)
+                                                )
+                                            }
+                                        } else null,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.height(24.dp))
+
+                    // Tujuan Asesmen Section
+                    TujuanAsesmenSection(
+                        selectedTujuan = tujuanAsesmen,
+                        customTujuan = customTujuanAsesmen,
+                        showCustom = showCustomTujuan,
+                        onTujuanSelected = { tujuanAsesmen = it },
+                        onCustomTujuanChange = { customTujuanAsesmen = it },
+                        onShowCustomChange = { showCustomTujuan = it }
+                    )
+
                     Spacer(Modifier.height(32.dp))
 
                     Text("Dokumen Pendukung", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(bottom = 16.dp))
@@ -293,10 +534,18 @@ fun AsesiFormScreen(
                                 fu.file?.let { filePart ->
                                     AttachmentRequest(
                                         file = filePart,
-                                        description = fu.description.toRequestBody("text/plain".toMediaTypeOrNull())
+                                        description = fu.name.toRequestBody("text/plain".toMediaTypeOrNull())
                                     )
                                 }
                             }
+
+                            // Determine the final tujuan value
+                            val finalTujuanAsesmen = if (showCustomTujuan) {
+                                customTujuanAsesmen
+                            } else {
+                                tujuanAsesmen
+                            }
+
                             val request = AsesiRequest(
                                 nama_lengkap = namaLengkap,
                                 nik = nik,
@@ -318,7 +567,9 @@ fun AsesiFormScreen(
                                 fax_kantor = faxKantor,
                                 email_kantor = emailKantor,
                                 status = "pending",
-                                attachments = attachments
+                                attachments = attachments,
+                                tujuan_assesment = finalTujuanAsesmen,
+                                schema_id = skemaId
                             )
                             viewModel.createDataAsesi(request)
                         },
@@ -353,7 +604,6 @@ fun AsesiFormScreen(
                 }
             }
         }
-
     }
 }
 

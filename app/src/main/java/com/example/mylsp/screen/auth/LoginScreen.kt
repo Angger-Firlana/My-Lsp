@@ -53,7 +53,6 @@ fun LoginScreen(
         stateLogin?.let { success ->
             isLoading = false
             if (success) {
-                userViewModel.getUserByToken()
                 delay(3000)
                 val role = UserManager(context).getUserRole()
                 role?.let{

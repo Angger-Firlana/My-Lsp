@@ -72,6 +72,8 @@ interface APIService {
         @Part("fax_kantor") faxKantor: RequestBody,
         @Part("email_kantor") emailKantor: RequestBody,
         @Part("status") status: RequestBody,
+        @Part("tujuan_assesment") tujuan_assesment:RequestBody,
+        @Part("schema_id") schema_id:RequestBody,
         @Part attachments: List<MultipartBody.Part>
     ): Response<CreateAsesiResponse>
 
@@ -94,7 +96,7 @@ interface APIService {
     suspend fun getAssesis():Response<AsesiResponse>
 
     @GET("assesment-asesi/byAsesi/{id}")
-    suspend fun getAssesmentAsesiByAsesi(@Path("id") id: Int): Response<PostAssesmentAsesiResponse>
+    suspend fun getAssesmentAsesiByAsesi(@Path("id") id: Int): Response<AssesmentAsesiResponse>
 
     @GET("assesment-asesi/assesor/{id}")
     suspend fun getAssesmentAsesiByAssesment(@Path("id") id: Int): Response<AssesmentAsesiResponse>

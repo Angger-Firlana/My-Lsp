@@ -42,7 +42,7 @@ class AssesmentAsesiViewModel(application: Application):AndroidViewModel(applica
             val result = repository.getAssesmentAsesiByAsesi(asesiId)
             result.fold(
                 onSuccess = { response ->
-                    _assesmentAsesi.value = response.data
+                    _assesmentAsesi.value = response.data[0]
                 },
                 onFailure = {
                     Log.e("AssesmentAsesiViewModel", "Error: ${it.message}")

@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import com.example.mylsp.model.api.assesment.Assessment
 import com.example.mylsp.util.user.UserManager
 import com.example.mylsp.viewmodel.APL01ViewModel
+import com.example.mylsp.viewmodel.AsesiViewModel
 import com.example.mylsp.viewmodel.AssesmentViewModel
 import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
 
@@ -52,6 +53,7 @@ fun DetailAssesment(
     modifier: Modifier = Modifier,
     userManager: UserManager,
     onClickKerjakan: (Int) -> Unit,
+    asesiViewModel: AsesiViewModel,
     apL01ViewModel: APL01ViewModel,
     assesmentAsesiViewModel: AssesmentAsesiViewModel,
     assessmentViewModel: AssesmentViewModel,
@@ -60,6 +62,7 @@ fun DetailAssesment(
     val context = LocalContext.current
     val listAssessment by assessmentViewModel.listAssessment.collectAsState()
     val asesi by apL01ViewModel.formData.collectAsState()
+    val assesi by asesiViewModel.asesi.collectAsState()
     val stateDaftar by assesmentAsesiViewModel.state.collectAsState()
 
     LaunchedEffect(stateDaftar) {
@@ -75,6 +78,7 @@ fun DetailAssesment(
 
     LaunchedEffect(Unit) {
         assessmentViewModel.getListAssesment()
+        asesiViewModel.getDataAsesiByUser(userManager.getUserId()?.toInt()?:0)
         apL01ViewModel.fetchFormApl01Status()
     }
 
@@ -246,7 +250,7 @@ fun DetailAssesment(
                                 onClick = {
                                     assesmentAsesiViewModel.daftarAssesment(
                                         assesmentId = data.id,
-                                        assesiId = asesi?.id?: 0
+                                        assesiId = assesi?.id?: 0
                                     )
                                 },
                                 modifier = Modifier

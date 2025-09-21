@@ -200,6 +200,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             DetailAssesment(
                 userManager = userManager,
                 idAssessment = id.toInt(),
+                asesiViewModel = asesiViewModel,
                 assesmentAsesiViewModel = assesmentAsesiViewModel,
                 onClickKerjakan = { assessment ->
                     navController.navigate(Screen.ListFormScreen.createRoute(assessment))
@@ -214,6 +215,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             showBottomBar(true)
             AsesiFormScreen(
                 asesiViewModel,
+                skemaViewModel = skemaViewModel,
                 apl01ViewModel = apl01ViewModel,
                 successSendingData = {
                     navController.navigate("main")
@@ -378,7 +380,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         composable(Screen.Main.route) {
             showTopBar(true)
             showBottomBar(true)
-            MainScreen(modifier = Modifier, asesiViewModel = asesiViewModel, assesmentAsesiViewModel = assesmentAsesiViewModel, navController = navController)
+            MainScreen(modifier = Modifier,apl01ViewModel = apl01ViewModel, asesiViewModel = asesiViewModel, assesmentAsesiViewModel = assesmentAsesiViewModel, navController = navController)
         }
         composable(Screen.Events.route) {
             showBottomBar(false)

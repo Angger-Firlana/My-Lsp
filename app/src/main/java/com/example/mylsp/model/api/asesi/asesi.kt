@@ -92,7 +92,9 @@ data class AsesiRequest(
     val fax_kantor: String?,
     val email_kantor: String?,
     val status:String,
-    val attachments: List<AttachmentRequest>
+    val attachments: List<AttachmentRequest>,
+    val tujuan_assesment: String,
+    val schema_id: Int
 )
 
 data class AttachmentRequest(

@@ -36,7 +36,14 @@ class AuthViewModel(
                 onSuccess = { body ->
                     _state.value = true
                     _message.value = body.message
-
+                    val user = body.user
+                    userManager.saveUser(
+                        id = user.id.toString(),
+                        name = user.username,
+                        email = "exampe@gmail.com",
+                        role = user.role,
+                        jurusan_id = user.jurusan_id
+                    )
                     val token = body.token
                     Log.d("AuthViewModel", "Token diterima: $token")
                     tokenManager.saveToken(token)

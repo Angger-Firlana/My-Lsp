@@ -23,7 +23,7 @@ class AssesmentAsesiRepository(context: Context) {
         }
     }
 
-    suspend fun getAssesmentAsesiByAsesi(asesiId:Int):Result<PostAssesmentAsesiResponse>{
+    suspend fun getAssesmentAsesiByAsesi(asesiId:Int):Result<AssesmentAsesiResponse>{
         return try {
             val response = api.getAssesmentAsesiByAsesi(asesiId)
             if (response.isSuccessful){
@@ -43,7 +43,8 @@ class AssesmentAsesiRepository(context: Context) {
             if (response.isSuccessful){
                 Result.success(response.body()!!)
             }else{
-                Result.failure(Exception(response.message()))
+                val errorBody = response.errorBody()
+                Result.failure(Exception(errorBody.toString()))
             }
         }catch (e:Exception){
             Result.failure(e)
