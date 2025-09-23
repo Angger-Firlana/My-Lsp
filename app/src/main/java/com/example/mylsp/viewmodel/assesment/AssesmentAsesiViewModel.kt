@@ -7,13 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.mylsp.model.api.asesi.AssesmentAsesi
 import com.example.mylsp.model.api.asesi.PostAssesmentAsesiReq
 import com.example.mylsp.repository.assesment.AssesmentAsesiRepository
+import com.example.mylsp.util.assesment.AssesmentAsesiManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AssesmentAsesiViewModel(application: Application):AndroidViewModel(application) {
     private val repository = AssesmentAsesiRepository(application.applicationContext)
-
+    val assesmentAsesiManager = AssesmentAsesiManager(application.applicationContext)
     private val _listAsesiAssesment = MutableStateFlow<List<AssesmentAsesi>>(emptyList())
     val listAsesi = _listAsesiAssesment.asStateFlow()
 
@@ -29,6 +30,7 @@ class AssesmentAsesiViewModel(application: Application):AndroidViewModel(applica
             result.fold(
                 onSuccess = {
                     _listAsesiAssesment.value = it.data
+
                 },
                 onFailure = {
 
@@ -43,6 +45,7 @@ class AssesmentAsesiViewModel(application: Application):AndroidViewModel(applica
             result.fold(
                 onSuccess = { response ->
                     _assesmentAsesi.value = response.data[0]
+                    Log.d("AssesmentAsesiViewModel", response.data[0].toString())
                 },
                 onFailure = {
                     Log.e("AssesmentAsesiViewModel", "Error: ${it.message}")
@@ -60,9 +63,14 @@ class AssesmentAsesiViewModel(application: Application):AndroidViewModel(applica
             )
 
             result.fold(
-                onSuccess = {
+                onSuccess = {body->
                     _state.value = true
-
+                    body.data?.let {
+                        _state.value = true
+                        assesmentAsesiManager.saveAssesmentAsesi(it)
+                    }?:run {
+                        _state.value = false
+                    }
                 },
                 onFailure = {
                     _state.value = false

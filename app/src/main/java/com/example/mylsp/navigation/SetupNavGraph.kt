@@ -25,7 +25,7 @@ import com.example.mylsp.screen.APL02
 import com.example.mylsp.screen.asesi.AsesiBarcodeScanner
 import com.example.mylsp.screen.asesi.AsesiFormScreen
 import com.example.mylsp.screen.asesi.DetailAssesment
-import com.example.mylsp.screen.asesi.FRAK03
+import com.example.mylsp.screen.asesor.ak.FRAK03
 import com.example.mylsp.screen.asesor.ak.FRAK01
 import com.example.mylsp.screen.asesi.FRAK04
 import com.example.mylsp.screen.asesor.ak.FRAK05
@@ -50,12 +50,16 @@ import com.example.mylsp.screen.waiting_approval.WaitingApprovalScreen
 import com.example.mylsp.util.assesment.AssessmentManager
 import com.example.mylsp.util.user.AsesiManager
 import com.example.mylsp.util.user.UserManager
+import com.example.mylsp.viewmodel.AK01ViewModel
 import com.example.mylsp.viewmodel.APL01ViewModel
 import com.example.mylsp.viewmodel.APL02ViewModel
 import com.example.mylsp.viewmodel.AsesiViewModel
 import com.example.mylsp.viewmodel.AssesmentViewModel
 import com.example.mylsp.viewmodel.SkemaViewModel
 import com.example.mylsp.viewmodel.UserViewModel
+import com.example.mylsp.viewmodel.assesment.AK02ViewModel
+import com.example.mylsp.viewmodel.assesment.AK03ViewModel
+import com.example.mylsp.viewmodel.assesment.AK05ViewModel
 import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
 import com.example.mylsp.viewmodel.assesment.IA01ViewModel
 
@@ -97,6 +101,22 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
     )
 
+    val ak01ViewModel:AK01ViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
+    )
+
+    val aK02ViewModel:AK02ViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
+    )
+
+    val aK03ViewModel:AK03ViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
+    )
+
+    val aK05ViewModel: AK05ViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
+    )
+
     val assessmentManager = AssessmentManager(context)
     val asesiManager = AsesiManager(context)
 
@@ -114,6 +134,16 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
                     when (role) {
                         "assesi" -> {
                             navController.navigate("main"){
+                                popUpTo(navController.graph.startDestinationId){inclusive = true}
+                            }
+                        }
+                        "asesi"->{
+                            navController.navigate(Screen.Main.route){
+                                popUpTo(navController.graph.startDestinationId){inclusive = true}
+                            }
+                        }
+                        "asesor"->{
+                            navController.navigate(Screen.DashboardAsesor.route){
                                 popUpTo(navController.graph.startDestinationId){inclusive = true}
                             }
                         }
@@ -150,6 +180,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             showBottomBar(false)
             ListFormScreen(
                 asesiManager = asesiManager,
+                assesmentAsesiViewModel = assesmentAsesiViewModel,
                 navigateToForm = { route ->
                     if (route == Screen.AssessmentList.route){
                         navController.navigate(route){
@@ -165,7 +196,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             FRIA06A(navController = navController)
         }
         composable(Screen.Ak05.route){
-            FRAK05(navController = navController)
+            FRAK05(viewModel = aK05ViewModel)
         }
         composable(Screen.KelengkapanDataAsesor.route) {
             KelengkapanDataAsesor(navController = navController)
@@ -187,9 +218,9 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
                     }
                 },
                 navigateToAssesment = {role, id ->
-                    if(role == "assesi"){
+                    if(role == "assesi" || role == "asesi"){
                         navController.navigate(Screen.DetailAssesment.createRoute(id))
-                    }else if (role == "assesor"){
+                    }else if (role == "assesor" || role == "asesor"){
                         navController.navigate(Screen.DetailEvent.createRoute(id))
                     }
                 }
@@ -235,10 +266,11 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             val id = it.arguments?.getString("id")?: "0"
             APL02(
                 id = id.toInt(),
+                apl01ViewModel = apl01ViewModel,
                 userManager = userManager,
                 apL02ViewModel = apL02ViewModel,
                 nextForm = {
-                    navController.navigate(Screen.WaitingAK01.createRoute(formId = 1, asesiName = "Afdhal Ezhar Pangestu"))
+                    navController.popBackStack()
                 }
             )
         }
@@ -290,12 +322,14 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             showTopBar(false)
             showBottomBar(false)
             val role = it.arguments?.getString("role")?: "assesi"
-            FRAK01(nextForm = {
+            FRAK01(
+                aK01ViewModel = ak01ViewModel,
+                nextForm = {
                 if (role == "assesi"){
-                    navController.navigate(Screen.Ak04.route)
+                    navController.navigate(Screen.ListFormScreen.route)
 
                 }else if(role == "assesor"){
-                    navController.navigate(Screen.Ia01.createRoute(1))
+                    navController.popBackStack()
                 }
             })
         }
@@ -316,7 +350,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         composable(Screen.Ak05.route){
             showTopBar(false)
             showBottomBar(false)
-            FRAK05(navController = navController)
+            FRAK05(viewModel = aK05ViewModel)
         }
         composable(Screen.Ia01.route){
             showTopBar(false)
@@ -380,7 +414,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         composable(Screen.Main.route) {
             showTopBar(true)
             showBottomBar(true)
-            MainScreen(modifier = Modifier,apl01ViewModel = apl01ViewModel, asesiViewModel = asesiViewModel, assesmentAsesiViewModel = assesmentAsesiViewModel, navController = navController)
+            MainScreen(modifier = Modifier,apl01ViewModel = apl01ViewModel,aK05ViewModel = aK05ViewModel, asesiViewModel = asesiViewModel, assesmentAsesiViewModel = assesmentAsesiViewModel, navController = navController)
         }
         composable(Screen.Events.route) {
             showBottomBar(false)
@@ -389,7 +423,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         composable(Screen.DashboardAsesor.route){
             showTopBar(false)
             showBottomBar(true)
-            DashboardAsesor(navController = navController)
+            DashboardAsesor(assesmentViewModel = assessmentViewModel, navController = navController)
         }
 
         composable("scanningBarcode"){

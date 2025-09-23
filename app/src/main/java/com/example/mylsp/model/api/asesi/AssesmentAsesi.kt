@@ -19,7 +19,7 @@ data class AssesmentAsesi(
     val assesi_id: Int,
     val created_at: String,
     val updated_at: String,
-    val apl01:Apl01
+    val asesi:Apl01
 )
 
 data class PostAssesmentAsesiResponse(

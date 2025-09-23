@@ -60,7 +60,7 @@ class JawabanManager {
         }
 
         Util.jawabanApl02.value = SubmissionGroup(
-            skema_id = if (currentGroup.skema_id == 0) skemaId else currentGroup.skema_id,
+            assesmentAsesiId = if (currentGroup.assesmentAsesiId == 0) skemaId else currentGroup.assesmentAsesiId,
             submissions = submissions
         )
     }

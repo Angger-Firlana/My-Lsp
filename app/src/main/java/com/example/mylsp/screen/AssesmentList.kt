@@ -111,7 +111,7 @@ fun AssesmentListScreen(
         color = MaterialTheme.colorScheme.background
     ) {
         // Validasi null untuk asesi
-        if (userManager.getUserRole() == "assesor"){
+        if (userManager.getUserRole() == "assesor" || userManager.getUserRole() == "asesor"){
             // Main content ketika asesi tersedia dan status valid
             Box(modifier = Modifier.fillMaxSize()) {
                 // Rounded Header with Tertiary Color
@@ -438,8 +438,10 @@ fun AssesmentListScreen(
                                 ),
                                 verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-                                items(assesments.size) {
-                                    val assesment = assesments[it]
+
+                                val assesmentsFilterBySchema = assesments.filter { it.schema.id == asesi.sertification_data?.schema_id }
+                                items(assesmentsFilterBySchema.size) {
+                                    val assesment = assesmentsFilterBySchema[it]
                                     AssessmentCard(
                                         assessment = assesment,
                                         onCardClick = {

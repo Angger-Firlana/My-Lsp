@@ -1,18 +1,18 @@
-package com.example.mylsp.viewmodel
+package com.example.mylsp.viewmodel.assesment
 
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mylsp.model.api.assesment.AK01Submission
-import com.example.mylsp.model.api.assesment.GetAK01Response
-import com.example.mylsp.repository.assesment.AK01Repository
+import com.example.mylsp.model.api.assesment.Ak05SubmissionRequest
+import com.example.mylsp.model.api.assesment.GetAk05Response
+import com.example.mylsp.repository.assesment.Ak05Repository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class AK01ViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository = AK01Repository(application.applicationContext)
+class AK05ViewModel(application: Application) : AndroidViewModel(application) {
+    private val repository = Ak05Repository(application.applicationContext)
 
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
@@ -23,13 +23,13 @@ class AK01ViewModel(application: Application) : AndroidViewModel(application) {
     private val _message = MutableStateFlow("")
     val message = _message.asStateFlow()
 
-    private val _submission = MutableStateFlow<GetAK01Response?>(null)
+    private val _submission = MutableStateFlow<GetAk05Response?>(null)
     val submission = _submission.asStateFlow()
 
-    fun sendSubmission(aK01SubmissionRequest: AK01Submission) {
+    fun sendSubmission(request: Ak05SubmissionRequest) {
         viewModelScope.launch {
             _loading.value = true
-            val result = repository.sendSubmission(aK01SubmissionRequest)
+            val result = repository.sendSubmission(request)
             result.fold(
                 onSuccess = {
                     _state.value = it.success
@@ -38,8 +38,7 @@ class AK01ViewModel(application: Application) : AndroidViewModel(application) {
                 onFailure = {
                     _state.value = false
                     _message.value = it.message.toString()
-                    Log.e("AK01ViewModel", it.message.toString())
-
+                    Log.e("Ak05ViewModel", it.message.toString())
                 }
             )
             _loading.value = false
@@ -60,7 +59,7 @@ class AK01ViewModel(application: Application) : AndroidViewModel(application) {
                     _submission.value = null
                     _state.value = false
                     _message.value = it.message.toString()
-                    Log.e("AK01ViewModel", it.message.toString())
+                    Log.e("Ak05ViewModel", it.message.toString())
                 }
             )
             _loading.value = false

@@ -1,18 +1,18 @@
-package com.example.mylsp.viewmodel
+package com.example.mylsp.viewmodel.assesment
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mylsp.model.api.assesment.AK01Submission
-import com.example.mylsp.model.api.assesment.GetAK01Response
-import com.example.mylsp.repository.assesment.AK01Repository
+import com.example.mylsp.model.api.assesment.Ak02Request
+import com.example.mylsp.model.api.assesment.Ak02Response
+import com.example.mylsp.model.api.assesment.Ak02GetResponse
+import com.example.mylsp.repository.assesment.AK02Repository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class AK01ViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository = AK01Repository(application.applicationContext)
+class AK02ViewModel(application: Application) : AndroidViewModel(application) {
+    private val repository = AK02Repository(application.applicationContext)
 
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
@@ -23,13 +23,13 @@ class AK01ViewModel(application: Application) : AndroidViewModel(application) {
     private val _message = MutableStateFlow("")
     val message = _message.asStateFlow()
 
-    private val _submission = MutableStateFlow<GetAK01Response?>(null)
+    private val _submission = MutableStateFlow<Ak02GetResponse?>(null)
     val submission = _submission.asStateFlow()
 
-    fun sendSubmission(aK01SubmissionRequest: AK01Submission) {
+    fun postSubmission(request: Ak02Request) {
         viewModelScope.launch {
             _loading.value = true
-            val result = repository.sendSubmission(aK01SubmissionRequest)
+            val result = repository.postAK02(request)
             result.fold(
                 onSuccess = {
                     _state.value = it.success
@@ -37,19 +37,17 @@ class AK01ViewModel(application: Application) : AndroidViewModel(application) {
                 },
                 onFailure = {
                     _state.value = false
-                    _message.value = it.message.toString()
-                    Log.e("AK01ViewModel", it.message.toString())
-
+                    _message.value = it.message ?: "Unknown error"
                 }
             )
             _loading.value = false
         }
     }
 
-    fun getSubmission(id: Int) {
+    fun getSubmission(assesiId: Int) {
         viewModelScope.launch {
             _loading.value = true
-            val result = repository.getSubmission(id)
+            val result = repository.getAk02ByAssesi(assesiId)
             result.fold(
                 onSuccess = {
                     _submission.value = it
@@ -59,8 +57,7 @@ class AK01ViewModel(application: Application) : AndroidViewModel(application) {
                 onFailure = {
                     _submission.value = null
                     _state.value = false
-                    _message.value = it.message.toString()
-                    Log.e("AK01ViewModel", it.message.toString())
+                    _message.value = it.message ?: "Unknown error"
                 }
             )
             _loading.value = false

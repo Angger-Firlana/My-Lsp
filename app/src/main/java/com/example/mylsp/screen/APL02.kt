@@ -16,43 +16,119 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.mylsp.component.ErrorCard
 import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.component.LoadingScreen
+import com.example.mylsp.model.api.Attachment
 import com.example.mylsp.model.api.assesment.Apl02
 import com.example.mylsp.model.api.assesment.ElemenAPL02
 import com.example.mylsp.model.api.assesment.UnitApl02
+import com.example.mylsp.model.api.assesment.GetAPL02Response
+import com.example.mylsp.model.api.assesment.PostApproveRequest
+import com.example.mylsp.model.api.assesment.UnitGetResponse
 import com.example.mylsp.util.AppFont
+import com.example.mylsp.util.assesment.AssesmentAsesiManager
 import com.example.mylsp.util.assesment.JawabanManager
+import com.example.mylsp.util.user.AsesiManager
 import com.example.mylsp.util.user.UserManager
+import com.example.mylsp.viewmodel.APL01ViewModel
 import com.example.mylsp.viewmodel.APL02ViewModel
 
 @Composable
 fun APL02(
     modifier: Modifier = Modifier,
     id: Int,
+    apl01ViewModel: APL01ViewModel,
     userManager: UserManager,
     apL02ViewModel: APL02ViewModel,
     nextForm: () -> Unit
 ) {
     val context = LocalContext.current
+    val asesiManager = AsesiManager(context)
+    val assesmentAsesiManager = AssesmentAsesiManager(context)
     val jawabanManager = remember { JawabanManager() }
     val apl02 by apL02ViewModel.apl02.collectAsState()
+    val apl02Submission by apL02ViewModel.apl02Submission.collectAsState()
     val message by apL02ViewModel.message.collectAsState()
     val state by apL02ViewModel.state.collectAsState()
-    var isSubmitted by remember {mutableStateOf(false)}
+    val apl01Data by apl01ViewModel.formData.collectAsState()
+
+    // State untuk dialog
+    var showSuccessDialog by remember { mutableStateOf(false) }
+
+    // Debug submission data sesuai structure yang benar
+    LaunchedEffect(apl02Submission) {
+        apl02Submission?.let { submission ->
+            Log.d("APL02_MAIN", "=== APL02 SUBMISSION DATA ===")
+            Log.d("APL02_MAIN", "Status: ${submission.status}")
+            Log.d("APL02_MAIN", "Message: ${submission.message}")
+            Log.d("APL02_MAIN", "Data Count: ${submission.data.size}")
+
+            submission.data.forEachIndexed { unitIndex, unitResponse ->
+                Log.d("APL02_MAIN", "Unit Response $unitIndex:")
+                Log.d("APL02_MAIN", "  ID: ${unitResponse.id}")
+                Log.d("APL02_MAIN", "  Submission Date: ${unitResponse.submission_date}")
+                Log.d("APL02_MAIN", "  Details Count: ${unitResponse.details.size}")
+
+                unitResponse.details.forEachIndexed { detailIndex, detail ->
+                    Log.d("APL02_MAIN", "  Detail $detailIndex:")
+                    Log.d("APL02_MAIN", "    Unit Ke: ${detail.unit_ke}")
+                    Log.d("APL02_MAIN", "    Kode Unit: ${detail.kode_unit}")
+                    Log.d("APL02_MAIN", "    Elemen ID: ${detail.elemen_id}")
+                    Log.d("APL02_MAIN", "    Kompetensinitas: ${detail.kompetensinitas}")
+                    Log.d("APL02_MAIN", "    Attachments Count: ${detail.attachments.size}")
+
+                    detail.attachments.forEachIndexed { attIndex, attachment ->
+                        Log.d("APL02_MAIN", "      Attachment $attIndex: ${attachment.bukti.nama_dokumen}")
+                    }
+                }
+            }
+        } ?: run {
+            Log.d("APL02_MAIN", "No submission data found")
+        }
+    }
+
+    // Check if form is already submitted and can't be edited
+    val isReadOnly = remember(apl02Submission) {
+        apl02Submission?.let { submission ->
+            // Form is read-only if it's already submitted and user is assesi
+            val isAssesi = userManager.getUserRole() == "assesi"
+            val hasSubmission = submission.data.isNotEmpty() && submission.data.any { it.details.isNotEmpty() }
+            Log.d("APL02_MAIN", "IsReadOnly calculation - IsAssesi: $isAssesi, HasSubmission: $hasSubmission")
+            isAssesi && hasSubmission
+        } ?: false
+    }
 
     LaunchedEffect(Unit) {
+        Log.d("APL02_MAIN", "Loading APL02 data and submission...")
         apL02ViewModel.getAPL02(id)
+        apL02ViewModel.getSubmissionByAsesi(asesiManager.getId())
     }
 
     LaunchedEffect(state) {
         state?.let { success ->
-            if (success) run {
-                nextForm()
+            if (success) {
+                Log.d("APL02_MAIN", "Form submitted successfully, showing dialog")
+                showSuccessDialog = true
             }
-            apL02ViewModel.resetState()
         }
+    }
+
+    // Success Dialog
+    if (showSuccessDialog) {
+        SuccessDialog(
+            onDismiss = {
+                showSuccessDialog = false
+                apL02ViewModel.resetState()
+            },
+            onNextForm = {
+                showSuccessDialog = false
+                apL02ViewModel.resetState()
+                nextForm()
+            },
+            userRole = userManager.getUserRole() ?: "assesi"
+        )
     }
 
     Box(
@@ -69,17 +145,33 @@ fun APL02(
                 HeaderForm(
                     title = "FR.APL.02.ASESMEN MANDIRI"
                 )
+
+                // Show submission status if exists - ambil dari data pertama
+                apl02Submission?.data?.firstOrNull()?.let { firstSubmission ->
+                    SubmissionStatusCard(firstSubmission, userManager.getUserRole()!!)
+                }
+
                 SchemaSection(data)
                 InstructionCard()
-                UnitsSection(id, data, jawabanManager)
-                if (userManager.getUserRole() == "assesi"){
-                    SubmitButton(apL02ViewModel, nextForm, titleButton = "Kirim Jawaban")
 
-                }else{
-                    SubmitButton(apL02ViewModel, nextForm, titleButton = "Setuju", buttonUnApproved = "Tidak Setuju")
+                UnitsSection(
+                    assesmentAsesiId = assesmentAsesiManager.getAssesmentId(),
+                    data = data,
+                    listAttachment = apl01Data?.attachments ?: emptyList(),
+                    jawabanManager = jawabanManager,
+                    submission = apl02Submission,
+                    isReadOnly = isReadOnly
+                )
 
-                }
-                if (message.isNotEmpty()){
+                SubmitButton(
+                    apL02ViewModel = apL02ViewModel,
+                    nextForm = nextForm,
+                    asesiId = assesmentAsesiManager.getAssesmentId(),
+                    titleButton = "Setuju",
+                    role = userManager.getUserRole()!!
+                )
+
+                if (message.isNotEmpty()) {
                     ErrorCard(
                         errorMessage = message,
                         modifier = Modifier.padding(16.dp)
@@ -88,6 +180,394 @@ fun APL02(
             }
         } ?: run {
             LoadingScreen()
+        }
+    }
+}
+
+@Composable
+private fun SuccessDialog(
+    onDismiss: () -> Unit,
+    onNextForm: () -> Unit,
+    userRole: String
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "✓",
+                    fontSize = 48.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Berhasil!",
+                    fontFamily = AppFont.Poppins,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = when(userRole) {
+                        "assesi", "asesi" -> "Jawaban APL02 berhasil dikirim"
+                        else -> "Persetujuan APL02 berhasil disimpan"
+                    },
+                    fontFamily = AppFont.Poppins,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = onNextForm,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "Kembali ke halaman sebelumnya",
+                        fontFamily = AppFont.Poppins,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TextButton(
+                    onClick = onDismiss
+                ) {
+                    Text(
+                        text = "Tutup",
+                        fontFamily = AppFont.Poppins,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+    }
+}
+
+// Update SubmissionStatusCard untuk UnitGetResponse
+@Composable
+private fun SubmissionStatusCard(
+    submission: UnitGetResponse,
+    userRole: String
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (userRole == "assesi")
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+            else
+                MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = if (userRole == "assesi") "Status: Sudah Disubmit" else "Menunggu Persetujuan",
+                fontFamily = AppFont.Poppins,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = "Tanggal Submit: ${submission.submission_date}",
+                fontFamily = AppFont.Poppins,
+                fontSize = 12.sp,
+                color = Color.Gray,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun UnitCompetensiSection(
+    assesmentAsesiId: Int,
+    unit: UnitApl02,
+    listAttachment: List<Attachment>,
+    jawabanManager: JawabanManager,
+    submission: GetAPL02Response?,
+    isReadOnly: Boolean
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(
+            text = "Unit Kompetensi ${unit.unit_ke}",
+            fontFamily = AppFont.Poppins,
+            fontWeight = FontWeight.Bold,
+            fontSize = 14.sp,
+            color = Color.Black
+        )
+
+        Column(
+            modifier = Modifier.padding(start = 20.dp)
+        ) {
+            Text(
+                text = "Kode Unit : ${unit.kode_unit}",
+                fontFamily = AppFont.Poppins,
+                fontSize = 12.sp
+            )
+            Text(
+                text = "Judul Unit : ${unit.judul_unit}",
+                fontFamily = AppFont.Poppins,
+                fontSize = 12.sp
+            )
+        }
+    }
+
+    Text(
+        text = "Dapatkah Saya?",
+        fontFamily = AppFont.Poppins,
+        fontWeight = FontWeight.Bold,
+        fontSize = 14.sp,
+        modifier = Modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center
+    )
+
+    unit.elemen.forEach { (_, elemen) ->
+        // Find existing data for this element dari semua unit responses
+        val existingDetail = submission?.data?.flatMap { it.details }?.find { detail ->
+            detail.unit_ke == unit.unit_ke &&
+                    detail.kode_unit == unit.kode_unit &&
+                    detail.elemen_id == elemen.elemen_index
+        }
+
+        // Extract existing bukti names
+        val existingBuktiNames = existingDetail?.attachments?.map { attachment ->
+            attachment.bukti.description
+        } ?: emptyList()
+
+        // Debug log
+        LaunchedEffect(existingDetail) {
+            if (existingDetail != null) {
+                Log.d("APL02_AUTO_FILL", "Found existing data for Unit ${unit.unit_ke}, Elemen ${elemen.elemen_index}")
+                Log.d("APL02_AUTO_FILL", "Kompetensinitas: ${existingDetail.kompetensinitas}")
+                Log.d("APL02_AUTO_FILL", "Bukti count: ${existingBuktiNames.size}")
+                existingBuktiNames.forEach { bukti ->
+                    Log.d("APL02_AUTO_FILL", "Bukti: $bukti")
+                }
+            }
+        }
+
+        ElemenCard(
+            elemen = elemen,
+            buktiList = listAttachment,
+            existingKompetensinitas = existingDetail?.kompetensinitas,
+            existingBuktiNames = existingBuktiNames,
+            isReadOnly = isReadOnly,
+            onSubmit = { buktiRelevans, kompetensinitas ->
+                if (!isReadOnly) {
+                    jawabanManager.upsertElemen(
+                        skemaId = assesmentAsesiId,
+                        unitKe = unit.unit_ke,
+                        kodeUnit = unit.kode_unit,
+                        elemenId = elemen.elemen_index,
+                        kompetensinitas = kompetensinitas,
+                        buktiList = buktiRelevans
+                    )
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun ElemenCard(
+    elemen: ElemenAPL02,
+    buktiList: List<Attachment>,
+    existingKompetensinitas: String?,
+    existingBuktiNames: List<String>,
+    isReadOnly: Boolean,
+    onSubmit: (List<String>, String) -> Unit
+) {
+    val context = LocalContext.current
+    val userManager = UserManager(context)
+    // State untuk radio button dan checkbox
+    var selectedOption by remember { mutableStateOf("") }
+    var buktiSelected by remember { mutableStateOf(setOf<String>()) }
+
+    // Key untuk memaksa recomposition ketika data berubah
+    val dataKey = remember(existingKompetensinitas, existingBuktiNames.joinToString()) {
+        "${existingKompetensinitas}_${existingBuktiNames.joinToString(",")}"
+    }
+
+    // Auto-fill data dari submission yang sudah ada
+    LaunchedEffect(dataKey) {
+        Log.d("APL02_AUTO_FILL", "LaunchedEffect triggered for elemen ${elemen.elemen_index}")
+        Log.d("APL02_AUTO_FILL", "Existing kompetensinitas: $existingKompetensinitas")
+        Log.d("APL02_AUTO_FILL", "Existing bukti: $existingBuktiNames")
+
+        // Set radio button
+        selectedOption = existingKompetensinitas ?: ""
+
+        // Set checkbox selections berdasarkan bukti.description yang match
+        val matchingBuktiDescriptions = buktiList.filter { attachment ->
+            existingBuktiNames.any { existingBukti ->
+                // Match berdasarkan description atau nama dokumen
+                attachment.description.equals(existingBukti, ignoreCase = true) ||
+                        existingBukti.contains(attachment.description, ignoreCase = true) ||
+                        attachment.description.contains(existingBukti, ignoreCase = true)
+            }
+        }.map { it.description }
+
+        buktiSelected = matchingBuktiDescriptions.toSet()
+
+        Log.d("APL02_AUTO_FILL", "Matched bukti descriptions: $matchingBuktiDescriptions")
+
+        // Auto submit jika ada data existing
+        if (existingKompetensinitas != null || existingBuktiNames.isNotEmpty()) {
+            Log.d("APL02_AUTO_FILL", "Auto-submitting existing data")
+            onSubmit(buktiSelected.toList(), selectedOption)
+        }
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp, horizontal = 16.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isReadOnly)
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            else
+                MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.onBackground
+        ),
+        elevation = CardDefaults.cardElevation(6.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Elemen ${elemen.elemen_index}: ${elemen.nama_elemen}",
+                fontFamily = AppFont.Poppins,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                color = Color.Black,
+                textAlign = TextAlign.Center
+            )
+
+            Text(
+                text = "Kriteria Untuk Kerja:",
+                fontFamily = AppFont.Poppins,
+                fontWeight = FontWeight.Bold,
+                fontSize = 12.sp,
+                color = Color.Black,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+
+            elemen.kuk.forEach { kuk ->
+                Text(
+                    text = "${elemen.elemen_index}.${kuk.urutan}.${kuk.deskripsi_kuk}",
+                    fontFamily = AppFont.Poppins,
+                    fontSize = 12.sp,
+                    color = Color.Black,
+                    modifier = Modifier.padding(vertical = 2.dp)
+                )
+            }
+        }
+    }
+
+    // Radio Button Section
+    RadioButtonGroup(
+        options = listOf("k", "bk"),
+        selectedOption = selectedOption,
+        isReadOnly = isReadOnly,
+        onOptionSelected = { option ->
+            selectedOption = option
+            onSubmit(buktiSelected.toList(), selectedOption)
+        }
+    )
+
+    // Bukti Relevan Section
+    if (userManager.getUserRole()!! == "assesi" || userManager.getUserRole()!! == "asesi"){
+        BuktiRelevanSection(
+            buktiList = buktiList,
+            selectedBukti = buktiSelected.toList(),
+            isReadOnly = isReadOnly,
+            onBuktiChanged = { bukti, isChecked ->
+                buktiSelected = if (isChecked) {
+                    buktiSelected + bukti
+                } else {
+                    buktiSelected - bukti
+                }
+                onSubmit(buktiSelected.toList(), selectedOption)
+            }
+        )
+    }
+
+
+    // Show existing custom bukti
+    val standardBuktiDescriptions = buktiList.map { it.description }.toSet()
+    val customBukti = existingBuktiNames.filter { it !in standardBuktiDescriptions }
+    if (customBukti.isNotEmpty()) {
+        ExistingCustomBuktiSection(customBukti)
+    }
+}
+
+@Composable
+private fun SubmissionStatusCard(
+    submission: GetAPL02Response,
+    userRole: String
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (userRole == "assesi")
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+            else
+                MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = if (userRole == "assesi") "Status: Sudah Disubmit" else "Menunggu Persetujuan",
+                fontFamily = AppFont.Poppins,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = "Tanggal Submit: ${submission.data[0].submission_date}",
+                fontFamily = AppFont.Poppins,
+                fontSize = 12.sp,
+                color = Color.Gray,
+                modifier = Modifier.padding(top = 4.dp)
+            )
         }
     }
 }
@@ -182,168 +662,70 @@ private fun InstructionCard() {
 
 @Composable
 private fun UnitsSection(
-    skemaId: Int,
+    assesmentAsesiId: Int,
     data: Apl02,
-    jawabanManager: JawabanManager
+    listAttachment: List<Attachment>,
+    jawabanManager: JawabanManager,
+    submission: GetAPL02Response?,
+    isReadOnly: Boolean
 ) {
     data.data.forEach { unit ->
         UnitCompetensiSection(
-            skemaId = skemaId,
+            assesmentAsesiId = assesmentAsesiId,
+            listAttachment = listAttachment,
             unit = unit,
-            jawabanManager = jawabanManager
+            jawabanManager = jawabanManager,
+            submission = submission,
+            isReadOnly = isReadOnly
         )
     }
 }
 
+
 @Composable
-private fun UnitCompetensiSection(
-    skemaId: Int,
-    unit: UnitApl02,
-    jawabanManager: JawabanManager
-) {
+private fun ExistingCustomBuktiSection(customBukti: List<String>) {
+    Text(
+        text = "Bukti Relevan",
+        fontFamily = AppFont.Poppins,
+        fontWeight = FontWeight.SemiBold,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+    )
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        horizontalAlignment = Alignment.Start
+            .padding(vertical = 4.dp, horizontal = 16.dp)
     ) {
-        Text(
-            text = "Unit Kompetensi ${unit.unit_ke}",
-            fontFamily = AppFont.Poppins,
-            fontWeight = FontWeight.Bold,
-            fontSize = 14.sp,
-            color = Color.Black
-        )
-
-        Column(
-            modifier = Modifier.padding(start = 20.dp)
-        ) {
-            Text(
-                text = "Kode Unit : ${unit.kode_unit}",
-                fontFamily = AppFont.Poppins,
-                fontSize = 12.sp
-            )
-            Text(
-                text = "Judul Unit : ${unit.judul_unit}",
-                fontFamily = AppFont.Poppins,
-                fontSize = 12.sp
-            )
-        }
-    }
-
-    Text(
-        text = "Dapatkah Saya?",
-        fontFamily = AppFont.Poppins,
-        fontWeight = FontWeight.Bold,
-        fontSize = 14.sp,
-        modifier = Modifier.fillMaxWidth(),
-        textAlign = TextAlign.Center
-    )
-
-    unit.elemen.forEach { (_, elemen) ->
-        ElemenCard(
-            elemen = elemen
-        ) { buktiRelevans, kompetensinitas ->
-            // langsung panggil util
-            jawabanManager.upsertElemen(
-                skemaId = skemaId,
-                unitKe = unit.unit_ke,
-                kodeUnit = unit.kode_unit,
-                elemenId = elemen.elemen_index,
-                kompetensinitas = kompetensinitas,
-                buktiList = buktiRelevans
-            )
-        }
-    }
-}
-
-@Composable
-private fun ElemenCard(
-    elemen: ElemenAPL02,
-    onSubmit: (List<String>, String) -> Unit
-) {
-    var selectedOption by remember { mutableStateOf("") }
-    val buktiSelected = remember { mutableStateListOf<String>() }
-
-    val buktiRelevans = listOf(
-        "Fotocopy semester 1-5",
-        "Sertifikat PKL"
-    )
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 16.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground
-        ),
-        elevation = CardDefaults.cardElevation(6.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(
-                text = "Elemen ${elemen.elemen_index}: ${elemen.nama_elemen}",
-                fontFamily = AppFont.Poppins,
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
-                color = Color.Black,
-                textAlign = TextAlign.Center
-            )
-
-            Text(
-                text = "Kriteria Untuk Kerja:",
-                fontFamily = AppFont.Poppins,
-                fontWeight = FontWeight.Bold,
-                fontSize = 12.sp,
-                color = Color.Black,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-
-            elemen.kuk.forEach { kuk ->
+        customBukti.forEach { bukti ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+            ) {
+                Checkbox(
+                    checked = true,
+                    onCheckedChange = null,
+                    enabled = false
+                )
                 Text(
-                    text = "${elemen.elemen_index}.${kuk.urutan}.${kuk.deskripsi_kuk}",
+                    text = bukti,
                     fontFamily = AppFont.Poppins,
-                    fontSize = 12.sp,
-                    color = Color.Black,
-                    modifier = Modifier.padding(vertical = 2.dp)
+                    color = Color.Gray,
+                    modifier = Modifier.padding(start = 8.dp)
                 )
             }
         }
     }
-
-    // Radio Button Section
-    RadioButtonGroup(
-        options = listOf("k", "bk"),
-        selectedOption = selectedOption,
-        onOptionSelected = { option ->
-            selectedOption = option
-            onSubmit(buktiSelected, selectedOption)
-        }
-    )
-
-    // Bukti Relevan Section
-    BuktiRelevanSection(
-        buktiList = buktiRelevans,
-        onBuktiChanged = { bukti, isChecked ->
-            if (isChecked) {
-                buktiSelected.add(bukti)
-            } else {
-                buktiSelected.remove(bukti)
-            }
-            onSubmit(buktiSelected, selectedOption)
-        }
-    )
 }
 
 @Composable
 private fun RadioButtonGroup(
     options: List<String>,
     selectedOption: String,
+    isReadOnly: Boolean,
     onOptionSelected: (String) -> Unit
 ) {
     Row(
@@ -360,13 +742,15 @@ private fun RadioButtonGroup(
             ) {
                 RadioButton(
                     selected = option == selectedOption,
-                    onClick = { onOptionSelected(option) }
+                    onClick = { if (!isReadOnly) onOptionSelected(option) },
+                    enabled = !isReadOnly
                 )
                 Text(
                     text = option.uppercase(),
                     fontFamily = AppFont.Poppins,
                     fontWeight = FontWeight.Medium,
-                    fontSize = 12.sp
+                    fontSize = 12.sp,
+                    color = if (isReadOnly) Color.Gray else Color.Black
                 )
             }
         }
@@ -375,7 +759,9 @@ private fun RadioButtonGroup(
 
 @Composable
 private fun BuktiRelevanSection(
-    buktiList: List<String>,
+    buktiList: List<Attachment>,
+    selectedBukti: List<String>,
+    isReadOnly: Boolean,
     onBuktiChanged: (String, Boolean) -> Unit
 ) {
     Text(
@@ -395,8 +781,10 @@ private fun BuktiRelevanSection(
         buktiList.forEach { bukti ->
             BuktiCheckboxItem(
                 bukti = bukti,
+                isChecked = bukti.description in selectedBukti,
+                isReadOnly = isReadOnly,
                 onCheckedChange = { isChecked ->
-                    onBuktiChanged(bukti, isChecked)
+                    onBuktiChanged(bukti.description, isChecked)
                 }
             )
         }
@@ -405,66 +793,85 @@ private fun BuktiRelevanSection(
 
 @Composable
 private fun BuktiCheckboxItem(
-    bukti: String,
+    bukti: Attachment,
+    isChecked: Boolean,
+    isReadOnly: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
-    var checked by remember { mutableStateOf(false) }
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                checked = !checked
-                onCheckedChange(checked)
+            .let { modifier ->
+                if (!isReadOnly) {
+                    modifier.clickable {
+                        onCheckedChange(!isChecked)
+                    }
+                } else {
+                    modifier
+                }
             }
             .padding(vertical = 4.dp)
     ) {
         Checkbox(
-            checked = checked,
-            onCheckedChange = { isChecked ->
-                checked = isChecked
-                onCheckedChange(isChecked)
-            }
+            checked = isChecked,
+            onCheckedChange = { checked ->
+                if (!isReadOnly) onCheckedChange(checked)
+            },
+            enabled = !isReadOnly
         )
         Text(
-            text = bukti,
+            text = bukti.description,
             fontFamily = AppFont.Poppins,
+            color = if (isReadOnly) Color.Gray else Color.Black,
             modifier = Modifier.padding(start = 8.dp)
         )
     }
 }
 
 @Composable
-private fun SubmitButton(apL02ViewModel: APL02ViewModel, nextForm: () -> Unit, titleButton: String = "Kirim Jawaban", buttonUnApproved: String?= null) {
-    Button(
-        onClick = {
-            if(buttonUnApproved != null){
-                 val jawaban = com.example.mylsp.util.Util.jawabanApl02.value
-                 apL02ViewModel.sendApl02()
-                 Log.d("APL02", "Jawaban: $jawaban")
-            }
-             nextForm()
-
-        },
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = titleButton,
-            fontFamily = AppFont.Poppins
-        )
-    }
-
-    if (buttonUnApproved!=null){
+private fun SubmitButton(
+    apL02ViewModel: APL02ViewModel,
+    nextForm: () -> Unit,
+    asesiId:Int,
+    titleButton: String = "Kirim Jawaban",
+    role:String = "asesi"
+) {
+    if(role == "asesi" || role == "assesi" ){
         Button(
             onClick = {
-                nextForm()
-//            val jawaban = com.example.mylsp.util.Util.jawabanApl02.value
-//            apL02ViewModel.sendApl02()
-//            Log.d("APL02", "Jawaban: $jawaban")
+                val jawaban = com.example.mylsp.util.Util.jawabanApl02.value
+                apL02ViewModel.sendApl02()
+                Log.d("APL02", "Jawaban: $jawaban")
+            },
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Kirim Jawaban",
+                fontFamily = AppFont.Poppins
+            )
+        }
+    }else{
+        Button(
+            onClick = {
+                apL02ViewModel.approveApl02(asesiId, PostApproveRequest("approved"))
+            },
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = titleButton,
+                fontFamily = AppFont.Poppins
+            )
+        }
+        Button(
+            onClick = {
+                apL02ViewModel.approveApl02(asesiId, PostApproveRequest("rejected"))
             },
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
@@ -475,7 +882,7 @@ private fun SubmitButton(apL02ViewModel: APL02ViewModel, nextForm: () -> Unit, t
             )
         ) {
             Text(
-                text = buttonUnApproved,
+                text = "Tolak",
                 fontFamily = AppFont.Poppins
             )
         }

@@ -56,7 +56,7 @@ fun LoginScreen(
                 delay(3000)
                 val role = UserManager(context).getUserRole()
                 role?.let{
-                    successLogin(role.toString())
+                    successLogin(role.lowercase())
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 }?:run{
                     Toast.makeText(context, "Terjadi Kesalahan Saat Login Coba Lagi", Toast.LENGTH_SHORT).show()

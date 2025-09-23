@@ -35,13 +35,13 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
-    val startDestination = if (UserManager(context).getUserId() != null){
-        if (UserManager(context).getUserRole() == "assesor"){
-            Screen.DashboardAsesor.route
-        }else{
-            Screen.Main.route
+    val startDestination = if (userManager.getUserId() != null) {
+        when (userManager.getUserRole()!!.lowercase()) {
+            "assesi", "asesi" -> Screen.Main.route
+            "assesor", "asesor" -> Screen.DashboardAsesor.route
+            else -> Screen.Main.route
         }
-    }else{
+    } else {
         Screen.Login.route
     }
     val currentRoute = navBackStackEntry?.destination?.route

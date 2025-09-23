@@ -60,6 +60,10 @@ import com.example.mylsp.component.LoadingScreen
 import com.example.mylsp.model.api.UserDetail
 import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
+import com.example.mylsp.util.assesment.AssesmentAsesiManager
+import com.example.mylsp.util.assesment.IA01SubmissionManager
+import com.example.mylsp.util.assesment.JawabanManager
+import com.example.mylsp.util.user.AsesiManager
 import com.example.mylsp.util.user.TokenManager
 import com.example.mylsp.util.user.UserManager
 import kotlinx.coroutines.delay
@@ -69,7 +73,10 @@ fun ProfileScreen(modifier: Modifier, navController: NavController) {
     val context = LocalContext.current
     val userManager = UserManager(context)
     val tokenManager = TokenManager(context)
-
+    val asesiManager = AsesiManager(context)
+    val assesmentAsesiManager = AssesmentAsesiManager(context)
+    val jawabanManager = JawabanManager()
+    val ia01SubmissionManager = IA01SubmissionManager(context)
     var showLogout by remember { mutableStateOf(false) }
     var logout by remember { mutableStateOf(false) }
 
@@ -360,6 +367,9 @@ fun ProfileScreen(modifier: Modifier, navController: NavController) {
                 logout = false
                 userManager.clearUser()
                 tokenManager.clearToken()
+                asesiManager.clear()
+                assesmentAsesiManager.clear()
+
                 navController.navigate(Screen.Login.route) {
                     popUpTo(navController.graph.startDestinationId) {
                         inclusive = true

@@ -4,9 +4,7 @@ import android.content.Context
 import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import com.example.mylsp.model.api.assesment.IA01UnitSubmission
-import com.example.mylsp.model.api.assesment.IA01ElemenSubmission
-import com.example.mylsp.model.api.assesment.IA01KUKSubmission
+import com.example.mylsp.model.api.assesment.*
 import com.google.gson.Gson
 
 class IA01SubmissionManager(context: Context) {
@@ -56,7 +54,6 @@ class IA01SubmissionManager(context: Context) {
         val currentElemen = if (elemenIndex >= 0) {
             updatedElemenList[elemenIndex]
         } else {
-            // Buat elemen baru jika belum ada
             IA01ElemenSubmission(
                 elemen_id = elemenId,
                 kuk = emptyList()
@@ -67,10 +64,13 @@ class IA01SubmissionManager(context: Context) {
         val updatedKukList = currentElemen.kuk.toMutableList()
         val kukIndex = updatedKukList.indexOfFirst { it.kuk_id == kukId }
 
+        // Buat penilaian lanjut sebagai list
+        val penilaianLanjutList = listOf(IA01PenilaianLanjut(teks_penilaian = catatanAsesor))
+
         val updatedKuk = IA01KUKSubmission(
             kuk_id = kukId,
-            hasil_observasi = hasilObservasi,
-            catatan_asesor = catatanAsesor
+            skkni = hasilObservasi,
+            penilaian_lanjut = penilaianLanjutList
         )
 
         if (kukIndex >= 0) {
@@ -101,7 +101,6 @@ class IA01SubmissionManager(context: Context) {
     }
 
     fun getIA01Submission(assesmentAsesiId: Int): IA01UnitSubmission? {
-        // Untuk backward compatibility, return unit pertama
         return getAllSubmissions(assesmentAsesiId).firstOrNull()
     }
 

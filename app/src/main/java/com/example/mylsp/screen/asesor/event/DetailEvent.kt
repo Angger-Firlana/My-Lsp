@@ -39,6 +39,8 @@ import com.example.mylsp.R
 import com.example.mylsp.model.api.Apl01
 import com.example.mylsp.model.api.asesi.AssesmentAsesi
 import com.example.mylsp.util.AppFont
+import com.example.mylsp.util.assesment.AssesmentAsesiManager
+import com.example.mylsp.util.user.AsesiManager
 import com.example.mylsp.util.user.UserManager
 import com.example.mylsp.viewmodel.AssesmentViewModel
 import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
@@ -298,7 +300,7 @@ fun ParticipantsList(participants: List<AssesmentAsesi>, onClick: (Int, Apl01) -
             ParticipantCard(
                 participant = participant,
                 onClick = {
-                   onClick(participant.id, participant.apl01)
+                   onClick(participant.id, participant.asesi)
                 }
             )
 
@@ -308,10 +310,15 @@ fun ParticipantsList(participants: List<AssesmentAsesi>, onClick: (Int, Apl01) -
 
 @Composable
 fun ParticipantCard(participant: AssesmentAsesi, onClick: (Int) -> Unit) {
-
+    val context = LocalContext.current
+    val assesmentAsesiManager = AssesmentAsesiManager(context = context)
+    val asesiManager = AsesiManager(context)
     Card(
         onClick = {
             onClick(participant.id)
+            asesiManager.setId(participant.assesi_id)
+            assesmentAsesiManager.setAssesmentAsesiId(participant.id)
+            assesmentAsesiManager.saveAssesmentAsesi(participant)
         },
         modifier = Modifier
             .fillMaxWidth()
@@ -334,14 +341,14 @@ fun ParticipantCard(participant: AssesmentAsesi, onClick: (Int) -> Unit) {
             ) {
                 Column {
                     Text(
-                        text = participant.apl01.nama_lengkap?: "Nama Asesi",
+                        text = participant.asesi.nama_lengkap?: "Nama Asesi",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black,
                         fontFamily = AppFont.Poppins
                     )
                     Text(
-                        text = "NIK: ${participant.apl01.no_ktp}",
+                        text = "NIK: ${participant.asesi.no_ktp}",
                         fontSize = 12.sp,
                         color = Color.Gray,
                         fontFamily = AppFont.Poppins

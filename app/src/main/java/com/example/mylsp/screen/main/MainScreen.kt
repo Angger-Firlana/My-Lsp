@@ -38,11 +38,14 @@ import com.example.mylsp.model.api.Apl01
 import com.example.mylsp.model.api.Attachment
 import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
+import com.example.mylsp.util.assesment.AssesmentAsesiManager
 import com.example.mylsp.util.user.AsesiManager
 import com.example.mylsp.util.user.UserManager
 import com.example.mylsp.viewmodel.APL01ViewModel
 import com.example.mylsp.viewmodel.AsesiViewModel
+import com.example.mylsp.viewmodel.assesment.AK05ViewModel
 import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
+import kotlinx.coroutines.delay
 
 data class ItemBar(
     val icon: ImageVector,
@@ -60,6 +63,7 @@ data class ItemBanner(
 fun MainScreen(
     modifier: Modifier = Modifier,
     apl01ViewModel: APL01ViewModel,
+    aK05ViewModel: AK05ViewModel,
     asesiViewModel: AsesiViewModel,
     assesmentAsesiViewModel: AssesmentAsesiViewModel,
     navController: NavController
@@ -68,6 +72,8 @@ fun MainScreen(
     val apl01Data by apl01ViewModel.formData.collectAsState()
     val asesi by asesiViewModel.asesi.collectAsState()
     val asesiManager = AsesiManager(context)
+    val AK05 by aK05ViewModel.submission.collectAsState()
+    val assesmentAsesiManager = AssesmentAsesiManager(context)
     val userManager = UserManager(context)
 
     val banners = listOf(
@@ -81,9 +87,14 @@ fun MainScreen(
 
     LaunchedEffect(Unit) {
         asesiViewModel.getDataAsesiByUser(userManager.getUserId()?.toInt() ?: "0".toInt())
-        Log.d("test", asesiManager.getId().toString())
+        aK05ViewModel.getSubmission(asesiManager.getId())
+        Log.d("testAsesiid", asesiManager.getId().toString())
         apl01ViewModel.fetchFormApl01Status()
         assesmentAsesiViewModel.getAssesmentAsesiByAsesi(asesiManager.getId())
+        assesmentAsesi?.let { assesmentAsesi ->
+            assesmentAsesiManager.setAssesmentAsesiId(assesmentAsesi.id)
+            assesmentAsesiManager.saveAssesmentAsesi(assesmentAsesi)
+        }
     }
 
     Box(Modifier.fillMaxSize().padding(bottom = 64.dp)) {
@@ -231,6 +242,22 @@ fun MainScreen(
                 apl01Data = apl01Data,
                 onNavigateToApl01 = { navController.navigate(Screen.Apl01.route) }
             )
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+                    .padding(vertical = 8.dp),
+                shape = RoundedCornerShape(8.dp),
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    EnhancedInfoRow(
+                        Icons.Default.Assessment,
+                        label = "Hasil Assesment",
+                        value = if (AK05?.data?.get(0)?.keputusan.isNullOrEmpty()) "Belum ada keputusan" else if(AK05?.data?.get(0)?.keputusan == "k") "Kompeten" else "Belum Kompeten"
+                    )
+                }
+            }
         }
     }
 }

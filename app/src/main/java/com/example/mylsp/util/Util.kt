@@ -7,7 +7,7 @@ import com.example.mylsp.model.api.SubmissionGroup
 
 object Util {
     var jawabanApl02 = mutableStateOf(
-        SubmissionGroup(skema_id = 0, submissions = listOf())
+        SubmissionGroup(assesmentAsesiId = 0, submissions = listOf())
     )
     var buktiRelevanApl02 = mutableStateListOf<BuktiRelevanApl02>()
     var logUser = 0

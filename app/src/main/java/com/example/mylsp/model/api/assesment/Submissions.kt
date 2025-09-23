@@ -1,7 +1,10 @@
 package com.example.mylsp.model.api
 
+import com.google.gson.annotations.SerializedName
+
 data class SubmissionGroup(
-    val skema_id: Int,
+    @SerializedName("assesment_asesi_id")
+    val assesmentAsesiId: Int,
     var submissions: List<Submission>
 )
 

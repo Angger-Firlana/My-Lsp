@@ -2,8 +2,14 @@ package com.example.mylsp.model.api.assesment
 
 // Root request
 data class IA01Request(
-    val skema_id: Int,
     val assesment_asesi_id: Int,
+    val submissions: List<IA01UnitSubmission>
+)
+
+// Response untuk GET
+data class IA01GetResponse(
+    val success: Boolean,
+    val message: String,
     val submissions: List<IA01UnitSubmission>
 )
 
@@ -20,17 +26,21 @@ data class IA01ElemenSubmission(
     val kuk: List<IA01KUKSubmission>
 )
 
-// KUK level - sesuai untuk observasi IA01
+// KUK level
 data class IA01KUKSubmission(
     val kuk_id: Int,
-    val hasil_observasi: String, // "Kompeten" atau "Belum Kompeten"
-    val catatan_asesor: String   // catatan observasi asesor
+    val skkni: String, // "ya" atau "tidak"
+    val penilaian_lanjut: List<IA01PenilaianLanjut>
 )
 
-// Response
+// Penilaian lanjut per KUK
+data class IA01PenilaianLanjut(
+    val teks_penilaian: String
+)
+
+// Response untuk POST
 data class IA01Response(
     val success: Boolean,
     val message: String,
     val submission_id: Int
 )
-

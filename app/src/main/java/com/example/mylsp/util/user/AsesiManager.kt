@@ -50,4 +50,7 @@ class AsesiManager(context: Context) {
             (value as? String)?.let { gson.fromJson(it, Apl01::class.java) }
         }
     }
+    fun clear() {
+        sharedPrefs.edit().clear().apply()
+    }
 }

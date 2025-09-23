@@ -51,7 +51,8 @@ data class Apl01(
     val email_kantor: String?,
     val status:String,
     val user: UserDetail,
-    val attachments: List<Attachment>?
+    val attachments: List<Attachment>?,
+    val sertification_data: SertificationData?
 )
 
 data class Attachment(
@@ -92,10 +93,20 @@ data class AsesiRequest(
     val fax_kantor: String?,
     val email_kantor: String?,
     val status:String,
-    val attachments: List<AttachmentRequest>,
-    val tujuan_assesment: String,
-    val schema_id: Int
+    val tujuan_asesmen: String,
+    val schema_id: Int,
+    val attachments: List<AttachmentRequest>
 )
+
+data class SertificationData(
+    val id: Int,
+    val form_apl01_id: Int,
+    val schema_id: Int,
+    val tujuan_asesmen: String,
+    val created_at: String,
+    val updated_at: String
+)
+
 
 data class AttachmentRequest(
     val file: MultipartBody.Part,

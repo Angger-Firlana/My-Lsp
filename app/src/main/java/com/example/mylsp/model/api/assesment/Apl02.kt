@@ -10,6 +10,74 @@ data class Apl02(
     val data: List<UnitApl02>
 )
 
+data class GetAPL02Response(
+    val status: Boolean,
+    val message: String,
+    val data: List<UnitGetResponse>
+)
+
+data class UnitGetResponse(
+    val id: Int,
+    val submission_date: String,
+    val created_at: String,
+    val updated_at: String,
+    val assesment_asesi_id: Int,
+    val ttd_assesor: String,
+    val details: List<Detail>,
+    val assesment_asesi: AssesmentAsesi
+) {
+    data class Detail(
+        val id: Int,
+        val submission_id: Int,
+        val unit_ke: Int,
+        val kode_unit: String,
+        val elemen_id: Int,
+        val kompetensinitas: String,
+        val created_at: String,
+        val updated_at: String,
+        val attachments: List<Attachment>
+    ) {
+        data class Attachment(
+            val id: Int,
+            val submission_detail_id: Int,
+            val bukti_id: Int,
+            val created_at: String,
+            val updated_at: String,
+            val bukti: Bukti
+        ) {
+            data class Bukti(
+                val id: Int,
+                val assesi_id: Int,
+                val nama_dokumen: String,
+                val file_path: String,
+                val description: String,
+                val created_at: String,
+                val updated_at: String
+            )
+        }
+    }
+
+    data class AssesmentAsesi(
+        val id: Int,
+        val assesment_id: Int,
+        val assesi_id: Int,
+        val status: String,
+        val created_at: String,
+        val updated_at: String
+    )
+}
+
+
+
+
+data class Apl02Response(
+    val success: Boolean,
+    val jurusan: Jurusan,
+    val judul_skema: String,
+    val nomor_skema: String,
+    val data: List<UnitApl02>
+)
+
 data class UnitApl02(
     val unit_ke: Int,
     val kode_unit: String,
@@ -37,4 +105,13 @@ data class JawabanApl02(
 data class BuktiRelevanApl02(
     val idElemen: Int,
     val buktiRelevans: MutableList<String> = mutableListOf()
+)
+
+data class PostApproveRequest(
+    val ttd_assesor: String
+)
+
+data class PostApproveResponse(
+    val success: Boolean,
+    val message: String
 )

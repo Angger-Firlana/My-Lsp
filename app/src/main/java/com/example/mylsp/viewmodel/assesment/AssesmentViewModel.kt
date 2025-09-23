@@ -18,6 +18,22 @@ class AssesmentViewModel(application: Application):AndroidViewModel(application)
     private val _message = MutableStateFlow("")
     val message = _message.asStateFlow()
 
+    fun getListAssesmentByUser(userId: Int){
+        viewModelScope.launch {
+            val result = repository.getAssesments()
+            result.fold(
+                onSuccess = {
+                    _listAssesment.value = it.data.filter { listA->
+                        listA.assesor.user_id == userId
+                    }
+                },
+                onFailure = {
+                    _message.value = it.message.toString()
+                }
+            )
+        }
+    }
+
     fun getListAssesment(){
         viewModelScope.launch {
             val result = repository.getAssesments()

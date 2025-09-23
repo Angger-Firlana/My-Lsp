@@ -20,7 +20,7 @@ class AsesiRepository(context: Context) {
         return try {
             // Debug log input data
             Log.d(TAG, "Input Data - schema_id: ${asesiRequest.schema_id}")
-            Log.d(TAG, "Input Data - tujuan_assesment: ${asesiRequest.tujuan_assesment}")
+            Log.d(TAG, "Input Data - tujuan_assesment: ${asesiRequest.tujuan_asesmen}")
 
             val (textParts, fileParts) = asesiRequest.toMultipart()
 
@@ -51,7 +51,7 @@ class AsesiRepository(context: Context) {
                 textParts["fax_kantor"]!!,
                 textParts["email_kantor"]!!,
                 textParts["status"]!!,
-                textParts["tujuan_assesment"]!!,
+                textParts["tujuan_asesmen"]!!,
                 textParts["schema_id"]!!,
                 fileParts
             )
@@ -165,7 +165,7 @@ fun AsesiRequest.toMultipart(): Pair<Map<String, RequestBody>, List<MultipartBod
     fax_kantor.asPart("fax_kantor")
     email_kantor.asPart("email_kantor")
     status.asPart("status")
-    tujuan_assesment.asPart("tujuan_assesment")
+    tujuan_asesmen.asPart("tujuan_asesmen")
     schema_id.asPart("schema_id")
 
     // Debug: Print final textParts
@@ -190,6 +190,14 @@ fun AsesiRequest.toMultipart(): Pair<Map<String, RequestBody>, List<MultipartBod
         multipartList.add(
             MultipartBody.Part.createFormData(
                 "attachments[$index][description]",
+                null,
+                part.description
+            )
+        )
+
+        multipartList.add(
+            MultipartBody.Part.createFormData(
+                "attachments[$index][nama_dokumen]",
                 null,
                 part.description
             )

@@ -2,17 +2,17 @@ package com.example.mylsp.repository.assesment
 
 import android.content.Context
 import com.example.mylsp.api.APIClient
-import com.example.mylsp.model.api.assesment.AK01SubmissionRequest
+import com.example.mylsp.model.api.assesment.AK01Submission
 import com.example.mylsp.model.api.assesment.AK01SubmissionResponse
+import com.example.mylsp.model.api.assesment.GetAK01Response
 
 class AK01Repository(private val context:Context) {
     private val api = APIClient.getClient(context)
 
-    suspend fun sendSubmission(aK01SubmissionRequest: AK01SubmissionRequest):Result<AK01SubmissionResponse>{
+    suspend fun sendSubmission(aK01SubmissionRequest: AK01Submission):Result<AK01SubmissionResponse>{
         return try {
             val response = api.sendSubmissionAk01(
-                assessmentAsesiId = aK01SubmissionRequest.assesmentAsesiId,
-                attachments = aK01SubmissionRequest.attachments
+                bodyRequestBody = aK01SubmissionRequest
             )
 
             if(response.isSuccessful) {
@@ -25,6 +25,24 @@ class AK01Repository(private val context:Context) {
             }else{
                 val errorBody = response.errorBody()
                 Result.failure(Exception(errorBody.toString()))
+            }
+        }catch (e:Exception){
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getSubmission(id:Int):Result<GetAK01Response>{
+        return try {
+            val response = api.getAk01ByAsesi(id = id)
+            if (response.isSuccessful){
+                val body = response.body()
+                if (body != null){
+                    Result.success(body)
+                }else {
+                    Result.failure(Exception("Response body is null"))
+                }
+            }else{
+                Result.failure(Exception("Ngebug"))
             }
         }catch (e:Exception){
             Result.failure(e)

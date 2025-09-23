@@ -49,15 +49,8 @@ fun ApprovedUnapprovedScreen(
 
     val items = listOf(
         ApprovalItem("FR.APL.02", "ASESMEN MANDIRI", "NIS: 8880", true, Screen.Apl02.createRoute(1)),
-        ApprovalItem("FR.AK.01", "PERSETUJUAN ASESMEN DAN KERAHASIAAN", "NIS: 8880", null, Screen.Ak01.createRoute("assesor")),
-        ApprovalItem("FR.AK.04", "BANDING ASESMEN", "NIS: 8880", true, Screen.Ak04.route),
         ApprovalItem("FR.IA.01.CL", "CEKLIST OBSERVASI AKTIVITAS DI TEMPAT KERJA/SIMULASI", "NIS: 8880", null, Screen.Ia01.createRoute(1)),
-        ApprovalItem("FR.IA.02", "TPO TUGAS PRAKTIK DEMONSTRASI", "NIS: 8880", false, Screen.Ia02.route),
-        ApprovalItem("FR.IA.03", "PERTANYAAN UNTUK MENDUKUNG OBSERVASI", "NIS: 8880", null, Screen.Ia03.route),
-        ApprovalItem("FR.IA.06A.DPT", "DAFTAR PERTANYAAN TERTULIS (ESAI)", "NIS: 8880", null, Screen.Ia06a.route),
-        ApprovalItem("FR.IA.06.C", "LEMBAR JAWABAN PERTANYAAN TERTULIS (ESAI)", "NIS: 8880", null, Screen.Ia06c.route),
-        ApprovalItem("FR.AK.02", "REKAMAN ASESMEN KOMPETENSI", "NIS: 8880", null, Screen.Ak02.route),
-        ApprovalItem("FR.AK.03", "UMPAN BALIK DAN CATATAN ASESMEN", "NIS: 8880", null, Screen.Ak03.route),
+        ApprovalItem("FR.AK.01", "PERSETUJUAN ASESMEN DAN KERAHASIAAN", "NIS: 8880", null, Screen.Ak01.createRoute("assesor")),
         ApprovalItem("FR.AK.05", "LAPORAN ASESMEN", "NIS: 8880", null, Screen.Ak05.route),
     )
 

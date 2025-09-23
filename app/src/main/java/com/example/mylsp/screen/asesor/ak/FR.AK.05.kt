@@ -1,418 +1,332 @@
 package com.example.mylsp.screen.asesor.ak
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.component.SkemaSertifikasi
-import com.example.mylsp.navigation.Screen
+import com.example.mylsp.model.api.assesment.Ak05SubmissionRequest
 import com.example.mylsp.util.AppFont
+import com.example.mylsp.util.assesment.AssesmentAsesiManager
+import com.example.mylsp.viewmodel.assesment.AK05ViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FRAK05(modifier: Modifier = Modifier, navController: NavController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState())
-    ) {
-        HeaderForm(
-            "FR.AK.05",
-            "PERTANYAAN WAWANCARA"
-        )
-
-        SkemaSertifikasi(
-            judulUnit = "Okupasi Junior Custom Made",
-            kodeUnit = "SKM.TBS.OJCM/LSP.SMKN24/2023",
-            TUK = "Sewaktu/Tempat Kerja/Mandiri",
-            namaAsesor = null,
-            namaAsesi = null,
-            tanggalAsesmen = null
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        UnitKompetensi(
-            kodeUnit = "I.555HDROOO.001.2",
-            judulUnit = "Memproses Reservasi"
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        InstruksiWawancara()
-
-        PertanyaanWawancara()
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        FormNamaAsesiAsesor(
-            namaAsesi = "Fawaz Muhammad Sena Rizki Ramadhan Lebaran Idul Adha",
-            namaAsesor = "Fawaz Muhammad Sena Rizki Ramadhan"
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TandaTanganAsesi(signerImage = null)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        KirimJawabanButton { navController.navigate(Screen.Congrats.route) }
-
-        Spacer(modifier = Modifier.height(16.dp))
-    }
-}
-
-@Composable
-fun UnitKompetensi(
-    kodeUnit: String,
-    judulUnit: String
+fun FRAK05(
+    modifier: Modifier = Modifier,
+    viewModel: AK05ViewModel
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(
-                "Unit Kompetensi",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = AppFont.Poppins
-            )
+    val context = LocalContext.current
+    val assesmentManager = remember { AssesmentAsesiManager(context) }
 
-            Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                Column {
-                    Text("Kode Unit", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                    Text("Judul Unit", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                }
+    // State untuk form
+    var keputusan by remember { mutableStateOf("") }
+    var keterangan by remember { mutableStateOf("") }
+    var aspekPositif by remember { mutableStateOf("") }
+    var aspekNegatif by remember { mutableStateOf("") }
+    var penolakanHasil by remember { mutableStateOf("") }
+    var saranPerbaikan by remember { mutableStateOf("") }
+    var ttdAsesor by remember { mutableStateOf("") }
 
-                Spacer(modifier = Modifier.width(8.dp))
+    // State dari ViewModel
+    val loading by viewModel.loading.collectAsState()
+    val state by viewModel.state.collectAsState()
+    val message by viewModel.message.collectAsState()
+    val submission by viewModel.submission.collectAsState()
 
-                Column {
-                    Text( ":", fontSize = 12.sp, fontFamily = AppFont.Poppins )
-                    Text( ":", fontSize = 12.sp, fontFamily = AppFont.Poppins )
-                }
+    // Ambil data assesment asesi
+    val assesmentAsesi = remember { assesmentManager.getAssesmentAsesi() }
+    val assesmentAsesiId = remember { assesmentManager.getAssesmentId() }
 
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Column {
-                    Text( kodeUnit, fontSize = 12.sp, fontFamily = AppFont.Poppins )
-                    Text( judulUnit, fontSize = 12.sp, fontFamily = AppFont.Poppins )
-                }
-            }
+    // Fetch existing data saat pertama kali load
+    LaunchedEffect(assesmentAsesiId) {
+        if (assesmentAsesiId != -1) {
+            viewModel.getSubmission(assesmentAsesiId)
         }
     }
-}
 
-@Composable
-fun InstruksiWawancara() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Text(
-            "Setiap pertanyaan harus diisi terkait dengan Elemen",
-            fontSize = 16.sp,
-            fontStyle = FontStyle.Italic,
-            fontWeight = FontWeight.Bold,
-            fontFamily = AppFont.Poppins
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            "Tuliskan bukti-bukti yang terdapat pada Ceklis Verifikasi Portofolio yang memerlukan wawancara",
-            fontSize = 12.sp,
-            fontFamily = AppFont.Poppins
-        )
+    // Update form dengan data yang sudah ada
+    LaunchedEffect(submission) {
+        submission?.data?.firstOrNull()?.let { data ->
+            keputusan = data.keputusan
+            keterangan = data.keterangan ?: ""
+            aspekPositif = data.aspekPositif ?: ""
+            aspekNegatif = data.aspekNegatif ?: ""
+            penolakanHasil = data.penolakanHasil ?: ""
+            saranPerbaikan = data.saranPerbaikan ?: ""
+            ttdAsesor = data.ttdAsesor
+        }
     }
-}
 
-@Composable
-fun PertanyaanWawancara(
-    modifier: Modifier = Modifier,
-    onItemChecked: (Int, Boolean?) -> Unit = { _, _ -> },
-) {
-    val pertanyaanList = listOf(
-        "Sesuai dengan bukti",
-        "Sesuai dengan bukti",
-        "Sesuai dengan bukti"
-    )
+    // Show snackbar untuk response
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    val checkboxStates = remember { mutableStateMapOf<Int, Boolean?>() }
-
-    Column(modifier = modifier.fillMaxWidth()) {
-        PertanyaanList(
-            items = pertanyaanList,
-            checkboxStates = checkboxStates,
-            onItemChecked = onItemChecked
-        )
+    LaunchedEffect(state, message) {
+        if (state != null && message.isNotEmpty()) {
+            snackbarHostState.showSnackbar(
+                message = message,
+                actionLabel = "OK"
+            )
+        }
     }
-}
 
-@Composable
-fun PertanyaanList(
-    items: List<String>,
-    checkboxStates: MutableMap<Int, Boolean?>,
-    onItemChecked: (Int, Boolean?) -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Daftar Pertanyaan Wawancara",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = AppFont.Poppins,
-                modifier = Modifier.padding(bottom = 16.dp)
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+        ) {
+            // Header
+            HeaderForm(
+                title = "FORMULIR ASESMEN KOMPETEN (AK-05)",
+                subTitle = "Keputusan Asesmen"
             )
 
-            items.forEachIndexed { index, item ->
-                PertanyaanItem(
-                    index = index,
-                    text = item,
-                    isCheckedK = checkboxStates[index] == true,
-                    isCheckedBK = checkboxStates[index] == false,
-                    onKChecked = { checked ->
-                        checkboxStates[index] = if (checked) true else null
-                        onItemChecked(index, checkboxStates[index])
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Form Content
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                // Keputusan Asesmen
+                Text(
+                    text = "Keputusan Asesmen",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = AppFont.Poppins,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                Column(
+                    modifier = Modifier.selectableGroup()
+                ) {
+                    listOf("KOMPETEN", "BELUM KOMPETEN").forEach { option ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .selectable(
+                                    selected = (keputusan == option),
+                                    onClick = { keputusan = option },
+                                    role = Role.RadioButton
+                                )
+                                .padding(vertical = 4.dp)
+                        ) {
+                            RadioButton(
+                                selected = (keputusan == option),
+                                onClick = null
+                            )
+                            Text(
+                                text = option,
+                                fontFamily = AppFont.Poppins,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Keterangan
+                OutlinedTextField(
+                    value = keterangan,
+                    onValueChange = { keterangan = it },
+                    label = {
+                        Text(
+                            "Keterangan",
+                            fontFamily = AppFont.Poppins
+                        )
                     },
-                    onBKChecked = { checked ->
-                        checkboxStates[index] = if (checked) false else null
-                        onItemChecked(index, checkboxStates[index])
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 3,
+                    maxLines = 5
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Aspek Positif
+                OutlinedTextField(
+                    value = aspekPositif,
+                    onValueChange = { aspekPositif = it },
+                    label = {
+                        Text(
+                            "Aspek Positif",
+                            fontFamily = AppFont.Poppins
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 3,
+                    maxLines = 5
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Aspek Negatif
+                OutlinedTextField(
+                    value = aspekNegatif,
+                    onValueChange = { aspekNegatif = it },
+                    label = {
+                        Text(
+                            "Aspek Negatif",
+                            fontFamily = AppFont.Poppins
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 3,
+                    maxLines = 5
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Penolakan Hasil (jika belum kompeten)
+                if (keputusan == "BELUM KOMPETEN") {
+                    OutlinedTextField(
+                        value = penolakanHasil,
+                        onValueChange = { penolakanHasil = it },
+                        label = {
+                            Text(
+                                "Penolakan Hasil",
+                                fontFamily = AppFont.Poppins
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        minLines = 3,
+                        maxLines = 5
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Saran Perbaikan
+                    OutlinedTextField(
+                        value = saranPerbaikan,
+                        onValueChange = { saranPerbaikan = it },
+                        label = {
+                            Text(
+                                "Saran Perbaikan",
+                                fontFamily = AppFont.Poppins
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        minLines = 3,
+                        maxLines = 5
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                // Tanda Tangan Asesor
+                OutlinedTextField(
+                    value = ttdAsesor,
+                    onValueChange = { ttdAsesor = it },
+                    label = {
+                        Text(
+                            "Tanda Tangan Asesor",
+                            fontFamily = AppFont.Poppins
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = {
+                        Text(
+                            "Masukkan nama asesor untuk tanda tangan",
+                            fontFamily = AppFont.Poppins,
+                            color = Color.Gray
+                        )
                     }
                 )
 
-                if (index < items.size - 1) {
-                    HorizontalDivider(
-                        color = Color.Gray.copy(alpha = 0.2f),
-                        thickness = 0.5.dp,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    )
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Submit Button
+                Button(
+                    onClick = {
+                        if (assesmentAsesiId != -1) {
+                            val request = Ak05SubmissionRequest(
+                                assesmentAsesiId = assesmentAsesiId,
+                                keputusan = if(keputusan == "KOMPETEN") "k" else "bk",
+                                keterangan = keterangan.ifEmpty { null },
+                                aspekPositif = aspekPositif.ifEmpty { null },
+                                aspekNegatif = aspekNegatif.ifEmpty { null },
+                                penolakanHasil = penolakanHasil.ifEmpty { null },
+                                saranPerbaikan = saranPerbaikan.ifEmpty { null },
+                                ttdAsesor = "sudah"
+                            )
+                            viewModel.sendSubmission(request)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    enabled = !loading && keputusan.isNotEmpty() && ttdAsesor.isNotEmpty()
+                ) {
+                    if (loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Text(
+                            text = "SUBMIT ASESMEN",
+                            fontFamily = AppFont.Poppins,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Informasi Status
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            text = "Informasi",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = AppFont.Poppins
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = "• Pilih keputusan asesmen (KOMPETEN/BELUM KOMPETEN)\n" +
+                                    "• Isi aspek positif dan negatif dari asesmen\n" +
+                                    "• Jika BELUM KOMPETEN, isi penolakan hasil dan saran perbaikan\n" +
+                                    "• Tanda tangan asesor wajib diisi",
+                            fontSize = 12.sp,
+                            fontFamily = AppFont.Poppins,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
             }
-        }
-    }
-}
-
-@Composable
-fun PertanyaanItem(
-    index: Int,
-    text: String,
-    isCheckedK: Boolean,
-    isCheckedBK: Boolean,
-    onKChecked: (Boolean) -> Unit,
-    onBKChecked: (Boolean) -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-    ) {
-        Text(
-            text = "${index + 1}. $text :",
-            fontSize = 12.sp,
-            fontFamily = AppFont.Poppins,
-            lineHeight = 16.sp
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 8.dp),
-            horizontalArrangement = Arrangement.Start
-        ) {
-            CheckboxRekomendasiOption(
-                label = "K",
-                checked = isCheckedK,
-                onCheckedChange = onKChecked
-            )
-
-            Spacer(modifier = Modifier.width(24.dp))
-
-            CheckboxRekomendasiOption(
-                label = "BK",
-                checked = isCheckedBK,
-                onCheckedChange = onBKChecked
-            )
-        }
-    }
-}
-
-@Composable
-fun CheckboxRekomendasiOption(
-    label: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Checkbox(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            modifier = Modifier.size(18.dp),
-            colors = CheckboxDefaults.colors(
-                checkedColor = MaterialTheme.colorScheme.primary,
-                uncheckedColor = Color.Gray
-            )
-        )
-        Text(
-            text = label,
-            fontSize = 12.sp,
-            fontFamily = AppFont.Poppins,
-            modifier = Modifier.padding(start = 4.dp)
-        )
-    }
-}
-
-@Composable
-fun FormNamaAsesiAsesor(
-    namaAsesi: String?= null,
-    namaAsesor: String?= null
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                "Nama Asesi",
-                fontFamily = AppFont.Poppins,
-                fontSize = 14.sp
-            )
-
-            OutlinedTextField(
-                value = namaAsesi ?: "",
-                onValueChange = {},
-                readOnly = true,
-                singleLine = true,
-                textStyle = TextStyle(fontSize = 14.sp),
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                "Nama Asesor",
-                fontFamily = AppFont.Poppins,
-                fontSize = 14.sp
-            )
-
-            OutlinedTextField(
-                value = namaAsesor ?: "",
-                onValueChange = {},
-                readOnly = true,
-                singleLine = true,
-                textStyle = TextStyle(fontSize = 14.sp),
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
-}
-
-@Composable
-fun TandaTanganAsesi(signerImage: Painter?) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            "Tanda Tangan Asesi",
-            fontSize = 14.sp,
-            fontFamily = AppFont.Poppins
-        )
-
-        Box(
-            modifier = Modifier
-                .height(200.dp)
-                .fillMaxWidth()
-                .border(1.dp, Color.Gray, RoundedCornerShape(4.dp)),
-            contentAlignment = Alignment.Center
-        ) {
-            signerImage?.let {
-                Image(
-                    painter = it,
-                    contentDescription = "Tanda Tangan",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-        }
-    }
-}
-
-
-@Composable
-fun KirimJawabanButton(onClick: () -> Unit) {
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        Button(
-            onClick = onClick,
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.tertiary)
-        ) {
-            Text(
-                "Kirim Jawaban",
-                fontSize = 14.sp,
-                fontFamily = AppFont.Poppins,
-                fontWeight = FontWeight.Bold
-            )
         }
     }
 }

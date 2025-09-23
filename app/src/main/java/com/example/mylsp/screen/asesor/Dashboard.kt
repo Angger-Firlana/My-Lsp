@@ -11,6 +11,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,12 +30,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mylsp.R
+import com.example.mylsp.model.api.assesment.Assessment
 import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.user.UserManager
+import com.example.mylsp.viewmodel.AssesmentViewModel
 
 @Composable
-fun DashboardAsesor(modifier: Modifier = Modifier, navController: NavController) {
+fun DashboardAsesor(
+    modifier: Modifier = Modifier,
+    assesmentViewModel: AssesmentViewModel,
+    navController: NavController
+) {
+    val listAssesment by assesmentViewModel.listAssessment.collectAsState()
     val userManager = UserManager(LocalContext.current.applicationContext)
     val username = userManager.getUserName()
     val Blue = Color(0xFF1DA1F2)
@@ -40,6 +50,10 @@ fun DashboardAsesor(modifier: Modifier = Modifier, navController: NavController)
     val Orange = Color(0xFFF7931E)
     val TextGray = Color(0xFF8A8A8A)
     val ButtonBlue = Color(0xFF2196F3)
+
+    LaunchedEffect(Unit) {
+        assesmentViewModel.getListAssesmentByUser(userManager.getUserId()?.toInt()?:0)
+    }
 
     Box(modifier = modifier.fillMaxSize().background(Color.White)) {
         // HEADER
@@ -53,7 +67,11 @@ fun DashboardAsesor(modifier: Modifier = Modifier, navController: NavController)
         CardsRow(
             modifier = Modifier
                 .padding(top = 145.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            listAssesment,
+            clickAssesment = {
+                navController.navigate(Screen.DetailEvent.createRoute(it))
+            }
         )
 
         // SAPAAN, STATISTIK, MENU, DAN TOMBOL
@@ -192,24 +210,20 @@ private data class InfoCard(
 enum class StatusType { Running, Pending }
 
 @Composable
-private fun CardsRow(modifier: Modifier = Modifier) {
-    val items = listOf(
-        InfoCard("USK RPL - PEMROGRAMAN DASAR", "SMKN 24 JAKARTA", "Sedang berjalan", StatusType.Running),
-        InfoCard("USK RPL - PEMROGRAMAN WEB", "SMKN 24 JAKARTA", "Pending", StatusType.Pending),
-        InfoCard("USK RPL - …", "SMKN 24 JAKARTA", "Pending", StatusType.Pending)
-    )
+private fun CardsRow(modifier: Modifier = Modifier, listAssesment: List<Assessment>, clickAssesment: (Int) -> Unit) {
+
 
     LazyRow(
         modifier = modifier,
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(items) { item -> SmallInfoCard(item) }
+        items(listAssesment) { item -> SmallInfoCard(item, onClick = {clickAssesment(it)}) }
     }
 }
 
 @Composable
-private fun SmallInfoCard(data: InfoCard) {
+private fun SmallInfoCard(data: Assessment, onClick: (Int) -> Unit) {
     val bg = Color.White
     val stroke = Color(0xFFE5E7EB)
     val running = Color(0xFFBDE6FF)
@@ -218,6 +232,9 @@ private fun SmallInfoCard(data: InfoCard) {
     val textLight = Color(0xFF9CA3AF)
 
     Surface(
+        onClick = {
+            onClick(data.id)
+        },
         modifier = Modifier.width(240.dp).height(86.dp),
         color = bg,
         shape = RoundedCornerShape(14.dp),
@@ -226,7 +243,7 @@ private fun SmallInfoCard(data: InfoCard) {
     ) {
         Column(Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 10.dp)) {
             Text(
-                text = data.title,
+                text = data.schema.judul_skema,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.labelLarge.copy(
@@ -238,15 +255,15 @@ private fun SmallInfoCard(data: InfoCard) {
             Spacer(Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = data.subtitle,
+                    text = data.schema.nomor_skema,
                     style = MaterialTheme.typography.labelSmall.copy(
                         color = textLight,
                         fontFamily = AppFont.Poppins
                     )
                 )
                 Spacer(Modifier.weight(1f))
-                val pillColor = if (data.statusType == StatusType.Running) running else pending
-                val pillTextColor = if (data.statusType == StatusType.Running) Color(0xFF4F9BD4) else Color(0xFF8C8C8C)
+                val pillColor = if (data.status.lowercase() == "active") running else pending
+                val pillTextColor = if (data.status.lowercase() == "active") Color(0xFF4F9BD4) else Color(0xFF8C8C8C)
                 Box(
                     modifier = Modifier
                         .height(24.dp)
@@ -256,7 +273,7 @@ private fun SmallInfoCard(data: InfoCard) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = data.statusText,
+                        text = data.status,
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.SemiBold,
                             color = pillTextColor,
