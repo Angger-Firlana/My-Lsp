@@ -1,5 +1,6 @@
 package com.example.mylsp.screen.asesor.approve
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,18 +10,25 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mylsp.model.api.Apl01
 import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
+import com.example.mylsp.util.assesment.AssesmentAsesiManager
+import com.example.mylsp.viewmodel.AssesmentViewModel
+import com.example.mylsp.viewmodel.assesment.AK03ViewModel
 
 
 data class ApprovalItem(
@@ -34,10 +42,14 @@ data class ApprovalItem(
 @Composable
 fun ApprovedUnapprovedScreen(
     modifier: Modifier = Modifier,
+    assesmentViewModel: AssesmentViewModel,
     apl01:Apl01,
-    assesmentAsesiId:Int,
     navigateToForm: (String) -> Unit
 ) {
+    val assesmentAsesiManager = AssesmentAsesiManager(LocalContext.current)
+
+    val assesmentAsesi = assesmentAsesiManager.getAssesmentAsesi()
+    val assesment by assesmentViewModel.assesment.collectAsState()
     // Gradient full-bleed
     val bgGradient = Brush.verticalGradient(
         colors = listOf(
@@ -47,10 +59,19 @@ fun ApprovedUnapprovedScreen(
         )
     )
 
+
+    LaunchedEffect(Unit) {
+        Log.d("ApprovedUnapprovedScreen", assesment.toString())
+        assesmentViewModel.getAssesmentById(assesmentAsesi?.assesment_id?: 0)
+    }
+
     val items = listOf(
-        ApprovalItem("FR.APL.02", "ASESMEN MANDIRI", "NIS: 8880", true, Screen.Apl02.createRoute(1)),
+        ApprovalItem("FR.APL.02", "ASESMEN MANDIRI", "NIS: 8880", true, Screen.Apl02.createRoute(assesment?.schema?.id?: 0)),
         ApprovalItem("FR.IA.01.CL", "CEKLIST OBSERVASI AKTIVITAS DI TEMPAT KERJA/SIMULASI", "NIS: 8880", null, Screen.Ia01.createRoute(1)),
         ApprovalItem("FR.AK.01", "PERSETUJUAN ASESMEN DAN KERAHASIAAN", "NIS: 8880", null, Screen.Ak01.createRoute("assesor")),
+        ApprovalItem("FR.AK.02", "REKAMAN ASESMEN KOMPETENSI", "NIS: 8880", null, Screen.Ak02.createRoute(assesment?.schema?.id?: 0)),
+        ApprovalItem("FR.AK.03", "UMPAN BALIK DAN CATATAN ASESMEN", "NIS: 8880", null, Screen.Ak03.route),
+        ApprovalItem("FR.AK.04", "BANDING ASESMEN", "NIS: 8880", null, Screen.Ak04.route),
         ApprovalItem("FR.AK.05", "LAPORAN ASESMEN", "NIS: 8880", null, Screen.Ak05.route),
     )
 

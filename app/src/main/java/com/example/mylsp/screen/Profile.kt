@@ -368,6 +368,7 @@ fun ProfileScreen(modifier: Modifier, navController: NavController) {
                 userManager.clearUser()
                 tokenManager.clearToken()
                 asesiManager.clear()
+
                 assesmentAsesiManager.clear()
 
                 navController.navigate(Screen.Login.route) {

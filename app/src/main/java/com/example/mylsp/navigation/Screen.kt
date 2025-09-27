@@ -25,7 +25,9 @@ sealed class Screen(val route: String) {
     data object Ak01: Screen("ak01/{role}"){
         fun createRoute(role: String) = "ak01/$role"
     }
-    data object Ak02: Screen("ak02")
+    data object Ak02: Screen("ak02/{id}"){
+        fun createRoute(id:Int) = "ak02/$id"
+    }
     data object Ak03: Screen("ak03")
     data object Ak04: Screen("ak04")
     data object Ak05: Screen("ak05")
@@ -61,7 +63,9 @@ sealed class Screen(val route: String) {
     data object AssessmentList: Screen("assessmentList")
 
     // Route untuk ApprovedUnapprovedScreen
-    data object ApprovedUnapproved: Screen("approved_unapproved")
+    data object ApprovedUnapproved: Screen("approved_unapproved"){
+        fun createRoute(id:Int) = "approved_unapproved/$id"
+    }
 
     data object Congrats: Screen("congrats")
     data object KelengkapanDataAsesor: Screen("kelengkapanDataAsesor")

@@ -5,13 +5,13 @@ import android.os.Message
 data class PostAK03Request(
     val assesment_asesi_id:Int,
     val catatan_tambahan:String,
-    val komponen: List<Komponen>
+    val komponen: List<KomponenPostReq>
 )
 
-data class Komponen(
+data class KomponenPostReq(
     val komponen_id: Int,
-    val hasil: String,
-    val catatan_hasil: String
+    var hasil: String,
+    var catatan_asesi: String
 )
 
 data class PostAK03Response(
@@ -24,8 +24,4 @@ data class getAK03Response(
     val success: Boolean,
     val message: String,
 
-)
-
-data class AK03(
-    val assesment_asesi_id: Int
 )

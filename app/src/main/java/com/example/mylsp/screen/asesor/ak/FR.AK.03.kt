@@ -1,5 +1,7 @@
 package com.example.mylsp.screen.asesor.ak
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +27,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -33,88 +37,149 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.component.SkemaSertifikasi
+import com.example.mylsp.model.api.assesment.KomponenData
+import com.example.mylsp.model.api.assesment.PostAK03Request
 import com.example.mylsp.util.AppFont
+import com.example.mylsp.util.assesment.AK03SubmissionManager
+import com.example.mylsp.util.assesment.AssesmentAsesiManager
+import com.example.mylsp.viewmodel.assesment.AK03ViewModel
+import com.example.mylsp.viewmodel.assesment.KomponenViewModel
 
 @Composable
-fun FRAK03(modifier: Modifier = Modifier, navController: NavController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState())
-    ) {
-        HeaderForm(
-            "FR.AK.03",
-            "PERSETUJUAN ASESMEN DAN KERAHASIAAN"
-        )
+fun FRAK03(
+    modifier: Modifier = Modifier,
+    aK03ViewModel: AK03ViewModel,
+    komponenViewModel: KomponenViewModel,
+    navController: NavController
+) {
+    val context = LocalContext.current
+    val assesmentAsesiManager = AssesmentAsesiManager(context)
 
-        SkemaSertifikasi(
-            judulUnit = "Okupasi Junior Custom Made",
-            kodeUnit = "SKM.TBS.OJCM/LSP.SMKN24/2023",
-            TUK = "Sewaktu/Tempat Kerja/Mandiri",
-            namaAsesor = null,
-            namaAsesi = null,
-            tanggalAsesmen = null
-        )
+    val listKomponen by komponenViewModel.listKomponen.collectAsState()
+    val aK03SubmissionManager = AK03SubmissionManager(context)
+    val state by aK03ViewModel.state.collectAsState()
+    val message by aK03ViewModel.message.collectAsState()
+    var showDialogSuccess by remember { mutableStateOf(false) }
+    var catatanTambahan by remember { mutableStateOf("") }
 
-        Text(
-            "Umpan balik dari asesi (diisi oleh Asesi setelah pengambilan keputusan)",
-            fontSize = 10.sp
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Komponen(navController = navController)
+    LaunchedEffect(Unit) {
+        komponenViewModel.getListKomponen()
     }
+
+    LaunchedEffect(state) {
+        state?.let { success ->
+            if (success){
+                showDialogSuccess = true
+                navController.popBackStack()
+            }else{
+                Toast.makeText(
+                    context,
+                    message,
+                    Toast.LENGTH_SHORT
+                ).show()
+                showDialogSuccess = false
+            }
+            aK03ViewModel.resetState()
+        }
+    }
+
+
+
+    Box(modifier = modifier){
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            HeaderForm(
+                "FR.AK.03",
+                "PERSETUJUAN ASESMEN DAN KERAHASIAAN"
+            )
+
+            SkemaSertifikasi(
+                judulUnit = "Okupasi Junior Custom Made",
+                kodeUnit = "SKM.TBS.OJCM/LSP.SMKN24/2023",
+                TUK = "Sewaktu/Tempat Kerja/Mandiri",
+                namaAsesor = null,
+                namaAsesi = null,
+                tanggalAsesmen = null
+            )
+
+            Text(
+                "Umpan balik dari asesi (diisi oleh Asesi setelah pengambilan keputusan)",
+                fontSize = 10.sp
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Komponen(
+                assesmentAsesiId = assesmentAsesiManager.getAssesmentId(),
+                komponenList = listKomponen,
+                navController = navController,
+                aK03SubmissionManager = aK03SubmissionManager
+            )
+
+            CatatanField(
+                value = catatanTambahan,
+                height = 200.dp,
+                onValueChange = { catatanTambahan = it }
+            )
+
+            KirimButton {
+                aK03ViewModel.sendSubmissionAK03(
+                    PostAK03Request(
+                        assesment_asesi_id = assesmentAsesiManager.getAssesmentId(),
+                        catatan_tambahan = catatanTambahan,
+                        komponen = aK03SubmissionManager.getAllSubmissionAK03(assesment_asesi_id = assesmentAsesiManager.getAssesmentId())
+                    )
+                )
+                Log.d("AK03Submission", aK03SubmissionManager.getAllSubmissionAK03(assesment_asesi_id = assesmentAsesiManager.getAssesmentId()).toString())
+            }
+        }
+    }
+
 }
 
 
 @Composable
 fun Komponen(
     modifier: Modifier = Modifier,
-    onItemChecked: (Int, Boolean?) -> Unit = { _, _ -> },
+    assesmentAsesiId: Int,
+    komponenList: List<KomponenData>,
+    aK03SubmissionManager: AK03SubmissionManager,
     navController: NavController
 ) {
-    val komponenList = listOf(
-        "Saya mendapatkan penjelasan yang cukup memadai mengenai proses asesmen/uji kompetensi",
-        "Saya diberikan kesempatan untuk mempelajari standar kompetensi yang akan diujikan dan menilai diri sendiri terhadap standar tersebut",
-        "Asesor memberikan kesempatan untuk mendiskusikan mengapa metoda, instrumen dan sumber asesmen serta jadwal asesmen",
-        "Asesor berhasaha menggali seluruh bukti pendukung yang sesuai dengan kebutuhan pelatihan dan pengalaman yang saya miliki",
-        "Saya sepenuhnya diberikan kesempatan untuk mendemonstrasikan kompetensi yang saya miliki selama asesmen",
-        "Saya mendapatkan penjelasan yang memadai mengenai keputusan asesmen",
-        "Asesor memberikan umpan balik yang mendukung setelah asesmen serta tidak lanjutnya",
-        "Asesor bersama saya mempelajari semua dokumen asesmen serta menandatanganinya",
-        "Saya mendapatkan jaminan kerahasiaan hasil asesmen serta penjelasannya mengenai dokumen asesmen",
-        "Asesor menggunakan keterampilan komunikasi yang efektif selama asesmen"
-    )
 
-    val checkboxStates = remember { mutableStateMapOf<Int, Boolean?>() }
-    var catatan by remember { mutableStateOf("") }
+    val checkboxStates = remember { mutableStateMapOf<Int, String?>() }
+    val catatanStates = remember { mutableStateMapOf<Int, String?>()}
+    // Load existing submissions
+    LaunchedEffect(komponenList) {
+        val existingSubmissions = aK03SubmissionManager.getAllSubmissionAK03(assesmentAsesiId)
+        komponenList.forEach { komponen ->
+            val existingSubmission = existingSubmissions.find { it.komponen_id == komponen.id }
+            if (existingSubmission != null) {
+                catatanStates[komponen.id] = existingSubmission.catatan_asesi
+                checkboxStates[komponen.id] = existingSubmission.hasil
+            }
+        }
+    }
 
     Column(modifier = modifier.fillMaxWidth()) {
         KomponenList(
             items = komponenList,
             checkboxStates = checkboxStates,
-            onItemChecked = onItemChecked
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        CatatanField(
-            value = catatan,
-            onValueChange = { catatan = it }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        KirimButton(
-            onClick = { navController.navigate("ak05") }
+            catatanStates = catatanStates,
+            assesmentAsesiId = assesmentAsesiId,
+            aK03SubmissionManager = aK03SubmissionManager,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -123,9 +188,11 @@ fun Komponen(
 
 @Composable
 fun KomponenList(
-    items: List<String>,
-    checkboxStates: MutableMap<Int, Boolean?>,
-    onItemChecked: (Int, Boolean?) -> Unit
+    items: List<KomponenData>,
+    checkboxStates: MutableMap<Int, String?>,
+    catatanStates: MutableMap<Int, String?>,
+    assesmentAsesiId: Int,
+    aK03SubmissionManager: AK03SubmissionManager
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -143,17 +210,31 @@ fun KomponenList(
             )
 
             items.forEachIndexed { index, item ->
+                var catatanAsesi by remember { mutableStateOf("") }
                 KomponenItem(
-                    text = item,
-                    isCheckedYes = checkboxStates[index] == true,
-                    isCheckedNo = checkboxStates[index] == false,
-                    onYesChecked = { checked ->
-                        checkboxStates[index] = if (checked) true else null
-                        onItemChecked(index, checkboxStates[index])
-                    },
-                    onNoChecked = { checked ->
-                        checkboxStates[index] = if (checked) false else null
-                        onItemChecked(index, checkboxStates[index])
+                    komponen = item,
+                    checkboxState = checkboxStates[item.id],
+                    onCheckboxChange = { hasil ->
+                        checkboxStates[item.id] = hasil
+                        aK03SubmissionManager.saveAK03Submission(
+                            assesment_asesi_id = assesmentAsesiId,
+                            komponen = item,
+                            hasil = hasil,
+                            catatanAsesi = catatanStates[item.id] ?: ""
+                        )
+                    }
+                )
+
+                CatatanField(
+                    value = catatanStates[item.id]?: "",
+                    onValueChange = {
+                        catatanStates[item.id] = it
+                        aK03SubmissionManager.saveAK03Submission(
+                            assesment_asesi_id = assesmentAsesiId,
+                            komponen = item,
+                            hasil = checkboxStates[item.id] ?: "",
+                            catatanAsesi = it
+                        )
                     }
                 )
 
@@ -171,11 +252,9 @@ fun KomponenList(
 
 @Composable
 fun KomponenItem(
-    text: String,
-    isCheckedYes: Boolean,
-    isCheckedNo: Boolean,
-    onYesChecked: (Boolean) -> Unit,
-    onNoChecked: (Boolean) -> Unit
+    komponen: KomponenData,
+    checkboxState: String?,
+    onCheckboxChange: (String) -> Unit
 ) {
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -189,7 +268,7 @@ fun KomponenItem(
                 modifier = Modifier.padding(end = 8.dp)
             )
             Text(
-                text = text,
+                text = komponen.komponen,
                 fontSize = 12.sp,
                 fontFamily = AppFont.Poppins,
                 lineHeight = 16.sp
@@ -204,16 +283,24 @@ fun KomponenItem(
         ) {
             CheckboxHasilOption(
                 label = "Ya",
-                checked = isCheckedYes,
-                onCheckedChange = onYesChecked
+                checked = checkboxState == "Ya",
+                onCheckedChange = { isChecked ->
+                    if (isChecked) {
+                        onCheckboxChange("Ya")
+                    }
+                }
             )
 
             Spacer(modifier = Modifier.width(24.dp))
 
             CheckboxHasilOption(
                 label = "Tidak",
-                checked = isCheckedNo,
-                onCheckedChange = onNoChecked
+                checked = checkboxState == "Tidak",
+                onCheckedChange = { isChecked ->
+                    if (isChecked) {
+                        onCheckboxChange("Tidak")
+                    }
+                }
             )
         }
     }
@@ -247,6 +334,7 @@ fun CheckboxHasilOption(
 @Composable
 fun CatatanField(
     value: String,
+    height: Dp = 100.dp,
     onValueChange: (String) -> Unit
 ) {
     Text(
@@ -269,7 +357,7 @@ fun CatatanField(
         },
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp),
+            .height(height),
         shape = RoundedCornerShape(16.dp)
     )
 }

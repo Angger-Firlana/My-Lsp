@@ -6,6 +6,12 @@ data class AssessmentResponse(
     val data: List<Assessment>
 )
 
+data class GetAssesmentResponse(
+    val success: Boolean,
+    val message: String,
+    val data: Assessment
+)
+
 data class Assessment(
     val id: Int,
     val skema_id: Int,

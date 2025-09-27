@@ -90,9 +90,11 @@ fun FRIA01(
         SuccessDialog(
             onDismiss = {
                 showSuccessDialog = false
+                ia01ViewModel.resetState()
             },
             onNextForm = {
                 showSuccessDialog = false
+                ia01ViewModel.resetState()
                 nextForm()
             }
         )
@@ -126,7 +128,7 @@ fun FRIA01(
                 InstructionsCard()
 
                 UnitsSection(
-                    units = apl02Data.data,
+                    units = apl02Data.data.units,
                     pilihan = pilihan,
 
                     iA01SubmissionManager = iA01SubmissionManager,
@@ -374,10 +376,10 @@ private fun UnitCard(
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        unit.elemen.forEach { (index, elemen) ->
+        unit.elements.forEach { elemen ->
             ElementCard(
                 elemen = elemen,
-                index = index,
+                index = elemen.elemen_index.toString(),
                 pilihan = pilihan,
                 iA01SubmissionManager = iA01SubmissionManager,
                 assesmentAsesiId = assesmentAsesiId,
@@ -433,10 +435,10 @@ private fun ElementCard(
                 color = Color.Black
             )
 
-            elemen.kuk.forEach { kukItem ->
+            elemen.kriteria_untuk_kerja.forEach { kukItem ->
                 KUKItem(
                     kukItem = kukItem,
-                    elemenIndex = elemen.elemen_index,
+                    elemen = elemen,
                     pilihan = pilihan,
                     assesmentAsesiId = assesmentAsesiId,
                     kodeUnit = kodeUnit,
@@ -452,35 +454,47 @@ private fun ElementCard(
 @Composable
 private fun KUKItem(
     kukItem: KriteriaUntukKerja,
-    elemenIndex: Int,
+    elemen: ElemenAPL02,
     pilihan: List<String>,
     assesmentAsesiId: Int,
     kodeUnit: String,
     unitKe: Int,
     submissionManager: IA01SubmissionManager,
-    ia01SubmissionsFromVM: List<IA01UnitSubmission>? = null // 👈 tambahan
+    ia01SubmissionsFromVM: List<IA01UnitSubmission>? = null
 ) {
     val context = LocalContext.current
 
     // Ambil jawaban KUK dari ViewModel kalau ada, fallback ke SubmissionManager
     val savedKuk = ia01SubmissionsFromVM
         ?.find { it.unit_ke == unitKe && it.kode_unit == kodeUnit }
-        ?.elemen?.find { it.elemen_id == elemenIndex }
-        ?.kuk?.find { it.kuk_id == kukItem.id_kuk }
+        ?.elemen?.find { it.elemen_id == elemen.id}
+        ?.kuk?.find { it.kuk_id == kukItem.id }
         ?: submissionManager.getKUKAnswer(
             assesmentAsesiId = assesmentAsesiId,
             unitKe = unitKe,
             kodeUnit = kodeUnit,
-            elemenId = elemenIndex,
-            kukId = kukItem.id_kuk
+            elemenId = elemen.id,
+            kukId = kukItem.id
         )
 
-    var selectedOption by remember { mutableStateOf(savedKuk?.skkni ?: "") }
-    var textFieldValue by remember { mutableStateOf(savedKuk?.penilaian_lanjut?.get(0)?.teks_penilaian ?: "") }
+    // Convert API values to display values and vice versa
+    val displayToApiValue = mapOf("IYA" to "ya", "TIDAK" to "tidak")
+    val apiToDisplayValue = mapOf("ya" to "IYA", "tidak" to "TIDAK")
+
+    var selectedOption by remember {
+        mutableStateOf(apiToDisplayValue[savedKuk?.skkni] ?: "")
+    }
+    var textFieldValue by remember {
+        mutableStateOf(savedKuk?.teks_penilaian ?: "")
+    }
+
+    LaunchedEffect(Unit) {
+        Log.d("KUKItem", "KUK ID: ${kukItem.id}, Description: ${kukItem.deskripsi_kuk}")
+    }
 
     Column(modifier = Modifier.padding(vertical = 8.dp)) {
         Text(
-            text = "${elemenIndex}.${kukItem.urutan}. ${kukItem.deskripsi_kuk}",
+            text = "${elemen.id}.${kukItem.urutan}. ${kukItem.deskripsi_kuk}",
             fontFamily = AppFont.Poppins,
             fontSize = 12.sp,
             color = Color.Black,
@@ -497,15 +511,17 @@ private fun KUKItem(
                         selected = option == selectedOption,
                         onClick = {
                             selectedOption = option
+                            val apiValue = displayToApiValue[option] ?: option.lowercase()
                             submissionManager.saveIA01Answer(
                                 assesmentAsesiId = assesmentAsesiId,
                                 unitKe = unitKe,
                                 kodeUnit = kodeUnit,
-                                elemenId = elemenIndex,
-                                kukId = kukItem.id_kuk,
-                                hasilObservasi = option,
+                                elemenId = elemen.id,
+                                kukId = kukItem.id,
+                                hasilObservasi = apiValue,
                                 catatanAsesor = textFieldValue
                             )
+                            Log.d("CLicked KUK", "KUK ID: ${kukItem.id}, Description: ${kukItem.deskripsi_kuk}")
                         }
                     )
                     Text(
@@ -525,13 +541,14 @@ private fun KUKItem(
             value = textFieldValue,
             onValueChange = {
                 textFieldValue = it
+                val apiValue = displayToApiValue[selectedOption] ?: selectedOption.lowercase()
                 submissionManager.saveIA01Answer(
                     assesmentAsesiId = assesmentAsesiId,
                     unitKe = unitKe,
                     kodeUnit = kodeUnit,
-                    elemenId = elemenIndex,
-                    kukId = kukItem.id_kuk,
-                    hasilObservasi = selectedOption,
+                    elemenId = elemen.id,
+                    kukId = kukItem.id,
+                    hasilObservasi = apiValue,
                     catatanAsesor = it
                 )
             },
@@ -566,15 +583,18 @@ private fun SubmitButtonIa01(
             } else {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
+            ia01ViewModel.resetState()
         }
     }
 
     Button(
         onClick = {
-            // Uncomment this when you want to submit for real
-            // ia01ViewModel.submitIA01(...)
-            // For now, just showing success dialog
-            onShowSuccessDialog()
+            ia01ViewModel.SendSubmissionIA01(
+                IA01Request(
+                    assesment_asesi_id = assesmentAsesiId,
+                    ia01Submission
+                )
+            )
             Log.d("ia01Submission", ia01Submission.toString())
         },
         shape = RoundedCornerShape(12.dp),

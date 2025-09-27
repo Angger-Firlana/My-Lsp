@@ -5,15 +5,15 @@ import com.example.mylsp.model.api.asesi.AssesmentAsesi
 data class Ak02Request(
     val assesment_asesi_id: Int,
     val ttd_asesi: String?, // "belum" | "sudah" | null
-    val ttd_asesor: String?, // "belum" | "sudah" | null
+    val ttd_asesor: String?,
+    val rekomendasi_hasil: String, // "kompeten" | "tidak_kompeten"
+    val tindak_lanjut: String?,
+    val komentar_asesor: String?,// "belum" | "sudah" | null
     val units: List<Ak02Unit>
 )
 
 data class Ak02Unit(
     val unit_id: Int,
-    val rekomendasi_hasil: String, // "kompeten" | "tidak_kompeten"
-    val tindak_lanjut: String?,
-    val komentar_asesor: String?,
     val bukti_yang_relevan: List<Ak02Bukti>
 )
 

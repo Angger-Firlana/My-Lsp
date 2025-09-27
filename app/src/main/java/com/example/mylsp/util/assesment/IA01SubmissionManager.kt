@@ -1,6 +1,7 @@
 package com.example.mylsp.util.assesment
 
 import android.content.Context
+import android.util.Log
 import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
@@ -63,14 +64,11 @@ class IA01SubmissionManager(context: Context) {
         // Update KUK dalam elemen
         val updatedKukList = currentElemen.kuk.toMutableList()
         val kukIndex = updatedKukList.indexOfFirst { it.kuk_id == kukId }
-
-        // Buat penilaian lanjut sebagai list
-        val penilaianLanjutList = listOf(IA01PenilaianLanjut(teks_penilaian = catatanAsesor))
-
+        Log.d("IA01SubmissionManager", "kuk_id = $kukId")
         val updatedKuk = IA01KUKSubmission(
             kuk_id = kukId,
             skkni = hasilObservasi,
-            penilaian_lanjut = penilaianLanjutList
+            teks_penilaian = catatanAsesor
         )
 
         if (kukIndex >= 0) {
@@ -119,7 +117,11 @@ class IA01SubmissionManager(context: Context) {
         }
     }
 
-    fun getSubmissionForUnit(assesmentAsesiId: Int, unitKe: Int, kodeUnit: String): IA01UnitSubmission? {
+    fun getSubmissionForUnit(
+        assesmentAsesiId: Int,
+        unitKe: Int,
+        kodeUnit: String
+    ): IA01UnitSubmission? {
         return getAllSubmissions(assesmentAsesiId).find {
             it.unit_ke == unitKe && it.kode_unit == kodeUnit
         }

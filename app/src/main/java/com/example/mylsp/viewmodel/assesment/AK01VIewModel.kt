@@ -53,17 +53,20 @@ class AK01ViewModel(application: Application) : AndroidViewModel(application) {
             result.fold(
                 onSuccess = {
                     _submission.value = it
-                    _state.value = true
                     _message.value = "Data berhasil diambil"
+                    Log.d("AK01ViewModel", it.toString())
                 },
                 onFailure = {
                     _submission.value = null
-                    _state.value = false
                     _message.value = it.message.toString()
                     Log.e("AK01ViewModel", it.message.toString())
                 }
             )
             _loading.value = false
         }
+    }
+
+    fun clearState(){
+        _state.value = null
     }
 }

@@ -30,7 +30,7 @@ data class IA01ElemenSubmission(
 data class IA01KUKSubmission(
     val kuk_id: Int,
     val skkni: String, // "ya" atau "tidak"
-    val penilaian_lanjut: List<IA01PenilaianLanjut>
+    val teks_penilaian: String
 )
 
 // Penilaian lanjut per KUK

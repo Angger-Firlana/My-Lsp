@@ -65,9 +65,9 @@ enum class ParticipantStatus {
 fun DetailEvent(
     modifier: Modifier = Modifier,
     userManager: UserManager,
+    idAssesment: Int,
     assessmentViewModel: AssesmentViewModel,
     assesmentAsesiViewModel: AssesmentAsesiViewModel,
-    idAssesment: Int,
     onDetailAssessi: (Int, Apl01) -> Unit
 ) {
     val gradientColors = listOf(
@@ -315,10 +315,10 @@ fun ParticipantCard(participant: AssesmentAsesi, onClick: (Int) -> Unit) {
     val asesiManager = AsesiManager(context)
     Card(
         onClick = {
-            onClick(participant.id)
             asesiManager.setId(participant.assesi_id)
             assesmentAsesiManager.setAssesmentAsesiId(participant.id)
             assesmentAsesiManager.saveAssesmentAsesi(participant)
+            onClick(participant.id)
         },
         modifier = Modifier
             .fillMaxWidth()

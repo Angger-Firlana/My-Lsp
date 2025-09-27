@@ -10,23 +10,19 @@ import com.example.mylsp.model.api.assesment.IA01Response
 class Ia01Repository(context: Context) {
     private val api = APIClient.getClient(context)
 
-    suspend fun postIa01(iA01Request: IA01Request):Result<IA01Response>{
+    suspend fun postIa01(iA01Request: IA01Request): Result<IA01Response> {
         return try {
             val response = api.postSubmissionIa01(submissionRequest = iA01Request)
-            val responseBodyString = response.body()
-            Log.e("errorIA01", (responseBodyString ?: "body kosong").toString())
-            if (response.isSuccessful){
-                val body = response.body()
-                if (body != null){
-                    Result.success(body)
-                }else{
-                    Result.failure(Exception("Response Body Is Null"))
-                }
-            }else{
-                Result.failure(Exception(response.errorBody().toString()))
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    Result.success(it)
+                } ?: Result.failure(Exception("Empty response body"))
+            } else {
+                // Parse error response
+                val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                Result.failure(Exception("HTTP ${response.code()}: $errorBody"))
             }
-        }catch (e:Exception){
-
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }

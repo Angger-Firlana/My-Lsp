@@ -254,7 +254,7 @@ private fun UnitsSection(
     submission: GetAPL02Response?,
     isReadOnly: Boolean
 ) {
-    data.data.forEach { unit ->
+    data.data.units.forEach { unit ->
         UnitCompetensiSection(
             assesmentAsesiId = assesmentAsesiId,
             listAttachment = listAttachment,
@@ -314,12 +314,12 @@ private fun UnitCompetensiSection(
         textAlign = TextAlign.Center
     )
 
-    unit.elemen.forEach { (_, elemen) ->
+    unit.elements.forEach { elemen ->
         // Find existing data for this element
         val existingDetail = submission?.data?.get(0)?.details?.find { detail ->
             detail.unit_ke == unit.unit_ke &&
                     detail.kode_unit == unit.kode_unit &&
-                    detail.elemen_id == elemen.elemen_index
+                    detail.elemen_id == elemen.id
         }
 
         // Extract existing bukti (evidence) names
@@ -410,7 +410,7 @@ private fun ElemenCard(
                 modifier = Modifier.padding(top = 8.dp)
             )
 
-            elemen.kuk.forEach { kuk ->
+            elemen.kriteria_untuk_kerja.forEach { kuk ->
                 Text(
                     text = "${elemen.elemen_index}.${kuk.urutan}.${kuk.deskripsi_kuk}",
                     fontFamily = AppFont.Poppins,

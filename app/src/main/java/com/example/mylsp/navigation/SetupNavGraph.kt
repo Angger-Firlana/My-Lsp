@@ -62,6 +62,7 @@ import com.example.mylsp.viewmodel.assesment.AK03ViewModel
 import com.example.mylsp.viewmodel.assesment.AK05ViewModel
 import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
 import com.example.mylsp.viewmodel.assesment.IA01ViewModel
+import com.example.mylsp.viewmodel.assesment.KomponenViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -110,6 +111,10 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
     )
 
     val aK03ViewModel:AK03ViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
+    )
+
+    val komponenViewModel: KomponenViewModel = viewModel(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
     )
 
@@ -336,7 +341,12 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         composable(Screen.Ak03.route){
             showTopBar(false)
             showBottomBar(false)
-            FRAK03(navController = navController)
+            FRAK03(
+                aK03ViewModel = aK03ViewModel,
+                komponenViewModel = komponenViewModel,
+                navController = navController
+            )
+
         }
         composable(Screen.Ak04.route){
             showTopBar(false)
@@ -435,12 +445,13 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         composable(Screen.ApprovedUnapproved.route) {
             showTopBar(false)
             showBottomBar(false)
+
             currentApl01InAssesorCheck?.let { asesi ->
                 ApprovedUnapprovedScreen(
                     modifier = Modifier,
+                    assesmentViewModel = assessmentViewModel,
                     // Bisa ambil userName dari UserManager atau parameter lain
                     apl01 = asesi,
-                    assesmentAsesiId = 1,
                     navigateToForm = {
                         navController.navigate(it)
                     }
@@ -474,8 +485,15 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         composable(Screen.Ak02.route) {
             showTopBar(false)
             showBottomBar(false)
+            val id = it.arguments?.getString("id")?: "0"
             // TODO: Buat screen untuk FR.AK.02 - REKAMAN ASESMEN KOMPETENSI
-            FRAK02(navController = navController)
+            FRAK02(
+
+                navController = navController,
+                aK02ViewModel = aK02ViewModel,
+                idSkema = id.toInt(),
+                apl02ViewModel = apL02ViewModel
+            )
         }
 
         composable("barcode"){

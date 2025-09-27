@@ -56,4 +56,8 @@ class IA01ViewModel(application: Application):AndroidViewModel(application) {
             )
         }
     }
+
+    fun resetState(){
+        _state.value = null
+    }
 }

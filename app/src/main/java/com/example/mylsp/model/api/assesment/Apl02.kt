@@ -7,7 +7,15 @@ data class Apl02(
     val jurusan: Jurusan,
     val judul_skema: String,
     val nomor_skema: String,
-    val data: List<UnitApl02>
+    val data: DataApl02
+)
+data class DataApl02(
+    val id: Int,
+    val judul_skema: String,
+    val nomor_skema: String,
+    val created_at: String,
+    val updated_at: String,
+    val units: List<UnitApl02>
 )
 
 data class GetAPL02Response(
@@ -79,20 +87,25 @@ data class Apl02Response(
 )
 
 data class UnitApl02(
+    val id:Int,
     val unit_ke: Int,
+    val schema_id: Int,
     val kode_unit: String,
     val judul_unit:String,
-    val elemen: Map<String, ElemenAPL02>
+    val elements: List<ElemenAPL02>
 )
 
 data class ElemenAPL02(
+    val id:Int,
+    val unit_id:Int,
     val elemen_index: Int,
     val nama_elemen: String,
-    val kuk: List<KriteriaUntukKerja>
+    val kriteria_untuk_kerja: List<KriteriaUntukKerja>
 )
 
 data class KriteriaUntukKerja(
-    val id_kuk:Int,
+    val id:Int,
+    val element_id: Int,
     val urutan: String,
     val deskripsi_kuk: String
 )

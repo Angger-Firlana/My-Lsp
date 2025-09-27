@@ -1,6 +1,7 @@
 package com.example.mylsp.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mylsp.model.api.assesment.Assessment
@@ -14,6 +15,9 @@ class AssesmentViewModel(application: Application):AndroidViewModel(application)
 
     private val _listAssesment = MutableStateFlow<List<Assessment>>(emptyList())
     val listAssessment = _listAssesment.asStateFlow()
+
+    private val _assesment = MutableStateFlow<Assessment?>(null)
+    val assesment = _assesment.asStateFlow()
 
     private val _message = MutableStateFlow("")
     val message = _message.asStateFlow()
@@ -30,6 +34,22 @@ class AssesmentViewModel(application: Application):AndroidViewModel(application)
                 onFailure = {
                     _message.value = it.message.toString()
                 }
+            )
+        }
+    }
+
+    fun getAssesmentById(id:Int){
+        viewModelScope.launch {
+            val result = repository.getAssesmentById(id)
+            result.fold(
+                onSuccess = {
+                    _assesment.value = it.data
+                },
+                onFailure = {
+                    _message.value = it.message.toString()
+                    Log.e("Error Log", it.message.toString())
+                }
+
             )
         }
     }

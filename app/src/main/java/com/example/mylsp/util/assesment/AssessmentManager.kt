@@ -17,10 +17,9 @@ class AssessmentManager(context: Context) {
 
     fun saveAssessmentId(
         id:Int
-    ){
-        sharedPreferences.edit{
-            putInt("assessment_id",id)
+    ) {
+        sharedPreferences.edit {
+            putInt("assessment_id", id)
         }
     }
-
 }

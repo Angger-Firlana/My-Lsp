@@ -27,10 +27,13 @@ import com.example.mylsp.model.api.assesment.Ak02Response
 import com.example.mylsp.model.api.assesment.Ak05SubmissionRequest
 import com.example.mylsp.model.api.assesment.Ak05SubmissionResponse
 import com.example.mylsp.model.api.assesment.Apl02Response
+import com.example.mylsp.model.api.assesment.Assessment
 import com.example.mylsp.model.api.assesment.GetAK01Response
 import com.example.mylsp.model.api.assesment.GetAPL02Response
 import com.example.mylsp.model.api.assesment.GetAk05Response
+import com.example.mylsp.model.api.assesment.GetAssesmentResponse
 import com.example.mylsp.model.api.assesment.IA01GetResponse
+import com.example.mylsp.model.api.assesment.KomponenResponse
 import com.example.mylsp.model.api.assesment.PostAK03Request
 import com.example.mylsp.model.api.assesment.PostAK03Response
 import com.example.mylsp.model.api.assesment.PostApproveRequest
@@ -95,6 +98,8 @@ interface APIService {
     @GET("assesment")
     suspend fun getAssesments(): Response<AssessmentResponse>
 
+    @GET("assesment/{id}")
+    suspend fun getAssesmentById(@Path("id") id: Int): Response<GetAssesmentResponse>
     //SHOW Approve and data apl 01
     @GET("show/approvement/assesment/formapl01/{id}")
     suspend fun getFormApl01Status(@Path("id") id:Int): Response<Apl01>
@@ -209,6 +214,10 @@ interface APIService {
         @Path("id") id: Int
     ):Response<IA01GetResponse>
 
+
+    //Komponen
+    @GET("komponen")
+    suspend fun getKomponens():Response<KomponenResponse>
     //getApl01
     @GET("apl01ByUser/{id}")
     suspend fun getApl01ByUser(@Path("id") id: Int): Response<Apl01>
@@ -222,6 +231,7 @@ interface APIService {
     suspend fun getDataAsesi():Response<Apl01>
 
     //Skema
+
     @GET("schema")
     suspend fun getListSkema():Response<Skemas>
 
