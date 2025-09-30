@@ -1,7 +1,5 @@
 package com.example.mylsp.model.api.assesment
 
-import android.os.Message
-
 data class PostAK03Request(
     val assesment_asesi_id:Int,
     val catatan_tambahan:String,
@@ -20,8 +18,24 @@ data class PostAK03Response(
     val data : String?
 )
 
-data class getAK03Response(
+data class GetAK03Response(
     val success: Boolean,
     val message: String,
+    val data: List<GetAK03Data>
+)
 
+data class GetAK03Data(
+    val id: Int,
+    val assesment_asesi_id: Int,
+    val catatan_tambahan: String,
+    val details: List<KomponenGetReq>
+)
+
+data class KomponenGetReq(
+    val id: Int,
+    val ak03_submission_id:Int,
+    val komponen_id: Int,
+    val hasil: String,
+    val catatan_asesi: String,
+    val komponen: KomponenData
 )

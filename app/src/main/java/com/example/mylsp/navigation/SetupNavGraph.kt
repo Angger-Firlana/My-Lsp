@@ -25,9 +25,9 @@ import com.example.mylsp.screen.APL02
 import com.example.mylsp.screen.asesi.AsesiBarcodeScanner
 import com.example.mylsp.screen.asesi.AsesiFormScreen
 import com.example.mylsp.screen.asesi.DetailAssesment
-import com.example.mylsp.screen.asesor.ak.FRAK03
+import com.example.mylsp.screen.asesi.ak.FRAK03
 import com.example.mylsp.screen.asesor.ak.FRAK01
-import com.example.mylsp.screen.asesi.FRAK04
+import com.example.mylsp.screen.asesi.ak.FRAK04
 import com.example.mylsp.screen.asesor.ak.FRAK05
 import com.example.mylsp.screen.asesi.FRIA06A
 import com.example.mylsp.screen.asesi.ListFormScreen
@@ -449,6 +449,12 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             currentApl01InAssesorCheck?.let { asesi ->
                 ApprovedUnapprovedScreen(
                     modifier = Modifier,
+                    apl02ViewModel = apL02ViewModel,
+                    ia01ViewModel = iA01ViewModel,
+                    ak01ViewModel = ak01ViewModel,
+                    ak02ViewModel = aK02ViewModel,
+                    ak03ViewModel = aK03ViewModel,
+                    ak05ViewModel = aK05ViewModel,
                     assesmentViewModel = assessmentViewModel,
                     // Bisa ambil userName dari UserManager atau parameter lain
                     apl01 = asesi,

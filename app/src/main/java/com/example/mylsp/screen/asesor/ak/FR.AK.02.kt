@@ -50,13 +50,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.component.SkemaSertifikasi
+import com.example.mylsp.model.api.assesment.AK02GetBukti
 import com.example.mylsp.model.api.assesment.Ak02Request
 import com.example.mylsp.model.api.assesment.Ak02Unit
-import com.example.mylsp.model.api.assesment.Apl02
+import com.example.mylsp.model.api.assesment.AK02GetSubmission
 import com.example.mylsp.model.api.assesment.UnitApl02
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.assesment.AK02Manager
 import com.example.mylsp.util.assesment.AssesmentAsesiManager
+import com.example.mylsp.util.user.UserManager
 import com.example.mylsp.viewmodel.APL02ViewModel
 import com.example.mylsp.viewmodel.assesment.AK02ViewModel
 
@@ -70,7 +72,13 @@ fun FRAK02(
 ) {
     val context = LocalContext.current
     val ak02Manager = AK02Manager(context)
+    val userManager = UserManager(context)
     val assesmentAsesiManager = AssesmentAsesiManager(context)
+    val assesmentAsesi = assesmentAsesiManager.getAssesmentAsesi()
+
+    // Validasi role user
+    val userRole = userManager.getUserRole()
+    val isAsesor = userRole.equals("asesor", ignoreCase = true) || userRole.equals("assesor", ignoreCase = true)
 
     var isKompeten by remember { mutableStateOf(false) }
     var isBelumKompeten by remember { mutableStateOf(false) }
@@ -79,27 +87,88 @@ fun FRAK02(
     var showDialogSuccess by remember { mutableStateOf(false) }
     var showDialogFail by remember { mutableStateOf(false) }
     var dialogMessage by remember { mutableStateOf("") }
+    var showApproveDialog by remember { mutableStateOf(false) }
+
     val loading by aK02ViewModel.loading.collectAsState()
     val skemas by apl02ViewModel.apl02.collectAsState()
     val message by aK02ViewModel.message.collectAsState()
+    val ak02Submissions by aK02ViewModel.submission.collectAsState()
     val submissionState by aK02ViewModel.state.collectAsState()
-    val assesmentAsesi = assesmentAsesiManager.getAssesmentAsesi()
+//    val updateTtdState by aK02ViewModel.updateTtdState.collectAsState()
+
+    // Cek apakah sudah ada submission
+    val hasSubmission = ak02Submissions != null
+    val currentSubmission = ak02Submissions
+    val isFormReadOnly = hasSubmission
 
     LaunchedEffect(Unit) {
         apl02ViewModel.getAPL02(idSkema)
+        aK02ViewModel.getSubmission(assesmentAsesi?.id ?: 0)
+    }
+
+    // Load data dari submission jika ada
+    LaunchedEffect(currentSubmission) {
+        currentSubmission?.let { submission ->
+            isKompeten = submission.rekomendasi_hasil == "kompeten"
+            isBelumKompeten = submission.rekomendasi_hasil == "tidak_kompeten"
+            tindakLanjutText = submission.tindak_lanjut ?: ""
+//            observasiText = submission.komentar_asesor ?: ""
+        }
     }
 
     // Handle submission response
     LaunchedEffect(submissionState) {
         submissionState?.let { success ->
-            if (success){
+            if (success) {
                 showDialogSuccess = true
                 dialogMessage = "Data berhasil dikirim!"
-            }else{
+            } else {
                 showDialogFail = true
                 dialogMessage = message
             }
         }
+    }
+
+    // Handle update TTD response
+//    LaunchedEffect(updateTtdState) {
+//        updateTtdState?.let { success ->
+//            if (success) {
+//                showDialogSuccess = true
+//                dialogMessage = "Persetujuan berhasil dikirim!"
+//                aK02ViewModel.getSubmission(assesmentAsesi?.id ?: 0)
+//            } else {
+//                showDialogFail = true
+//                dialogMessage = message
+//            }
+//            aK02ViewModel.resetUpdateTtdState()
+//        }
+//    }
+
+    // Validasi akses untuk non-asesor
+    if (!isAsesor && !hasSubmission) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Akses Ditolak",
+                fontSize = 20.sp,
+                fontFamily = AppFont.Poppins,
+                fontWeight = FontWeight.Bold,
+                color = Color.Red
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Hanya Asesor yang dapat mengisi form ini",
+                fontSize = 14.sp,
+                fontFamily = AppFont.Poppins,
+                color = Color.Gray
+            )
+        }
+        return
     }
 
     skemas?.let { skemas ->
@@ -123,6 +192,43 @@ fun FRAK02(
                 tanggalAsesmen = null
             )
 
+            // Status badge jika form sudah disubmit
+            if (hasSubmission) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text(
+                                text = "Form telah disubmit",
+                                fontSize = 14.sp,
+                                fontFamily = AppFont.Poppins,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Text(
+                                text = "Status TTD Asesi: ${currentSubmission?.ttd_asesi ?: "belum"}",
+                                fontSize = 12.sp,
+                                fontFamily = AppFont.Poppins,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
+                }
+            }
+
             Text(
                 "Beri tanda centang (✔) dikolom yang sesuai untuk mencerminkan bukti yang sesuai untuk setiap Unit Kompetensi.",
                 fontSize = 10.sp,
@@ -143,7 +249,9 @@ fun FRAK02(
             assesmentAsesi?.let {
                 UnitKompetensi(
                     assesmentAsesiId = it.id,
-                    unitKompetensiList = skemas.data.units
+                    unitKompetensiList = skemas.data.units,
+                    isReadOnly = isFormReadOnly,
+                    existingSubmission = currentSubmission
                 )
             }
 
@@ -152,45 +260,121 @@ fun FRAK02(
             RekomendasiHasilAsesmen(
                 isKompeten = isKompeten,
                 isBelumKompeten = isBelumKompeten,
-                onKompetenChanged = { isKompeten = it },
-                onBelumKompetenChanged = { isBelumKompeten = it }
+                onKompetenChanged = { if (!isFormReadOnly) isKompeten = it },
+                onBelumKompetenChanged = { if (!isFormReadOnly) isBelumKompeten = it },
+                isEnabled = !isFormReadOnly
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             TindakLanjut(
                 text = tindakLanjutText,
-                onTextChanged = { tindakLanjutText = it }
+                onTextChanged = { if (!isFormReadOnly) tindakLanjutText = it },
+                isEnabled = !isFormReadOnly
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             ObservasiAsesor(
                 text = observasiText,
-                onTextChanged = { observasiText = it }
+                onTextChanged = { if (!isFormReadOnly) observasiText = it },
+                isEnabled = !isFormReadOnly
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            KirimButton(
-                isLoading = loading
-            ) {
-                val ak02UnitSubmissions = ak02Manager.getAK02Submission(assesmentAsesi?.id ?: 0)
-                aK02ViewModel.postSubmission(
-                    Ak02Request(
-                        assesment_asesi_id = assesmentAsesi?.id ?: 0,
-                        rekomendasi_hasil = if (isKompeten) "kompeten" else if (isBelumKompeten) "tidak_kompeten" else "invalid",
-                        ttd_asesi = "belum",
-                        ttd_asesor = "sudah",
-                        tindak_lanjut = tindakLanjutText,
-                        komentar_asesor = observasiText,
-                        units = ak02UnitSubmissions
+            // Tampilkan button sesuai role dan status
+            if (isAsesor && !isFormReadOnly) {
+                KirimButton(
+                    isLoading = loading
+                ) {
+                    val ak02UnitSubmissions = ak02Manager.getAK02Submission(assesmentAsesi?.id ?: 0)
+                    aK02ViewModel.postSubmission(
+                        Ak02Request(
+                            assesment_asesi_id = assesmentAsesi?.id ?: 0,
+                            rekomendasi_hasil = if (isKompeten) "kompeten" else if (isBelumKompeten) "tidak_kompeten" else "invalid",
+                            ttd_asesi = "belum",
+                            ttd_asesor = "sudah",
+                            tindak_lanjut = tindakLanjutText,
+                            komentar_asesor = observasiText,
+                            units = ak02UnitSubmissions
+                        )
                     )
-                )
+                }
+            } else if (!isAsesor && hasSubmission && currentSubmission?.ttd_asesi == "belum") {
+                // Button approve untuk asesi
+                Button(
+                    onClick = { showApproveDialog = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !loading
+                ) {
+                    Text(
+                        text = if (loading) "Memproses..." else "Setujui Asesmen",
+                        fontSize = 16.sp,
+                        fontFamily = AppFont.Poppins,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
         }
+    }
+
+    // Approve Dialog untuk Asesi
+    if (showApproveDialog) {
+        AlertDialog(
+            onDismissRequest = { showApproveDialog = false },
+            title = {
+                Text(
+                    text = "Konfirmasi Persetujuan",
+                    fontFamily = AppFont.Poppins,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = "Apakah Anda yakin ingin menyetujui hasil asesmen ini? Tindakan ini tidak dapat dibatalkan.",
+                    fontFamily = AppFont.Poppins
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showApproveDialog = false
+                        currentSubmission?.let { submission ->
+//                            aK02ViewModel.updateTtdAsesi(submission.id)
+                        }
+                    }
+                ) {
+                    Text(
+                        "Ya, Setuju",
+                        fontFamily = AppFont.Poppins,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showApproveDialog = false }
+                ) {
+                    Text(
+                        "Batal",
+                        fontFamily = AppFont.Poppins
+                    )
+                }
+            },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(12.dp)
+        )
     }
 
     // Success Dialog
@@ -267,6 +451,8 @@ fun FRAK02(
 fun UnitKompetensi(
     assesmentAsesiId: Int,
     unitKompetensiList: List<UnitApl02>,
+    isReadOnly: Boolean = false,
+    existingSubmission: AK02GetSubmission? = null,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -274,9 +460,16 @@ fun UnitKompetensi(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         unitKompetensiList.forEach { item ->
+            // Ambil SEMUA bukti untuk unit ini dari details yang sesuai
+            val submittedBukti = existingSubmission?.details
+                ?.firstOrNull { it.unit_id == item.id }  // Cari detail untuk unit ini
+                ?.bukti ?: emptyList()  // Ambil list bukti nya
+
             UnitKompetensiCard(
                 assesmentAsesiId = assesmentAsesiId,
-                item = item
+                item = item,
+                isReadOnly = isReadOnly,
+                submittedBukti = submittedBukti
             )
         }
     }
@@ -286,31 +479,33 @@ fun UnitKompetensi(
 fun UnitKompetensiCard(
     assesmentAsesiId: Int,
     item: UnitApl02,
+    isReadOnly: Boolean = false,
+    submittedBukti: List<AK02GetBukti>,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val ak02Manager = AK02Manager(context = context)
 
-    // State for tracking checkbox selections
     var checkedOptions by remember { mutableStateOf(setOf<String>()) }
-    var showSuccessDialog by remember { mutableStateOf(false) }
-    var showErrorDialog by remember { mutableStateOf(false) }
-    var dialogMessage by remember { mutableStateOf("") }
 
-    // Initialize checkbox state from saved data
-    LaunchedEffect(assesmentAsesiId, item.id) {
-        val submissions = ak02Manager.getAK02Submission(assesmentAsesiId)
-        val currentSubmission = submissions.firstOrNull { it.unit_id == item.id }
-        checkedOptions = currentSubmission?.bukti_yang_relevan
-            ?.map { it.bukti_description }
-            ?.toSet() ?: setOf()
+    // Initialize checkbox state
+    LaunchedEffect(assesmentAsesiId, item.id, submittedBukti) {
+        checkedOptions = if (isReadOnly && submittedBukti.isNotEmpty()) {
+            submittedBukti.map { it.bukti_description }.toSet()
+        } else {
+            val submissions = ak02Manager.getAK02Submission(assesmentAsesiId)
+            val currentSubmission = submissions.firstOrNull { it.unit_id == item.id }
+            currentSubmission?.bukti_yang_relevan
+                ?.map { it.bukti_description }
+                ?.toSet() ?: setOf()
+        }
     }
 
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = if (isReadOnly) Color.Gray.copy(alpha = 0.1f) else Color.White
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 4.dp
@@ -338,23 +533,22 @@ fun UnitKompetensiCard(
                     CheckboxOption(
                         option = option.copy(isChecked = isChecked),
                         isChecked = isChecked,
+                        isEnabled = !isReadOnly,
                         onCheckedChange = { checked ->
-
-                                // Update local state
+                            if (!isReadOnly) {
                                 checkedOptions = if (checked) {
                                     checkedOptions + option.text
                                 } else {
                                     checkedOptions - option.text
                                 }
 
-                                // Save to manager
                                 ak02Manager.saveAK02Submission(
                                     assesmentAsesiId = assesmentAsesiId,
                                     unitId = item.id,
                                     bukti = option.text,
                                     isChecked = checked
                                 )
-
+                            }
                         }
                     )
                 }
@@ -370,86 +564,13 @@ fun UnitKompetensiCard(
             )
         }
     }
-
-    // Success Dialog (quick feedback)
-    if (showSuccessDialog) {
-        LaunchedEffect(Unit) {
-            kotlinx.coroutines.delay(1500) // Auto dismiss after 1.5 seconds
-            showSuccessDialog = false
-        }
-
-        AlertDialog(
-            onDismissRequest = { showSuccessDialog = false },
-            title = {
-                Text(
-                    text = "Berhasil",
-                    fontFamily = AppFont.Poppins,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            },
-            text = {
-                Text(
-                    text = dialogMessage,
-                    fontFamily = AppFont.Poppins,
-                    fontSize = 14.sp
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = { showSuccessDialog = false }
-                ) {
-                    Text(
-                        "OK",
-                        fontFamily = AppFont.Poppins
-                    )
-                }
-            },
-            containerColor = Color.White,
-            shape = RoundedCornerShape(12.dp)
-        )
-    }
-
-    // Error Dialog
-    if (showErrorDialog) {
-        AlertDialog(
-            onDismissRequest = { showErrorDialog = false },
-            title = {
-                Text(
-                    text = "Error",
-                    fontFamily = AppFont.Poppins,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Red
-                )
-            },
-            text = {
-                Text(
-                    text = dialogMessage,
-                    fontFamily = AppFont.Poppins,
-                    fontSize = 14.sp
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = { showErrorDialog = false }
-                ) {
-                    Text(
-                        "OK",
-                        fontFamily = AppFont.Poppins,
-                        color = Color.Red
-                    )
-                }
-            },
-            containerColor = Color.White,
-            shape = RoundedCornerShape(12.dp)
-        )
-    }
 }
 
 @Composable
 fun CheckboxOption(
     option: KompetensiOption,
     isChecked: Boolean,
+    isEnabled: Boolean = true,
     onCheckedChange: (Boolean) -> Unit,
 ) {
     Card(
@@ -467,16 +588,18 @@ fun CheckboxOption(
         Row(
             modifier = Modifier
                 .padding(12.dp)
-                .clickable { onCheckedChange(!isChecked) },
+                .clickable(enabled = isEnabled) { onCheckedChange(!isChecked) },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Checkbox(
                 checked = isChecked,
-                onCheckedChange = onCheckedChange,
+                onCheckedChange = if (isEnabled) onCheckedChange else null,
+                enabled = isEnabled,
                 modifier = Modifier.size(20.dp),
                 colors = CheckboxDefaults.colors(
                     checkmarkColor = Color.White,
-                    checkedColor = MaterialTheme.colorScheme.primary
+                    checkedColor = MaterialTheme.colorScheme.primary,
+                    disabledCheckedColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
                 )
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -508,7 +631,8 @@ fun KirimButton(
             containerColor = MaterialTheme.colorScheme.primary,
             disabledContainerColor = Color.Gray.copy(alpha = 0.6f)
         ),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        enabled = !isLoading
     ) {
         Text(
             text = if (isLoading) "Mengirim..." else "Kirim Data",
@@ -546,13 +670,14 @@ fun RekomendasiHasilAsesmen(
     isBelumKompeten: Boolean = false,
     onKompetenChanged: (Boolean) -> Unit = {},
     onBelumKompetenChanged: (Boolean) -> Unit = {},
+    isEnabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = if (isEnabled) Color.White else Color.Gray.copy(alpha = 0.1f)
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
@@ -577,7 +702,8 @@ fun RekomendasiHasilAsesmen(
                 isKompeten = isKompeten,
                 isBelumKompeten = isBelumKompeten,
                 onKompetenChanged = onKompetenChanged,
-                onBelumKompetenChanged = onBelumKompetenChanged
+                onBelumKompetenChanged = onBelumKompetenChanged,
+                isEnabled = isEnabled
             )
         }
     }
@@ -589,6 +715,7 @@ fun RekomendasiChecked(
     isBelumKompeten: Boolean = false,
     onKompetenChanged: (Boolean) -> Unit = {},
     onBelumKompetenChanged: (Boolean) -> Unit = {},
+    isEnabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -598,7 +725,7 @@ fun RekomendasiChecked(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable {
+            modifier = Modifier.clickable(enabled = isEnabled) {
                 onKompetenChanged(!isKompeten)
                 if (!isKompeten) {
                     onBelumKompetenChanged(false)
@@ -607,12 +734,13 @@ fun RekomendasiChecked(
         ) {
             Checkbox(
                 checked = isKompeten,
-                onCheckedChange = { checked ->
+                onCheckedChange = if (isEnabled) { checked ->
                     onKompetenChanged(checked)
                     if (checked) {
                         onBelumKompetenChanged(false)
                     }
-                },
+                } else null,
+                enabled = isEnabled,
                 colors = CheckboxDefaults.colors(
                     checkmarkColor = Color.White,
                     checkedColor = MaterialTheme.colorScheme.primary
@@ -629,7 +757,7 @@ fun RekomendasiChecked(
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable {
+            modifier = Modifier.clickable(enabled = isEnabled) {
                 onBelumKompetenChanged(!isBelumKompeten)
                 if (!isBelumKompeten) {
                     onKompetenChanged(false)
@@ -638,12 +766,13 @@ fun RekomendasiChecked(
         ) {
             Checkbox(
                 checked = isBelumKompeten,
-                onCheckedChange = { checked ->
+                onCheckedChange = if (isEnabled) { checked ->
                     onBelumKompetenChanged(checked)
                     if (checked) {
                         onKompetenChanged(false)
                     }
-                },
+                } else null,
+                enabled = isEnabled,
                 colors = CheckboxDefaults.colors(
                     checkmarkColor = Color.White,
                     checkedColor = MaterialTheme.colorScheme.primary
@@ -664,13 +793,14 @@ fun RekomendasiChecked(
 fun TindakLanjut(
     text: String = "",
     onTextChanged: (String) -> Unit = {},
+    isEnabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = if (isEnabled) Color.White else Color.Gray.copy(alpha = 0.1f)
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
@@ -702,6 +832,7 @@ fun TindakLanjut(
             OutlinedTextField(
                 value = text,
                 onValueChange = onTextChanged,
+                enabled = isEnabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp),
@@ -713,7 +844,9 @@ fun TindakLanjut(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
                     focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
+                    unfocusedTextColor = Color.Black,
+                    disabledBorderColor = Color.Gray.copy(alpha = 0.3f),
+                    disabledTextColor = Color.Black.copy(alpha = 0.6f)
                 ),
                 shape = RoundedCornerShape(8.dp),
                 placeholder = {
@@ -733,13 +866,14 @@ fun TindakLanjut(
 fun ObservasiAsesor(
     text: String = "",
     onTextChanged: (String) -> Unit = {},
+    isEnabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = if (isEnabled) Color.White else Color.Gray.copy(alpha = 0.1f)
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
@@ -763,6 +897,7 @@ fun ObservasiAsesor(
             OutlinedTextField(
                 value = text,
                 onValueChange = onTextChanged,
+                enabled = isEnabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp),
@@ -774,7 +909,9 @@ fun ObservasiAsesor(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f),
                     focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.Black
+                    unfocusedTextColor = Color.Black,
+                    disabledBorderColor = Color.Gray.copy(alpha = 0.3f),
+                    disabledTextColor = Color.Black.copy(alpha = 0.6f)
                 ),
                 shape = RoundedCornerShape(8.dp),
                 placeholder = {

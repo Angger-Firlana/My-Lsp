@@ -61,6 +61,13 @@ fun ListFormScreen(
         ApprovalItem("FR.APL.02", "ASESMEN MANDIRI", "NIS: 8880", true, Screen.Apl02.createRoute(1)),
         ApprovalItem("FR.AK.01", "PERSETUJUAN ASESMEN DAN KERAHASIAAN", "NIS: 8880", null, Screen.Ak01.createRoute("assesor")),
         ApprovalItem("FR.AK.03", "UMPAN BALIK DAN CATATAN ASESMEN", "NIS: 8880", null, Screen.Ak03.route),
+        ApprovalItem(
+            "FR.AK.04",
+            "BANDING ASESMEN",
+            "NIS: 8880",
+            null,
+            Screen.Ak04.route
+        ),
     )
 
     LaunchedEffect(Unit) {

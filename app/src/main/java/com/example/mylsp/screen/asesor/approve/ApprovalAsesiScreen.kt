@@ -27,8 +27,13 @@ import com.example.mylsp.model.api.Apl01
 import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.assesment.AssesmentAsesiManager
+import com.example.mylsp.viewmodel.AK01ViewModel
+import com.example.mylsp.viewmodel.APL02ViewModel
 import com.example.mylsp.viewmodel.AssesmentViewModel
+import com.example.mylsp.viewmodel.assesment.AK02ViewModel
 import com.example.mylsp.viewmodel.assesment.AK03ViewModel
+import com.example.mylsp.viewmodel.assesment.AK05ViewModel
+import com.example.mylsp.viewmodel.assesment.IA01ViewModel
 
 
 data class ApprovalItem(
@@ -42,6 +47,12 @@ data class ApprovalItem(
 @Composable
 fun ApprovedUnapprovedScreen(
     modifier: Modifier = Modifier,
+    apl02ViewModel: APL02ViewModel,
+    ia01ViewModel:IA01ViewModel,
+    ak01ViewModel:AK01ViewModel,
+    ak02ViewModel: AK02ViewModel,
+    ak03ViewModel: AK03ViewModel,
+    ak05ViewModel: AK05ViewModel,
     assesmentViewModel: AssesmentViewModel,
     apl01:Apl01,
     navigateToForm: (String) -> Unit
@@ -50,6 +61,13 @@ fun ApprovedUnapprovedScreen(
 
     val assesmentAsesi = assesmentAsesiManager.getAssesmentAsesi()
     val assesment by assesmentViewModel.assesment.collectAsState()
+    val apl02Submission by apl02ViewModel.apl02Submission.collectAsState()
+    val ia01Submission by ia01ViewModel.submissions.collectAsState()
+    val ak01Submission by ak01ViewModel.submission.collectAsState()
+    val ak02Submission by ak02ViewModel.submission.collectAsState()
+    val ak03Submission by ak03ViewModel.submissions.collectAsState()
+    val ak05Submission by ak05ViewModel.submission.collectAsState()
+
     // Gradient full-bleed
     val bgGradient = Brush.verticalGradient(
         colors = listOf(
@@ -63,15 +81,26 @@ fun ApprovedUnapprovedScreen(
     LaunchedEffect(Unit) {
         Log.d("ApprovedUnapprovedScreen", assesment.toString())
         assesmentViewModel.getAssesmentById(assesmentAsesi?.assesment_id?: 0)
+        apl02ViewModel.getSubmissionByAsesi(assesmentAsesi?.assesi_id?: 0)
+        ak01ViewModel.getSubmission(assesmentAsesi?.assesi_id?: 0)
+        ak02ViewModel.getSubmission(assesmentAsesi?.assesi_id?:0)
+        ak03ViewModel.getAK03ByAsesi(assesmentAsesi?.assesi_id?:0)
+        ak05ViewModel.getSubmission(assesmentAsesi?.assesi_id?:0)
+        ia01ViewModel.getIA01ByAsesi(assesmentAsesi?.assesi_id?:0)
+    }
+
+    // Auto-refresh ketika ada perubahan data dari submission forms
+    LaunchedEffect(apl02Submission, ak01Submission, ak02Submission, ak03Submission, ak05Submission, ia01Submission) {
+        Log.d("ApprovedUnapprovedScreen", "Data updated - refreshing list")
     }
 
     val items = listOf(
-        ApprovalItem("FR.APL.02", "ASESMEN MANDIRI", "NIS: 8880", true, Screen.Apl02.createRoute(assesment?.schema?.id?: 0)),
-        ApprovalItem("FR.IA.01.CL", "CEKLIST OBSERVASI AKTIVITAS DI TEMPAT KERJA/SIMULASI", "NIS: 8880", null, Screen.Ia01.createRoute(1)),
-        ApprovalItem("FR.AK.01", "PERSETUJUAN ASESMEN DAN KERAHASIAAN", "NIS: 8880", null, Screen.Ak01.createRoute("assesor")),
-        ApprovalItem("FR.AK.02", "REKAMAN ASESMEN KOMPETENSI", "NIS: 8880", null, Screen.Ak02.createRoute(assesment?.schema?.id?: 0)),
+        ApprovalItem("FR.APL.02", "ASESMEN MANDIRI", "NIS: 8880", apl02Submission?.data?.get(0)?.ttd_assesor == "approved", Screen.Apl02.createRoute(assesment?.schema?.id?: 0)),
+        ApprovalItem("FR.IA.01.CL", "CEKLIST OBSERVASI AKTIVITAS DI TEMPAT KERJA/SIMULASI", "NIS: 8880", if (ia01Submission!= null) true else null, Screen.Ia01.createRoute(1)),
+        ApprovalItem("FR.AK.01", "PERSETUJUAN ASESMEN DAN KERAHASIAAN", "NIS: 8880", ak01Submission?.data?.get(0)?.ttd_assesor == 1 && ak01Submission?.data?.get(0)?.ttd_asesi == 1, Screen.Ak01.createRoute("assesor")),
+        ApprovalItem("FR.AK.02", "REKAMAN ASESMEN KOMPETENSI", "NIS: 8880", ak02Submission?.ttd_asesi == "sudah" && ak02Submission?.ttd_asesor == "sudah", Screen.Ak02.createRoute(assesment?.schema?.id?: 0)),
         ApprovalItem("FR.AK.03", "UMPAN BALIK DAN CATATAN ASESMEN", "NIS: 8880", null, Screen.Ak03.route),
-        ApprovalItem("FR.AK.04", "BANDING ASESMEN", "NIS: 8880", null, Screen.Ak04.route),
+        ApprovalItem("FR.AK.04", "BANDING ASESMEN", "NIS: 8880", ak05Submission?.data?.get(0)?.ttdAsesor == "sudah", Screen.Ak04.route),
         ApprovalItem("FR.AK.05", "LAPORAN ASESMEN", "NIS: 8880", null, Screen.Ak05.route),
     )
 

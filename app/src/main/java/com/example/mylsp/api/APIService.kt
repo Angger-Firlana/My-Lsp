@@ -29,6 +29,7 @@ import com.example.mylsp.model.api.assesment.Ak05SubmissionResponse
 import com.example.mylsp.model.api.assesment.Apl02Response
 import com.example.mylsp.model.api.assesment.Assessment
 import com.example.mylsp.model.api.assesment.GetAK01Response
+import com.example.mylsp.model.api.assesment.GetAK03Response
 import com.example.mylsp.model.api.assesment.GetAPL02Response
 import com.example.mylsp.model.api.assesment.GetAk05Response
 import com.example.mylsp.model.api.assesment.GetAssesmentResponse
@@ -185,7 +186,7 @@ interface APIService {
     suspend fun getAk03ByAsesi(
         @Header("Accept") accept: String = "application/json",
         @Path("id") id: Int
-    ):Response<PostAK03Response>
+    ):Response<GetAK03Response>
 
     //AK05
     @POST("assesment/formak05")

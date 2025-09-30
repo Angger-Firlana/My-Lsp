@@ -1,4 +1,4 @@
-package com.example.mylsp.screen.asesi
+package com.example.mylsp.screen.asesi.ak
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.component.SkemaSertifikasi
-import com.example.mylsp.screen.asesor.ak.CheckboxHasilOption
 import com.example.mylsp.util.AppFont
 
 /* FR.AK.04

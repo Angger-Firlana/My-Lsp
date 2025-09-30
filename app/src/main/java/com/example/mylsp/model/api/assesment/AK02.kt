@@ -30,43 +30,39 @@ data class Ak02Response(
 data class Ak02GetResponse(
     val success: Boolean,
     val message: String,
-    val data: List<Ak02Submission>?
+    val data: List<AK02GetSubmission>?
 )
 
-data class Ak02Submission(
+data class AK02GetSubmission(
     val id: Int,
     val assesment_asesi_id: Int,
     val ttd_asesi: String?,
     val ttd_asesor: String?,
+
+    val rekomendasi_hasil: String,
+    val tindak_lanjut: String?,
     val assesmentAsesi: AssesmentAsesi?,
     val details: List<Ak02Detail>
 )
 
 data class Ak02Detail(
     val id: Int,
+    val ak02_detail_id: Int,
     val unit_id: Int,
-    val rekomendasi_hasil: String,
-    val tindak_lanjut: String?,
-    val komentar_asesor: String?,
-    val unit: Unit?,
-    val bukti: List<Ak02DetailBukti>
+    val unit: Unit,
+    val bukti: List<AK02GetBukti>
 )
 
-data class Ak02DetailBukti(
+data class AK02GetBukti(
     val id: Int,
-    val bukti_id: Int,
-    val bukti: BuktiDokumen?
-)
-
-data class BuktiDokumen(
-    val id: Int,
-    val description: String,
-    val file_path: String?,
-    val view_url: String? // tambahan dari controller
+    val ak02_detail_id: Int,
+    val bukti_description: String
 )
 
 data class Unit(
     val id: Int,
-    val kode: String?,
-    val nama: String?
+    val schema_id: Int,
+    val unit_ke: Int,
+    val kode_unit: String?,
+    val judul_unit: String?
 )

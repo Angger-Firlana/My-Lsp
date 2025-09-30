@@ -2,6 +2,7 @@ package com.example.mylsp.repository.assesment
 
 import android.content.Context
 import com.example.mylsp.api.APIClient
+import com.example.mylsp.model.api.assesment.GetAK03Response
 import com.example.mylsp.model.api.assesment.PostAK03Request
 import com.example.mylsp.model.api.assesment.PostAK03Response
 
@@ -30,6 +31,24 @@ class AK03Repository(context:Context) {
                 Result.failure(Exception("Error ${response.code()}: $errorMessage"))
             }
         } catch (e: Exception) {
+            Result.failure(Exception("Request failed: ${e.localizedMessage}", e))
+        }
+    }
+
+    suspend fun getAK03ByAsesi(id:Int):Result<GetAK03Response>{
+        return try {
+            val response = api.getAk03ByAsesi(id = id)
+            if (response.isSuccessful){
+                val body = response.body()
+                if (body != null){
+                    Result.success(body)
+                }else{
+                    Result.failure(Exception(""))
+                }
+            }else{
+                Result.failure(Exception("Error ${response.errorBody()}"))
+            }
+        }catch (e:Exception){
             Result.failure(Exception("Request failed: ${e.localizedMessage}", e))
         }
     }
