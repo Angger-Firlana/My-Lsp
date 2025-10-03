@@ -97,11 +97,25 @@ fun ApprovedUnapprovedScreen(
     val items = listOf(
         ApprovalItem("FR.APL.02", "ASESMEN MANDIRI", "NIS: 8880", apl02Submission?.data?.get(0)?.ttd_assesor == "approved", Screen.Apl02.createRoute(assesment?.schema?.id?: 0)),
         ApprovalItem("FR.IA.01.CL", "CEKLIST OBSERVASI AKTIVITAS DI TEMPAT KERJA/SIMULASI", "NIS: 8880", if (ia01Submission!= null) true else null, Screen.Ia01.createRoute(1)),
-        ApprovalItem("FR.AK.01", "PERSETUJUAN ASESMEN DAN KERAHASIAAN", "NIS: 8880", ak01Submission?.data?.get(0)?.ttd_assesor == 1 && ak01Submission?.data?.get(0)?.ttd_asesi == 1, Screen.Ak01.createRoute("assesor")),
+        ApprovalItem(
+            "FR.AK.01",
+            "PERSETUJUAN ASESMEN DAN KERAHASIAAN",
+            "NIS: 8880",
+            if (ak01Submission != null &&
+                ak01Submission!!.data?.isNotEmpty() == true &&
+                ak01Submission!!.data?.get(0)?.ttd_assesor == 1 &&
+                ak01Submission!!.data?.get(0)?.ttd_asesi  == 1
+            ) {
+                true
+            } else {
+                null
+            },
+            Screen.Ak01.createRoute("assesor")
+        ),
         ApprovalItem("FR.AK.02", "REKAMAN ASESMEN KOMPETENSI", "NIS: 8880", ak02Submission?.ttd_asesi == "sudah" && ak02Submission?.ttd_asesor == "sudah", Screen.Ak02.createRoute(assesment?.schema?.id?: 0)),
-        ApprovalItem("FR.AK.03", "UMPAN BALIK DAN CATATAN ASESMEN", "NIS: 8880", null, Screen.Ak03.route),
-        ApprovalItem("FR.AK.04", "BANDING ASESMEN", "NIS: 8880", ak05Submission?.data?.get(0)?.ttdAsesor == "sudah", Screen.Ak04.route),
-        ApprovalItem("FR.AK.05", "LAPORAN ASESMEN", "NIS: 8880", null, Screen.Ak05.route),
+        ApprovalItem("FR.AK.03", "UMPAN BALIK DAN CATATAN ASESMEN", "NIS: 8880", ak03Submission != null, Screen.Ak03.route),
+        ApprovalItem("FR.AK.04", "BANDING ASESMEN", "NIS: 8880", null, Screen.Ak04.route),
+        ApprovalItem("FR.AK.05", "LAPORAN ASESMEN", "NIS: 8880", ak05Submission?.data?.get(0)?.ttdAsesor == "sudah", Screen.Ak05.route),
     )
 
     // Penting: background dulu, baru .then(modifier) agar padding dari parent

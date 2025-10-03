@@ -5,8 +5,6 @@ import com.example.mylsp.model.api.Jurusan
 data class Apl02(
     val success: Boolean,
     val jurusan: Jurusan,
-    val judul_skema: String,
-    val nomor_skema: String,
     val data: DataApl02
 )
 data class DataApl02(

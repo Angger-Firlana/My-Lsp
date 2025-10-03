@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mylsp.model.api.assesment.Apl02
 import com.example.mylsp.model.api.assesment.Apl02Response
+import com.example.mylsp.model.api.assesment.DataApl02
 import com.example.mylsp.model.api.assesment.GetAPL02Response
 import com.example.mylsp.model.api.assesment.PostApproveRequest
 import com.example.mylsp.repository.assesment.APL02Repository
@@ -17,7 +18,7 @@ import kotlinx.coroutines.launch
 class APL02ViewModel(application: Application):AndroidViewModel(application) {
     private val repository = APL02Repository(application)
 
-    private val _apl02 = MutableStateFlow<Apl02?>(null)
+    private val _apl02 = MutableStateFlow<DataApl02?>(null)
     val apl02 = _apl02.asStateFlow()
 
     private val _state = MutableStateFlow<Boolean?>(null)
@@ -33,7 +34,7 @@ class APL02ViewModel(application: Application):AndroidViewModel(application) {
             val result = repository.getApl02(idSchemas)
             result.fold(
                 onSuccess = { body ->
-                    _apl02.value = body
+                    _apl02.value = body.data
                     _message.value = "Apl 02 Berhasil diambil"
                 },
                 onFailure = { error ->

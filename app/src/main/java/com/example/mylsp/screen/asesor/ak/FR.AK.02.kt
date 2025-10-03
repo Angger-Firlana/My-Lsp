@@ -249,7 +249,7 @@ fun FRAK02(
             assesmentAsesi?.let {
                 UnitKompetensi(
                     assesmentAsesiId = it.id,
-                    unitKompetensiList = skemas.data.units,
+                    unitKompetensiList = skemas.units,
                     isReadOnly = isFormReadOnly,
                     existingSubmission = currentSubmission
                 )

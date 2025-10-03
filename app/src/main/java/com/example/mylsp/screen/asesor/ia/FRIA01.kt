@@ -187,7 +187,7 @@ fun FRIA01(
                 InstructionsCard()
 
                 UnitsSection(
-                    units = apl02Data.data.units,
+                    units = apl02Data.units,
                     pilihan = pilihan,
                     iA01SubmissionManager = iA01SubmissionManager,
                     assesmentAsesiId = assesmentAsesiId,
@@ -426,7 +426,7 @@ private fun SuccessDialog(
 }
 
 @Composable
-private fun SchemaInfoSection(apl02Data: Apl02) {
+private fun SchemaInfoSection(apl02Data: DataApl02) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -811,7 +811,7 @@ private fun SubmitButtonIa01(
     ia01ViewModel: IA01ViewModel,
     assesmentAsesiId: Int,
     iA01SubmissionManager: IA01SubmissionManager,
-    apl02Data: Apl02,
+    apl02Data: DataApl02,
     isFormSubmitted: Boolean,
     onShowSuccessDialog: () -> Unit,
     onShowValidationDialog: (String) -> Unit,
@@ -846,7 +846,7 @@ private fun SubmitButtonIa01(
 
             // Hitung total KUK dari APL02
             val allKUKs = mutableListOf<Triple<Int, String, Int>>() // (unitKe, kodeUnit, kukId)
-            apl02Data.data.units?.forEach { unit ->
+            apl02Data.units?.forEach { unit ->
                 unit.elements.forEach { elemen ->
                     elemen.kriteria_untuk_kerja.forEach { kuk ->
                         allKUKs.add(Triple(unit.unit_ke, unit.kode_unit, kuk.id))
@@ -868,7 +868,7 @@ private fun SubmitButtonIa01(
             val unselectedKUKs = mutableListOf<String>()
             val emptyNotesKUKs = mutableListOf<String>()
 
-            apl02Data.data.units?.forEachIndexed { unitIndex, unit ->
+            apl02Data.units?.forEachIndexed { unitIndex, unit ->
                 unit.elements.forEachIndexed { elemenIndex, elemen ->
                     elemen.kriteria_untuk_kerja.forEachIndexed { kukIndex, kuk ->
                         // Cari submission untuk KUK ini

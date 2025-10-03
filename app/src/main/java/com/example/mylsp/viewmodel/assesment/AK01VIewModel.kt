@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mylsp.model.api.assesment.AK01Submission
 import com.example.mylsp.model.api.assesment.GetAK01Response
+import com.example.mylsp.model.api.assesment.PostApproveRequest
 import com.example.mylsp.repository.assesment.AK01Repository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -63,6 +64,21 @@ class AK01ViewModel(application: Application) : AndroidViewModel(application) {
                 }
             )
             _loading.value = false
+        }
+    }
+
+    fun approveAk01(id: Int, request: PostApproveRequest){
+        viewModelScope.launch {
+            val result = repository.postApproveAK01(id = id, postApproveRequest = request)
+            result.fold(
+                onSuccess = {
+                    _state.value = true
+                },
+                onFailure = {
+                    _state.value = false
+                    Log.e("ErrorApproveAk01", it.message?: "Unknown Error")
+                }
+            )
         }
     }
 

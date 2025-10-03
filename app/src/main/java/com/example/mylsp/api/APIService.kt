@@ -18,9 +18,12 @@ import com.example.mylsp.model.api.Skemas
 import com.example.mylsp.model.api.SubmissionGroup
 import com.example.mylsp.model.api.User
 import com.example.mylsp.model.api.asesi.AssesmentAsesiResponse
+import com.example.mylsp.model.api.asesi.PatchStatusReq
+import com.example.mylsp.model.api.asesi.PatchStatusResponse
 import com.example.mylsp.model.api.asesi.PostAssesmentAsesiReq
 import com.example.mylsp.model.api.asesi.PostAssesmentAsesiResponse
 import com.example.mylsp.model.api.assesment.AK01Submission
+import com.example.mylsp.model.api.assesment.AK04
 import com.example.mylsp.model.api.assesment.Ak02GetResponse
 import com.example.mylsp.model.api.assesment.Ak02Request
 import com.example.mylsp.model.api.assesment.Ak02Response
@@ -30,6 +33,8 @@ import com.example.mylsp.model.api.assesment.Apl02Response
 import com.example.mylsp.model.api.assesment.Assessment
 import com.example.mylsp.model.api.assesment.GetAK01Response
 import com.example.mylsp.model.api.assesment.GetAK03Response
+import com.example.mylsp.model.api.assesment.GetAK04QuestionResponse
+import com.example.mylsp.model.api.assesment.GetAK04Response
 import com.example.mylsp.model.api.assesment.GetAPL02Response
 import com.example.mylsp.model.api.assesment.GetAk05Response
 import com.example.mylsp.model.api.assesment.GetAssesmentResponse
@@ -37,6 +42,7 @@ import com.example.mylsp.model.api.assesment.IA01GetResponse
 import com.example.mylsp.model.api.assesment.KomponenResponse
 import com.example.mylsp.model.api.assesment.PostAK03Request
 import com.example.mylsp.model.api.assesment.PostAK03Response
+import com.example.mylsp.model.api.assesment.PostAK04Response
 import com.example.mylsp.model.api.assesment.PostApproveRequest
 import com.example.mylsp.model.api.assesment.PostApproveResponse
 import okhttp3.MultipartBody
@@ -46,6 +52,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
@@ -125,6 +132,13 @@ interface APIService {
         @Body request: PostAssesmentAsesiReq
     ):Response<PostAssesmentAsesiResponse>
 
+    @PATCH("assesment/asesi/{id}/updateStatus")
+    suspend fun patchStatusAssesmentAsesi(
+        @Header("Accept") accept: String = "application/json",
+        @Path("id") id: Int,
+        @Body request: PatchStatusReq
+    ):Response<PatchStatusResponse>
+
     //APL02
     @GET("apl02/{id}")
     suspend fun getAPL02(@Path("id") id: Int): Response<Apl02>
@@ -162,6 +176,13 @@ interface APIService {
         @Path("id") id: Int
     ):Response<GetAK01Response>
 
+    @POST("user/assesment/formak01/{id}")
+    suspend fun postApproveAk01(
+        @Header("Accept") accept: String = "application/json",
+        @Path("id") id: Int,
+        @Body request: PostApproveRequest
+    ):Response<PostApproveResponse>
+
     //AK02
     @POST("assesment/formak02")
     suspend fun postSubmissionAk02(
@@ -187,6 +208,22 @@ interface APIService {
         @Header("Accept") accept: String = "application/json",
         @Path("id") id: Int
     ):Response<GetAK03Response>
+
+    //AK04
+    @GET("ak04/questions")
+    suspend fun getAk04Questions():Response<GetAK04QuestionResponse>
+
+    @GET("assesment/formak04/{id}")
+    suspend fun getAk04ByAsesi(
+        @Header("Accept") accept: String = "application/json",
+        @Path("id") id: Int
+    ):Response<GetAK04Response>
+
+    @POST("assesment/formak04")
+    suspend fun postAk04(
+        @Header("Accept") accept: String = "application/json",
+        @Body bodyRequestBody: AK04
+    ):Response<PostAK04Response>
 
     //AK05
     @POST("assesment/formak05")

@@ -121,9 +121,9 @@ fun FRAK01(
 
                 // Tampilan untuk data yang sudah ada
             if (!submission.data.isNullOrEmpty()){
-                submission.data.let {
+
                         ExistingSubmissionView(
-                            submissionData = it.first(),
+                            submissionData = submission.data.first(),
                             loading = loading,
                             onApprove = {
                                 // Logic untuk approve (untuk asesi)
@@ -132,7 +132,7 @@ fun FRAK01(
                             }
                         )
 
-                }
+
             }else{
                 EmptyFormView(
                     loading = false,

@@ -90,11 +90,13 @@ fun MainScreen(
         aK05ViewModel.getSubmission(asesiManager.getId())
         Log.d("testAsesiid", asesiManager.getId().toString())
         apl01ViewModel.fetchFormApl01Status()
-        assesmentAsesiViewModel.getAssesmentAsesiByAsesi(asesiManager.getId())
+        assesmentAsesiViewModel.getAssesmentAsesiByAsesi(asesi?.id?: 0)
         assesmentAsesi?.let { assesmentAsesi ->
             assesmentAsesiManager.setAssesmentAsesiId(assesmentAsesi.id)
             assesmentAsesiManager.saveAssesmentAsesi(assesmentAsesi)
+            Log.d("assesmentAsesiMainScreenInLetBody", assesmentAsesi.toString())
         }
+        Log.d("assesmentAsesiMainScreen", assesmentAsesi.toString())
     }
 
     Box(Modifier.fillMaxSize().padding(bottom = 64.dp)) {

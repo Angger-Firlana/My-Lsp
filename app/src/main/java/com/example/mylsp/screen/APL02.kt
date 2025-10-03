@@ -22,6 +22,7 @@ import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.component.LoadingScreen
 import com.example.mylsp.model.api.Attachment
 import com.example.mylsp.model.api.assesment.Apl02
+import com.example.mylsp.model.api.assesment.DataApl02
 import com.example.mylsp.model.api.assesment.ElemenAPL02
 import com.example.mylsp.model.api.assesment.UnitApl02
 import com.example.mylsp.model.api.assesment.GetAPL02Response
@@ -34,6 +35,8 @@ import com.example.mylsp.util.user.AsesiManager
 import com.example.mylsp.util.user.UserManager
 import com.example.mylsp.viewmodel.APL01ViewModel
 import com.example.mylsp.viewmodel.APL02ViewModel
+import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun APL02(
@@ -89,6 +92,8 @@ fun APL02(
         }
     }
 
+
+
     // Check if form is already submitted and can't be edited
     val isReadOnly = remember(apl02Submission) {
         apl02Submission?.let { submission ->
@@ -104,6 +109,8 @@ fun APL02(
         Log.d("APL02_MAIN", "Loading APL02 data and submission...")
         apL02ViewModel.getAPL02(id)
         apL02ViewModel.getSubmissionByAsesi(asesiManager.getId())
+        delay(3000)
+        Log.d("apl02data", apl02.toString())
     }
 
     LaunchedEffect(state) {
@@ -165,6 +172,7 @@ fun APL02(
 
                 SubmitButton(
                     apL02ViewModel = apL02ViewModel,
+                    assesmentAsesiViewModel = AssesmentAsesiViewModel,
                     nextForm = nextForm,
                     asesiId = assesmentAsesiManager.getAssesmentId(),
                     titleButton = "Setuju",
@@ -573,7 +581,7 @@ private fun SubmissionStatusCard(
 }
 
 @Composable
-private fun SchemaSection(data: Apl02) {
+private fun SchemaSection(data: DataApl02) {
     Text(
         text = "Skema Sertifikasi",
         fontFamily = AppFont.Poppins,
@@ -663,13 +671,13 @@ private fun InstructionCard() {
 @Composable
 private fun UnitsSection(
     assesmentAsesiId: Int,
-    data: Apl02,
+    data: DataApl02,
     listAttachment: List<Attachment>,
     jawabanManager: JawabanManager,
     submission: GetAPL02Response?,
     isReadOnly: Boolean
 ) {
-    data.data.units.forEach { unit ->
+    data.units.forEach { unit ->
         UnitCompetensiSection(
             assesmentAsesiId = assesmentAsesiId,
             listAttachment = listAttachment,

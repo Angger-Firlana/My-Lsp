@@ -60,6 +60,7 @@ import com.example.mylsp.viewmodel.UserViewModel
 import com.example.mylsp.viewmodel.assesment.AK02ViewModel
 import com.example.mylsp.viewmodel.assesment.AK03ViewModel
 import com.example.mylsp.viewmodel.assesment.AK05ViewModel
+import com.example.mylsp.viewmodel.assesment.Ak04ViewModel
 import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
 import com.example.mylsp.viewmodel.assesment.IA01ViewModel
 import com.example.mylsp.viewmodel.assesment.KomponenViewModel
@@ -119,6 +120,9 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
     )
 
     val aK05ViewModel: AK05ViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
+    )
+    val ak04ViewModel:Ak04ViewModel = viewModel(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
     )
 
@@ -186,6 +190,13 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             ListFormScreen(
                 asesiManager = asesiManager,
                 assesmentAsesiViewModel = assesmentAsesiViewModel,
+                apl02ViewModel = apL02ViewModel,
+                ak01ViewModel = ak01ViewModel,
+                ak02ViewModel = aK02ViewModel,
+                ak03ViewModel = aK03ViewModel,
+                ak04ViewModel = ak04ViewModel,
+                ak05ViewModel = aK05ViewModel,
+                assesmentViewModel = assessmentViewModel,
                 navigateToForm = { route ->
                     if (route == Screen.AssessmentList.route){
                         navController.navigate(route){
@@ -352,8 +363,9 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             showTopBar(false)
             showBottomBar(false)
             FRAK04(
+                viewModel = ak04ViewModel,
                 nextForm = {
-                    navController.navigate(Screen.Ak03.route)
+                    navController.popBackStack()
                 }
             )
         }

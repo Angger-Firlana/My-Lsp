@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mylsp.model.api.asesi.AssesmentAsesi
+import com.example.mylsp.model.api.asesi.PatchStatusReq
 import com.example.mylsp.model.api.asesi.PostAssesmentAsesiReq
 import com.example.mylsp.repository.assesment.AssesmentAsesiRepository
 import com.example.mylsp.util.assesment.AssesmentAsesiManager
@@ -21,8 +22,14 @@ class AssesmentAsesiViewModel(application: Application):AndroidViewModel(applica
     private val _assesmentAsesi = MutableStateFlow<AssesmentAsesi?>(null)
     val assesmentAsesi = _assesmentAsesi.asStateFlow()
 
+    private val _message = MutableStateFlow("")
+    val message = _message.asStateFlow()
+
     private val _state = MutableStateFlow<Boolean?>(null)
     val state = _state.asStateFlow()
+
+    private val _loading = MutableStateFlow(false)
+    val loading = _loading.asStateFlow()
 
     fun getListAsesiByAssesment(assesmentId:Int){
         viewModelScope.launch {
@@ -75,6 +82,24 @@ class AssesmentAsesiViewModel(application: Application):AndroidViewModel(applica
                 onFailure = {
                     _state.value = false
                     Log.e("AssesmentAsesiViewModel", "Error: ${it.message}")
+                }
+            )
+        }
+    }
+    fun updateStatusAssesmentAsesi(assesmentAsesiId:Int, status:String){
+        viewModelScope.launch {
+            _loading.value = true
+            val request = PatchStatusReq(status)
+            val result = repository.patchStatus(assesmentAsesiId,request)
+            result.fold(
+                onSuccess = {
+                    _loading.value = false
+                    _state.value = true
+                },
+                onFailure = {
+                    _loading.value = false
+                    _state.value = false
+                    _message.value = it.message.toString()
                 }
             )
         }

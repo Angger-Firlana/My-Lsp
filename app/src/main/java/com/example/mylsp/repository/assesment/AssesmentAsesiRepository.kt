@@ -3,6 +3,8 @@ package com.example.mylsp.repository.assesment
 import android.content.Context
 import com.example.mylsp.api.APIClient
 import com.example.mylsp.model.api.asesi.AssesmentAsesiResponse
+import com.example.mylsp.model.api.asesi.PatchStatusReq
+import com.example.mylsp.model.api.asesi.PatchStatusResponse
 import com.example.mylsp.model.api.asesi.PostAssesmentAsesiReq
 import com.example.mylsp.model.api.asesi.PostAssesmentAsesiResponse
 
@@ -43,6 +45,20 @@ class AssesmentAsesiRepository(context: Context) {
             if (response.isSuccessful){
                 Result.success(response.body()!!)
             }else{
+                val errorBody = response.errorBody()
+                Result.failure(Exception(errorBody.toString()))
+            }
+        }catch (e:Exception){
+            Result.failure(e)
+        }
+    }
+
+    suspend fun patchStatus(assesmentAsesiId: Int,request: PatchStatusReq):Result<PatchStatusResponse>{
+        return try {
+            val response = api.patchStatusAssesmentAsesi(id = assesmentAsesiId, request = request)
+            if (response.isSuccessful) {
+                Result.success(response.body()!!)
+            } else {
                 val errorBody = response.errorBody()
                 Result.failure(Exception(errorBody.toString()))
             }

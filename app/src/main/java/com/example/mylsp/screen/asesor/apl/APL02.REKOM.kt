@@ -21,6 +21,7 @@ import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.component.LoadingScreen
 import com.example.mylsp.model.api.Attachment
 import com.example.mylsp.model.api.assesment.Apl02
+import com.example.mylsp.model.api.assesment.DataApl02
 import com.example.mylsp.model.api.assesment.ElemenAPL02
 import com.example.mylsp.model.api.assesment.UnitApl02
 import com.example.mylsp.model.api.assesment.GetAPL02Response
@@ -158,7 +159,7 @@ private fun SubmissionStatusCard(
 }
 
 @Composable
-private fun SchemaSection(data: Apl02) {
+private fun SchemaSection(data: DataApl02) {
     Text(
         text = "Skema Sertifikasi",
         fontFamily = AppFont.Poppins,
@@ -248,13 +249,13 @@ private fun InstructionCard() {
 @Composable
 private fun UnitsSection(
     assesmentAsesiId: Int,
-    data: Apl02,
+    data: DataApl02,
     listAttachment: List<Attachment>,
     jawabanManager: JawabanManager,
     submission: GetAPL02Response?,
     isReadOnly: Boolean
 ) {
-    data.data.units.forEach { unit ->
+    data.units.forEach { unit ->
         UnitCompetensiSection(
             assesmentAsesiId = assesmentAsesiId,
             listAttachment = listAttachment,
