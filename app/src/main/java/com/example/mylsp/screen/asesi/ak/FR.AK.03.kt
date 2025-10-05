@@ -85,7 +85,7 @@ fun FRAK03(
     // Check if AK03 already submitted
     LaunchedEffect(Unit) {
         komponenViewModel.getListKomponen()
-        aK03ViewModel.getAK03ByAsesi(assesmentAsesi?.assesi_id?:0)
+        aK03ViewModel.getAK03ByAsesi(assesmentAsesi?.id?:0)
 
         // Tetap load data untuk asesor agar bisa melihat hasil
         // Tidak ada logic khusus yang menghalangi pemanggilan API

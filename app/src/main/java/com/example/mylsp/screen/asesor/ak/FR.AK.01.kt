@@ -77,7 +77,7 @@ fun FRAK01(
 
     // Load existing data jika ada
     LaunchedEffect(assesmentAsesiId) {
-        aK01ViewModel.getSubmission(assesmentAsesiManager.getAssesmentAsesi()?.assesi_id?:0)
+        aK01ViewModel.getSubmission(assesmentAsesiId)
         Log.d(
             "AK01GetForm",
             submission.toString()
@@ -361,7 +361,7 @@ private fun ActionButtonsSection(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         when (userRole) {
-            "asesi" -> {
+            "asesi", "assesi" -> {
                 // Button untuk asesi
                 when (submissionData.status) {
                     "pending", "draft" -> {
@@ -410,7 +410,7 @@ private fun ActionButtonsSection(
 
             }
 
-            "asesor" -> {
+            "asesor", "assesor" -> {
                 // Button untuk asesor
                 Row(
                     modifier = Modifier.fillMaxWidth(),

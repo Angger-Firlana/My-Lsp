@@ -75,7 +75,7 @@ fun FRAK04(
 
     LaunchedEffect(Unit) {
         viewModel.getAk04Questions()
-        viewModel.getAk04ByAsesi(assesmentAsesi?.assesi_id ?: 0)
+        viewModel.getAk04ByAsesi(assesmentAsesi?.id ?: 0)
 
         // Load saved answers dari local storage
         val savedAnswers = manager.getAllSubmissions(assesmentAsesiId)

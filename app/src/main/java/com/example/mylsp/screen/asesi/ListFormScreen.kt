@@ -90,11 +90,11 @@ fun ListFormScreen(
         assesmentAsesi?.let { asesiData ->
             assesmentViewModel.getAssesmentById(asesiData.assesment_id ?: 0)
             apl02ViewModel.getSubmissionByAsesi(asesiData.assesi_id ?: 0)
-            ak01ViewModel.getSubmission(asesiData.assesi_id ?: 0)
-            ak02ViewModel.getSubmission(asesiData.assesi_id ?: 0)
-            ak03ViewModel.getAK03ByAsesi(asesiData.assesi_id ?: 0)
-            ak04ViewModel.getAk04ByAsesi(asesiData.assesi_id ?: 0)
-            ak05ViewModel.getSubmission(asesiData.assesi_id ?: 0)
+            ak01ViewModel.getSubmission(asesiData.id ?: 0)
+            ak02ViewModel.getSubmission(asesiData.id ?: 0)
+            ak03ViewModel.getAK03ByAsesi(asesiData.id ?: 0)
+            ak04ViewModel.getAk04ByAsesi(asesiData.id ?: 0)
+            ak05ViewModel.getSubmission(asesiData.id ?: 0)
         }
     }
 

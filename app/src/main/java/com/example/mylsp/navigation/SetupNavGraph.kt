@@ -212,7 +212,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             FRIA06A(navController = navController)
         }
         composable(Screen.Ak05.route){
-            FRAK05(viewModel = aK05ViewModel)
+            FRAK05(viewModel = aK05ViewModel, assesmentAsesiViewModel = assesmentAsesiViewModel)
         }
         composable(Screen.KelengkapanDataAsesor.route) {
             KelengkapanDataAsesor(navController = navController)
@@ -373,7 +373,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         composable(Screen.Ak05.route){
             showTopBar(false)
             showBottomBar(false)
-            FRAK05(viewModel = aK05ViewModel)
+            FRAK05(viewModel = aK05ViewModel, assesmentAsesiViewModel = assesmentAsesiViewModel)
         }
         composable(Screen.Ia01.route){
             showTopBar(false)
@@ -463,10 +463,11 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
                 ApprovedUnapprovedScreen(
                     modifier = Modifier,
                     apl02ViewModel = apL02ViewModel,
-                    ia01ViewModel = iA1ViewModel,
+                    ia01ViewModel = iA01ViewModel,
                     ak01ViewModel = ak01ViewModel,
                     ak02ViewModel = aK02ViewModel,
                     ak03ViewModel = aK03ViewModel,
+                    ak04ViewModel = ak04ViewModel,
                     ak05ViewModel = aK05ViewModel,
                     assesmentViewModel = assessmentViewModel,
                     // Bisa ambil userName dari UserManager atau parameter lain

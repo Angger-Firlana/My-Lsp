@@ -33,6 +33,7 @@ import com.example.mylsp.viewmodel.AssesmentViewModel
 import com.example.mylsp.viewmodel.assesment.AK02ViewModel
 import com.example.mylsp.viewmodel.assesment.AK03ViewModel
 import com.example.mylsp.viewmodel.assesment.AK05ViewModel
+import com.example.mylsp.viewmodel.assesment.Ak04ViewModel
 import com.example.mylsp.viewmodel.assesment.IA01ViewModel
 
 
@@ -52,6 +53,7 @@ fun ApprovedUnapprovedScreen(
     ak01ViewModel:AK01ViewModel,
     ak02ViewModel: AK02ViewModel,
     ak03ViewModel: AK03ViewModel,
+    ak04ViewModel: Ak04ViewModel,
     ak05ViewModel: AK05ViewModel,
     assesmentViewModel: AssesmentViewModel,
     apl01:Apl01,
@@ -66,6 +68,7 @@ fun ApprovedUnapprovedScreen(
     val ak01Submission by ak01ViewModel.submission.collectAsState()
     val ak02Submission by ak02ViewModel.submission.collectAsState()
     val ak03Submission by ak03ViewModel.submissions.collectAsState()
+    val ak04Submission by ak04ViewModel.submissions.collectAsState()
     val ak05Submission by ak05ViewModel.submission.collectAsState()
 
     // Gradient full-bleed
@@ -77,16 +80,16 @@ fun ApprovedUnapprovedScreen(
         )
     )
 
-
     LaunchedEffect(Unit) {
         Log.d("ApprovedUnapprovedScreen", assesment.toString())
         assesmentViewModel.getAssesmentById(assesmentAsesi?.assesment_id?: 0)
-        apl02ViewModel.getSubmissionByAsesi(assesmentAsesi?.assesi_id?: 0)
-        ak01ViewModel.getSubmission(assesmentAsesi?.assesi_id?: 0)
-        ak02ViewModel.getSubmission(assesmentAsesi?.assesi_id?:0)
-        ak03ViewModel.getAK03ByAsesi(assesmentAsesi?.assesi_id?:0)
-        ak05ViewModel.getSubmission(assesmentAsesi?.assesi_id?:0)
-        ia01ViewModel.getIA01ByAsesi(assesmentAsesi?.assesi_id?:0)
+        apl02ViewModel.getSubmissionByAsesi(assesmentAsesi?.id?: 0)
+        ak04ViewModel.getAk04ByAsesi(assesmentAsesi?.id?: 0)
+        ak01ViewModel.getSubmission(assesmentAsesi?.id?: 0)
+        ak02ViewModel.getSubmission(assesmentAsesi?.id?:0)
+        ak03ViewModel.getAK03ByAsesi(assesmentAsesi?.id?:0)
+        ak05ViewModel.getSubmission(assesmentAsesi?.id?:0)
+        ia01ViewModel.getIA01ByAsesi(assesmentAsesi?.id?:0)
     }
 
     // Auto-refresh ketika ada perubahan data dari submission forms
@@ -114,7 +117,7 @@ fun ApprovedUnapprovedScreen(
         ),
         ApprovalItem("FR.AK.02", "REKAMAN ASESMEN KOMPETENSI", "NIS: 8880", ak02Submission?.ttd_asesi == "sudah" && ak02Submission?.ttd_asesor == "sudah", Screen.Ak02.createRoute(assesment?.schema?.id?: 0)),
         ApprovalItem("FR.AK.03", "UMPAN BALIK DAN CATATAN ASESMEN", "NIS: 8880", ak03Submission != null, Screen.Ak03.route),
-        ApprovalItem("FR.AK.04", "BANDING ASESMEN", "NIS: 8880", null, Screen.Ak04.route),
+        ApprovalItem("FR.AK.04", "BANDING ASESMEN", "NIS: 8880", if (ak04Submission != null) true else null, Screen.Ak04.route),
         ApprovalItem("FR.AK.05", "LAPORAN ASESMEN", "NIS: 8880", ak05Submission?.data?.get(0)?.ttdAsesor == "sudah", Screen.Ak05.route),
     )
 

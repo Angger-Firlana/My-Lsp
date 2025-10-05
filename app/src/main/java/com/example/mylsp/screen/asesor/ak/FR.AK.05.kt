@@ -24,12 +24,14 @@ import com.example.mylsp.model.api.assesment.Ak05SubmissionRequest
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.assesment.AssesmentAsesiManager
 import com.example.mylsp.viewmodel.assesment.AK05ViewModel
+import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FRAK05(
     modifier: Modifier = Modifier,
-    viewModel: AK05ViewModel
+    viewModel: AK05ViewModel,
+    assesmentAsesiViewModel: AssesmentAsesiViewModel,
 ) {
     val context = LocalContext.current
     val assesmentManager = remember { AssesmentAsesiManager(context) }
@@ -271,6 +273,10 @@ fun FRAK05(
                                 ttdAsesor = "sudah"
                             )
                             viewModel.sendSubmission(request)
+                            assesmentAsesiViewModel.updateStatusAssesmentAsesi(
+                                assesmentAsesiId,
+                                keputusan.lowercase()
+                            )
                         }
                     },
                     modifier = Modifier
