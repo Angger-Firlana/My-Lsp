@@ -19,6 +19,7 @@ data class AssesmentAsesi(
     val id: Int,
     val assesment_id: Int,
     val assesi_id: Int,
+    val status: String,
     val created_at: String,
     val updated_at: String,
     val asesi:Apl01

@@ -17,7 +17,7 @@ class AssesmentAsesiViewModel(application: Application):AndroidViewModel(applica
     private val repository = AssesmentAsesiRepository(application.applicationContext)
     val assesmentAsesiManager = AssesmentAsesiManager(application.applicationContext)
     private val _listAsesiAssesment = MutableStateFlow<List<AssesmentAsesi>>(emptyList())
-    val listAsesi = _listAsesiAssesment.asStateFlow()
+    val listAssesmentAsesi = _listAsesiAssesment.asStateFlow()
 
     private val _assesmentAsesi = MutableStateFlow<AssesmentAsesi?>(null)
     val assesmentAsesi = _assesmentAsesi.asStateFlow()

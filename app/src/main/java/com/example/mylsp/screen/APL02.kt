@@ -42,6 +42,7 @@ import kotlinx.coroutines.delay
 fun APL02(
     modifier: Modifier = Modifier,
     id: Int,
+    assesmentAsesiViewModel: AssesmentAsesiViewModel,
     apl01ViewModel: APL01ViewModel,
     userManager: UserManager,
     apL02ViewModel: APL02ViewModel,
@@ -92,7 +93,9 @@ fun APL02(
         }
     }
 
-
+    LaunchedEffect(Unit) {
+        assesmentAsesiViewModel.updateStatusAssesmentAsesi(assesmentAsesiManager.getAssesmentId(), "APL-02")
+    }
 
     // Check if form is already submitted and can't be edited
     val isReadOnly = remember(apl02Submission) {
@@ -172,7 +175,7 @@ fun APL02(
 
                 SubmitButton(
                     apL02ViewModel = apL02ViewModel,
-                    assesmentAsesiViewModel = AssesmentAsesiViewModel,
+                    assesmentAsesiViewModel = assesmentAsesiViewModel,
                     nextForm = nextForm,
                     asesiId = assesmentAsesiManager.getAssesmentId(),
                     titleButton = "Setuju",
@@ -840,6 +843,7 @@ private fun BuktiCheckboxItem(
 @Composable
 private fun SubmitButton(
     apL02ViewModel: APL02ViewModel,
+    assesmentAsesiViewModel: AssesmentAsesiViewModel,
     nextForm: () -> Unit,
     asesiId:Int,
     titleButton: String = "Kirim Jawaban",

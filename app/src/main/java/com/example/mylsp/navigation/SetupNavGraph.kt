@@ -282,6 +282,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             val id = it.arguments?.getString("id")?: "0"
             APL02(
                 id = id.toInt(),
+                assesmentAsesiViewModel = assesmentAsesiViewModel,
                 apl01ViewModel = apl01ViewModel,
                 userManager = userManager,
                 apL02ViewModel = apL02ViewModel,
@@ -462,7 +463,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
                 ApprovedUnapprovedScreen(
                     modifier = Modifier,
                     apl02ViewModel = apL02ViewModel,
-                    ia01ViewModel = iA01ViewModel,
+                    ia01ViewModel = iA1ViewModel,
                     ak01ViewModel = ak01ViewModel,
                     ak02ViewModel = aK02ViewModel,
                     ak03ViewModel = aK03ViewModel,

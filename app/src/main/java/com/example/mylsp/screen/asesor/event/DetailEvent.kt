@@ -9,16 +9,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.DonutLarge
 import androidx.compose.material.icons.filled.PeopleOutline
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +45,8 @@ import com.example.mylsp.util.user.AsesiManager
 import com.example.mylsp.util.user.UserManager
 import com.example.mylsp.viewmodel.AssesmentViewModel
 import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 data class Participant(
     val name: String,
@@ -61,6 +64,7 @@ enum class ParticipantStatus {
     PENDING
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DetailEvent(
     modifier: Modifier = Modifier,
@@ -75,7 +79,31 @@ fun DetailEvent(
         Color(0xFFFFFFFF), // Orange medium
     )
     val listAssessment by assessmentViewModel.listAssessment.collectAsState()
-    val listAsesi by assesmentAsesiViewModel.listAsesi.collectAsState()
+    val listAssesmentAsesi by assesmentAsesiViewModel.listAssesmentAsesi.collectAsState()
+
+    // State untuk pull refresh
+    var isRefreshing by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    // Function untuk refresh data
+    val onRefresh: () -> Unit = {
+        scope.launch {
+            isRefreshing = true
+            // Refresh data dari API
+            assessmentViewModel.getListAssesment()
+            assesmentAsesiViewModel.getListAsesiByAssesment(idAssesment)
+            // Simulasi delay untuk menunjukkan loading indicator
+            delay(1000)
+            isRefreshing = false
+        }
+    }
+
+    // Pull refresh state
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = onRefresh
+    )
+
     LaunchedEffect(Unit) {
         assessmentViewModel.getListAssesment()
         assesmentAsesiViewModel.getListAsesiByAssesment(idAssesment)
@@ -92,6 +120,7 @@ fun DetailEvent(
                             colors = gradientColors
                         )
                     )
+                    .pullRefresh(pullRefreshState) // Tambahkan pull refresh modifier
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -114,7 +143,21 @@ fun DetailEvent(
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    StatsSection()
+                    StatsSection(
+                        totalPeserta = listAssesmentAsesi.size,
+                        selesai = listAssesmentAsesi.count {
+                            // Sesuaikan kondisi dengan data real Anda
+                            false // Placeholder - ganti dengan kondisi sebenarnya
+                        },
+                        sedangUjian = listAssesmentAsesi.count {
+                            // Sesuaikan kondisi dengan data real Anda
+                            true // Placeholder - ganti dengan kondisi sebenarnya
+                        },
+                        belumMulai = listAssesmentAsesi.count {
+                            // Sesuaikan kondisi dengan data real Anda
+                            false // Placeholder - ganti dengan kondisi sebenarnya
+                        }
+                    )
 
                     Spacer(modifier = Modifier.height(10.dp))
 
@@ -144,15 +187,23 @@ fun DetailEvent(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    ParticipantsList(participants = listAsesi, onClick = { id, asesi -> onDetailAssessi(id, asesi)})
+                    ParticipantsList(
+                        participants = listAssesmentAsesi,
+                        onClick = { id, asesi -> onDetailAssessi(id, asesi)}
+                    )
                 }
+
+                // Pull refresh indicator
+                PullRefreshIndicator(
+                    refreshing = isRefreshing,
+                    state = pullRefreshState,
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    backgroundColor = Color.White,
+                    contentColor = Color(0xFFFE9C54)
+                )
             }
         }
     }
-
-
-
-
 }
 
 @Composable
@@ -201,7 +252,12 @@ fun HeaderSection(title: String, subTitle: String) {
 }
 
 @Composable
-fun StatsSection() {
+fun StatsSection(
+    totalPeserta: Int = 26,
+    selesai: Int = 10,
+    sedangUjian: Int = 5,
+    belumMulai: Int = 0
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -209,29 +265,41 @@ fun StatsSection() {
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         StatCard(
-            number = "26", label = "Total Peserta", icon = Icons.Default.PeopleOutline,
-            color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f)
+            number = totalPeserta.toString(),
+            label = "Total Peserta",
+            icon = Icons.Default.PeopleOutline,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.weight(1f)
         )
 
         Spacer(modifier = Modifier.width(8.dp))
 
         StatCard(
-            number = "10", label = "Selesai", icon = Icons.Default.CheckCircleOutline,
-            color = Color.Green, modifier = Modifier.weight(1f)
+            number = selesai.toString(),
+            label = "Selesai",
+            icon = Icons.Default.CheckCircleOutline,
+            color = Color.Green,
+            modifier = Modifier.weight(1f)
         )
 
         Spacer(modifier = Modifier.width(8.dp))
 
         StatCard(
-            number = "5", label = "Sedang Ujian", icon = Icons.Default.DonutLarge,
-            color = MaterialTheme.colorScheme.secondary, modifier = Modifier.weight(1f)
+            number = sedangUjian.toString(),
+            label = "Sedang Ujian",
+            icon = Icons.Default.DonutLarge,
+            color = MaterialTheme.colorScheme.secondary,
+            modifier = Modifier.weight(1f)
         )
 
         Spacer(modifier = Modifier.width(8.dp))
 
         StatCard(
-            number = "0", label = "Belum Mulai", icon = Icons.Default.Cancel,
-            color = Color.Red, modifier = Modifier.weight(1f)
+            number = belumMulai.toString(),
+            label = "Belum Mulai",
+            icon = Icons.Default.Cancel,
+            color = Color.Red,
+            modifier = Modifier.weight(1f)
         )
     }
 }
@@ -300,10 +368,9 @@ fun ParticipantsList(participants: List<AssesmentAsesi>, onClick: (Int, Apl01) -
             ParticipantCard(
                 participant = participant,
                 onClick = {
-                   onClick(participant.id, participant.asesi)
+                    onClick(participant.id, participant.asesi)
                 }
             )
-
         }
     }
 }
@@ -359,13 +426,13 @@ fun ParticipantCard(participant: AssesmentAsesi, onClick: (Int) -> Unit) {
                 Box(
                     modifier = Modifier
                         .background(
-                            color = Color.Green,
+                            color = getStatusColor(participant),
                             shape = RoundedCornerShape(50)
                         )
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
-                        text = "Sedangkan Mengerjakan",
+                        text = getStatusText(participant),
                         fontSize = 10.sp,
                         color = Color.White,
                         fontFamily = AppFont.Poppins
@@ -382,43 +449,64 @@ fun ParticipantCard(participant: AssesmentAsesi, onClick: (Int) -> Unit) {
             ) {
                 Column {
                     Text("Waktu mulai", fontSize = 10.sp, color = Color.Gray, fontFamily = AppFont.Poppins)
-                    Text("", fontSize = 12.sp, color = Color.Black, fontFamily = AppFont.Poppins)
+                    Text(participant.created_at?: "-", fontSize = 12.sp, color = Color.Black, fontFamily = AppFont.Poppins)
                 }
                 Column {
                     Text("Waktu selesai", fontSize = 10.sp, color = Color.Gray, fontFamily = AppFont.Poppins)
-                    Text("", fontSize = 12.sp, color = Color.Black, fontFamily = AppFont.Poppins)
-                }
-                Column {
-                    Text("Bagian saat ini", fontSize = 10.sp, color = Color.Gray, fontFamily = AppFont.Poppins)
-                    Text("", fontSize = 12.sp, color = Color.Black, fontFamily = AppFont.Poppins)
+                    Text(participant.updated_at?: "-", fontSize = 12.sp, color = Color.Black, fontFamily = AppFont.Poppins)
                 }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Progress bar + persen
+            // Status info
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                LinearProgressIndicator(
-                    progress = { 100f },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(8.dp)
-                        .clip(RoundedCornerShape(50)),
-                    color = Color(0xFF85B6F7),
-                    trackColor = Color(0xFFE0E0E0),
-                )
-                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "${(100f * 100).toInt()}%",
+                    text = "Status: ",
                     fontSize = 12.sp,
-                    color = Color.Black,
+                    color = Color.Gray,
+                    fontFamily = AppFont.Poppins
+                )
+                Text(
+                    text = participant.status ?: "Belum Diketahui",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = getStatusTextColor(participant),
                     fontFamily = AppFont.Poppins
                 )
             }
         }
+    }
+}
+
+// Helper functions
+fun getStatusColor(participant: AssesmentAsesi): Color {
+    // Sesuaikan dengan status dari AssesmentAsesi
+    return when (participant.status?.lowercase()) {
+        "selesai", "completed", "lulus", "kompeten" -> Color.Green
+        "sedang ujian", "apl-02", "ak-01","ak-02", "ak-03", "ak-04","ak-05",-> Color(0xFFFFA500) // Orange
+        "belum", "pending", "menunggu" -> Color.Gray
+        "gagal", "failed", "tidak lulus", "belum kompeten" -> Color.Red
+        else -> Color.Gray
+    }
+}
+
+fun getStatusText(participant: AssesmentAsesi): String {
+    // Menggunakan status dari AssesmentAsesi
+    return participant.status ?: "Status Tidak Diketahui"
+}
+
+fun getStatusTextColor(participant: AssesmentAsesi): Color {
+    // Warna teks untuk status di bagian bawah card
+    return when (participant.status?.lowercase()) {
+        "selesai", "completed", "lulus" -> Color(0xFF4CAF50)
+        "sedang ujian", "in progress", "proses" -> Color(0xFFFFA500)
+        "belum mulai", "pending", "menunggu" -> Color.Gray
+        "gagal", "failed", "tidak lulus" -> Color(0xFFF44336)
+        else -> Color.Black
     }
 }
