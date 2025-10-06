@@ -64,4 +64,25 @@ class AK02ViewModel(application: Application) : AndroidViewModel(application) {
             _loading.value = false
         }
     }
+
+    fun updateTtdAsesi(submissionId: Int) {
+        viewModelScope.launch {
+            val result = repository.patchTtdAsesi(submissionId)
+            result.fold(
+                onSuccess = {
+                    _state.value = true
+
+                },
+                onFailure = {
+                    _state.value = false
+                    _message.value = it.message ?: "Unknown error"
+                }
+            )
+        }
+    }
+
+    fun clearState(){
+        _state.value = null
+        _message.value = ""
+    }
 }

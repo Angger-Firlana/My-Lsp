@@ -67,9 +67,9 @@ class AK01ViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun approveAk01(id: Int, request: PostApproveRequest){
+    fun approveAk01(id: Int){
         viewModelScope.launch {
-            val result = repository.postApproveAK01(id = id, postApproveRequest = request)
+            val result = repository.postApproveAK01(id = id)
             result.fold(
                 onSuccess = {
                     _state.value = true

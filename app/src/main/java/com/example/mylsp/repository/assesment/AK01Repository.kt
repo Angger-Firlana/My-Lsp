@@ -51,9 +51,9 @@ class AK01Repository(private val context:Context) {
         }
     }
 
-    suspend fun postApproveAK01(id:Int, postApproveRequest:PostApproveRequest):Result<PostApproveResponse>{
+    suspend fun postApproveAK01(id:Int):Result<PostApproveResponse>{
         return try {
-            val response = api.postApproveAk01(id = id, request = postApproveRequest)
+            val response = api.postApproveAk01(id = id)
             if (response.isSuccessful){
                 val body = response.body()
                 if (body != null){

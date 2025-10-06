@@ -180,7 +180,6 @@ interface APIService {
     suspend fun postApproveAk01(
         @Header("Accept") accept: String = "application/json",
         @Path("id") id: Int,
-        @Body request: PostApproveRequest
     ):Response<PostApproveResponse>
 
     //AK02
@@ -195,6 +194,12 @@ interface APIService {
         @Header("Accept") accept: String = "application/json",
         @Path("id") id:Int
     ):Response<Ak02GetResponse>
+
+    @POST("user/assesment/formak02/{id}")
+    suspend fun updateStatusAsesi(
+        @Header("Accept") accept: String = "application/json",
+        @Path("id") id: Int,
+    ):Response<Ak02Response>
 
     //AK03
     @POST("assesment/formak03")

@@ -56,4 +56,22 @@ class AK02Repository(private val context: Context) {
             Result.failure(e)
         }
     }
+
+    suspend fun patchTtdAsesi(submissionId: Int): Result<Ak02Response> {
+        return try{
+            val response = api.updateStatusAsesi(id = submissionId)
+            if (response.isSuccessful){
+                val body = response.body()
+                if (body != null){
+                    Result.success(body)
+                }else{
+                    Result.failure(Exception("Response body is null"))
+                }
+            }else{
+                Result.failure(Exception("Request failed: ${response.errorBody()}"))
+            }
+        }catch (e:Exception){
+            Result.failure(e)
+        }
+    }
 }

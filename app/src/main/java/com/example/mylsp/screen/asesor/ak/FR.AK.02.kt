@@ -94,7 +94,7 @@ fun FRAK02(
     val message by aK02ViewModel.message.collectAsState()
     val ak02Submissions by aK02ViewModel.submission.collectAsState()
     val submissionState by aK02ViewModel.state.collectAsState()
-//    val updateTtdState by aK02ViewModel.updateTtdState.collectAsState()
+    val updateTtdState by aK02ViewModel.state.collectAsState()
 
     // Cek apakah sudah ada submission
     val hasSubmission = ak02Submissions != null
@@ -126,23 +126,24 @@ fun FRAK02(
                 showDialogFail = true
                 dialogMessage = message
             }
+            aK02ViewModel.clearState()
         }
     }
 
     // Handle update TTD response
-//    LaunchedEffect(updateTtdState) {
-//        updateTtdState?.let { success ->
-//            if (success) {
-//                showDialogSuccess = true
-//                dialogMessage = "Persetujuan berhasil dikirim!"
-//                aK02ViewModel.getSubmission(assesmentAsesi?.id ?: 0)
-//            } else {
-//                showDialogFail = true
-//                dialogMessage = message
-//            }
-//            aK02ViewModel.resetUpdateTtdState()
-//        }
-//    }
+    LaunchedEffect(updateTtdState) {
+        updateTtdState?.let { success ->
+            if (success) {
+                showDialogSuccess = true
+                dialogMessage = "Persetujuan berhasil dikirim!"
+                aK02ViewModel.getSubmission(assesmentAsesi?.id ?: 0)
+            } else {
+                showDialogFail = true
+                dialogMessage = message
+            }
+            aK02ViewModel.clearState()
+        }
+    }
 
     // Validasi akses untuk non-asesor
     if (!isAsesor && !hasSubmission) {
@@ -350,7 +351,7 @@ fun FRAK02(
                     onClick = {
                         showApproveDialog = false
                         currentSubmission?.let { submission ->
-//                            aK02ViewModel.updateTtdAsesi(submission.id)
+                            aK02ViewModel.updateTtdAsesi(submission.id)
                         }
                     }
                 ) {

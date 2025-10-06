@@ -128,6 +128,7 @@ fun FRAK01(
                             onApprove = {
                                 // Logic untuk approve (untuk asesi)
                                 // Bisa tambah endpoint khusus untuk approve
+                                aK01ViewModel.approveAk01(submission.data.first().id)
                                 nextForm()
                             }
                         )

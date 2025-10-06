@@ -14,8 +14,12 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -46,6 +50,7 @@ import com.example.mylsp.viewmodel.AsesiViewModel
 import com.example.mylsp.viewmodel.assesment.AK05ViewModel
 import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 data class ItemBar(
     val icon: ImageVector,
@@ -58,7 +63,7 @@ data class ItemBanner(
     val description: String,
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
@@ -85,6 +90,36 @@ fun MainScreen(
     var currentBanner by remember { mutableStateOf(0) }
     val assesmentAsesi by assesmentAsesiViewModel.assesmentAsesi.collectAsState()
 
+    // Pull to Refresh State
+    var isRefreshing by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
+    // Function to refresh data
+    fun refreshData() {
+        coroutineScope.launch {
+            isRefreshing = true
+            try {
+                asesiViewModel.getDataAsesiByUser(userManager.getUserId()?.toInt() ?: 0)
+                aK05ViewModel.getSubmission(asesiManager.getId())
+                apl01ViewModel.fetchFormApl01Status()
+                assesmentAsesiViewModel.getAssesmentAsesiByAsesi(asesi?.id ?: 0)
+
+                // Add delay to show refresh animation
+                delay(500)
+
+                assesmentAsesi?.let { assesmentAsesi ->
+                    assesmentAsesiManager.setAssesmentAsesiId(assesmentAsesi.id)
+                    assesmentAsesiManager.saveAssesmentAsesi(assesmentAsesi)
+                    Log.d("assesmentAsesiMainScreenInLetBody", assesmentAsesi.toString())
+                }
+                Log.d("assesmentAsesiMainScreen", assesmentAsesi.toString())
+            } finally {
+                isRefreshing = false
+            }
+        }
+    }
+
+    // Initial data load
     LaunchedEffect(Unit) {
         asesiViewModel.getDataAsesiByUser(userManager.getUserId()?.toInt() ?: "0".toInt())
         aK05ViewModel.getSubmission(asesiManager.getId())
@@ -99,175 +134,193 @@ fun MainScreen(
         Log.d("assesmentAsesiMainScreen", assesmentAsesi.toString())
     }
 
-    Box(Modifier.fillMaxSize().padding(bottom = 64.dp)) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Enhanced Banner Section
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp)
-                    .padding(vertical = 8.dp),
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-            ) {
-                HorizontalPager(state = pagerState) { page ->
-                    currentBanner = page
-                    val item = banners[page]
-                    Box(Modifier.fillMaxSize()) {
-                        Image(
-                            painter = painterResource(id = item.image),
-                            contentDescription = item.description,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = { refreshData() }
+    )
 
-                        // Gradient overlay for better text readability
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    Brush.verticalGradient(
-                                        colors = listOf(
-                                            Color.Transparent,
-                                            Color.Black.copy(alpha = 0.4f),
-                                            Color.Black.copy(alpha = 0.7f)
+    Box(
+        Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState)
+    ) {
+        Box(Modifier.fillMaxSize().padding(bottom = 64.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Enhanced Banner Section
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp)
+                        .padding(vertical = 8.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                ) {
+                    HorizontalPager(state = pagerState) { page ->
+                        currentBanner = page
+                        val item = banners[page]
+                        Box(Modifier.fillMaxSize()) {
+                            Image(
+                                painter = painterResource(id = item.image),
+                                contentDescription = item.description,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+
+                            // Gradient overlay for better text readability
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        Brush.verticalGradient(
+                                            colors = listOf(
+                                                Color.Transparent,
+                                                Color.Black.copy(alpha = 0.4f),
+                                                Color.Black.copy(alpha = 0.7f)
+                                            )
                                         )
                                     )
+                            )
+
+                            Text(
+                                text = item.description,
+                                fontFamily = AppFont.Poppins,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp,
+                                color = Color.White,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .padding(20.dp)
+                            )
+                        }
+                    }
+                }
+
+                // Enhanced Banner Indicators
+                LazyRow(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    items(banners.size) { index ->
+                        val isSelected = index == currentBanner
+                        Box(
+                            modifier = Modifier
+                                .padding(horizontal = 3.dp)
+                                .size(
+                                    width = if (isSelected) 24.dp else 8.dp,
+                                    height = 8.dp
+                                )
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(
+                                    if (isSelected)
+                                        MaterialTheme.colorScheme.primary
+                                    else
+                                        MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
                                 )
                         )
+                    }
+                }
 
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Enhanced Action Buttons
+                if (assesmentAsesi == null) {
+                    ElevatedButton(
+                        onClick = { navController.navigate(Screen.AssessmentList.route) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .padding(horizontal = 4.dp),
+                        colors = ButtonDefaults.elevatedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ),
+                        elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ViewList,
+                            contentDescription = "List Assessment",
+                            modifier = Modifier.padding(end = 12.dp)
+                        )
                         Text(
-                            text = item.description,
+                            "Pilih Skema Assessment",
                             fontFamily = AppFont.Poppins,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            color = Color.White,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .padding(20.dp)
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                } else {
+                    ElevatedButton(
+                        onClick = { navController.navigate(Screen.ListFormScreen.route) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .padding(horizontal = 4.dp),
+                        colors = ButtonDefaults.elevatedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                        ),
+                        elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.NavigateNext,
+                            contentDescription = "Continue Assessment",
+                            modifier = Modifier.padding(end = 12.dp)
+                        )
+                        Text(
+                            "Lanjutkan Assessment",
+                            fontFamily = AppFont.Poppins,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Enhanced APL01 Section
+                EnhancedApl01Card(
+                    apl01Data = apl01Data,
+                    onNavigateToApl01 = { navController.navigate(Screen.Apl01.route) }
+                )
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .padding(vertical = 8.dp),
+                    shape = RoundedCornerShape(8.dp),
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        EnhancedInfoRow(
+                            Icons.Default.Assessment,
+                            label = "Hasil Assesment",
+                            value = if (AK05?.data?.get(0)?.keputusan.isNullOrEmpty()) "Belum ada keputusan" else if(AK05?.data?.get(0)?.keputusan == "k") "Kompeten" else "Belum Kompeten"
                         )
                     }
                 }
             }
-
-            // Enhanced Banner Indicators
-            LazyRow(
-                modifier = Modifier.padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                items(banners.size) { index ->
-                    val isSelected = index == currentBanner
-                    Box(
-                        modifier = Modifier
-                            .padding(horizontal = 3.dp)
-                            .size(
-                                width = if (isSelected) 24.dp else 8.dp,
-                                height = 8.dp
-                            )
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(
-                                if (isSelected)
-                                    MaterialTheme.colorScheme.primary
-                                else
-                                    MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
-                            )
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Enhanced Action Buttons
-            if (assesmentAsesi == null) {
-                ElevatedButton(
-                    onClick = { navController.navigate(Screen.AssessmentList.route) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .padding(horizontal = 4.dp),
-                    colors = ButtonDefaults.elevatedButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    ),
-                    elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 6.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ViewList,
-                        contentDescription = "List Assessment",
-                        modifier = Modifier.padding(end = 12.dp)
-                    )
-                    Text(
-                        "Pilih Skema Assessment",
-                        fontFamily = AppFont.Poppins,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-            } else {
-                ElevatedButton(
-                    onClick = { navController.navigate(Screen.ListFormScreen.route) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .padding(horizontal = 4.dp),
-                    colors = ButtonDefaults.elevatedButtonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-                    ),
-                    elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 6.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.NavigateNext,
-                        contentDescription = "Continue Assessment",
-                        modifier = Modifier.padding(end = 12.dp)
-                    )
-                    Text(
-                        "Lanjutkan Assessment",
-                        fontFamily = AppFont.Poppins,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Enhanced APL01 Section
-            EnhancedApl01Card(
-                apl01Data = apl01Data,
-                onNavigateToApl01 = { navController.navigate(Screen.Apl01.route) }
-            )
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-                    .padding(vertical = 8.dp),
-                shape = RoundedCornerShape(8.dp),
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    EnhancedInfoRow(
-                        Icons.Default.Assessment,
-                        label = "Hasil Assesment",
-                        value = if (AK05?.data?.get(0)?.keputusan.isNullOrEmpty()) "Belum ada keputusan" else if(AK05?.data?.get(0)?.keputusan == "k") "Kompeten" else "Belum Kompeten"
-                    )
-                }
-            }
         }
+
+        // Pull to Refresh Indicator
+        PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EnhancedApl01Card(
-    apl01Data: Apl01?, // Replace with actual APL01 data type
+    apl01Data: Apl01?,
     onNavigateToApl01: () -> Unit
 ) {
     val context = LocalContext.current
@@ -511,7 +564,7 @@ fun EnhancedApl01Card(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AttachmentCard(
-    attachment: Attachment, // Replace with actual attachment type
+    attachment: Attachment,
     onClick: () -> Unit
 ) {
     Card(
@@ -541,7 +594,7 @@ fun AttachmentCard(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = getFileIcon(attachment), // Function to determine icon based on file type
+                    imageVector = getFileIcon(attachment),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp),
                     tint = MaterialTheme.colorScheme.primary
@@ -568,8 +621,6 @@ fun AttachmentCard(
 
 // Helper functions for attachment handling
 fun getFileIcon(attachment: Any): ImageVector {
-    // You can customize this based on your attachment object structure
-    // For now, returning a default icon
     return Icons.Default.InsertDriveFile
 }
 
