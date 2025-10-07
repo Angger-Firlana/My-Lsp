@@ -10,23 +10,25 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mylsp.util.AppFont
+import com.example.mylsp.util.assesment.AssesmentAsesiManager
+import com.example.mylsp.viewmodel.AssesmentViewModel
 
 @Composable
 fun SkemaSertifikasi(
     modifier: Modifier = Modifier,
-    judulUnit: String? = null,
-    kodeUnit: String? = null,
-    TUK: String? = null,
-    namaAsesor: String? = null,
-    namaAsesi: String? = null,
-    tanggalAsesmen: String? = null,
 
     // label kolom pertama dibuat opsional
     labelJudulUnit: String? = "Judul Unit",
@@ -36,6 +38,17 @@ fun SkemaSertifikasi(
     labelNamaAsesi: String? = "Nama Asesi",
     labelTanggalAsesmen: String? = "Tanggal Asesmen"
 ) {
+    val context = LocalContext.current
+    val assesmentAsesiManager = AssesmentAsesiManager(context)
+    val assesmentViewModel:AssesmentViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as android.app.Application)
+    )
+    val assesment by assesmentViewModel.assesment.collectAsState()
+    var skema = assesment?.schema
+    val assesmentAsesi = assesmentAsesiManager.getAssesmentAsesi()
+    LaunchedEffect(assesmentAsesi) {
+        assesmentViewModel.getAssesmentById(assesmentAsesi?.assesment_id?: 0)
+    }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -78,13 +91,14 @@ fun SkemaSertifikasi(
             Spacer(modifier = Modifier.width(8.dp))
 
             Column {
-                judulUnit?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
-                kodeUnit?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
-                TUK?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
-                namaAsesor?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
-                namaAsesi?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
-                tanggalAsesmen?.let { Text(it, fontSize = 12.sp, fontFamily = AppFont.Poppins) }
+                Text(skema?.judul_skema?: "unknown judul schema", fontSize = 12.sp, fontFamily = AppFont.Poppins)
+                Text(skema?.nomor_skema?: "nomor skema", fontSize = 12.sp, fontFamily = AppFont.Poppins)
+                Text(assesment?.tuk?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins)
+                 Text(assesment?.assesor?.nama_lengkap?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins)
+                Text(assesmentAsesi?.asesi?.nama_lengkap?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins)
+               Text(assesment?.tanggal_assesment?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins)
             }
+
         }
 
         HorizontalDivider(
@@ -92,5 +106,7 @@ fun SkemaSertifikasi(
             color = MaterialTheme.colorScheme.tertiary,
             modifier = Modifier.padding(bottom = 8.dp)
         )
+
     }
 }
+

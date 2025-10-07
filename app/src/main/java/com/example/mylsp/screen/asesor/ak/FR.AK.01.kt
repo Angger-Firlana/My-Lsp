@@ -494,14 +494,7 @@ private fun EmptyFormView(
             modifier = Modifier.padding(vertical = 8.dp)
         )
 
-        SkemaSertifikasi(
-            judulUnit = "Okupasi Junior Custom Made",
-            kodeUnit = "SKM.TBS.OJCM/LSP.SMKN24/2023",
-            TUK = tuk.ifEmpty { null },
-            namaAsesor = null,
-            namaAsesi = null,
-            labelTanggalAsesmen = if (dayDate.isNotEmpty()) dayDate else null
-        )
+        SkemaSertifikasi()
 
         Spacer(modifier = Modifier.height(16.dp))
 

@@ -20,6 +20,7 @@ import androidx.compose.ui.window.Dialog
 import com.example.mylsp.component.ErrorCard
 import com.example.mylsp.component.HeaderForm
 import com.example.mylsp.component.LoadingScreen
+import com.example.mylsp.component.SkemaSertifikasi
 import com.example.mylsp.model.api.Attachment
 import com.example.mylsp.model.api.assesment.Apl02
 import com.example.mylsp.model.api.assesment.DataApl02
@@ -161,7 +162,7 @@ fun APL02(
                     SubmissionStatusCard(firstSubmission, userManager.getUserRole()!!)
                 }
 
-                SchemaSection(data)
+                SkemaSertifikasi()
                 InstructionCard()
 
                 UnitsSection(

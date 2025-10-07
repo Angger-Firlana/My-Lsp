@@ -40,6 +40,7 @@ import androidx.navigation.NavController
 import com.example.mylsp.R
 import com.example.mylsp.model.api.Apl01
 import com.example.mylsp.model.api.Attachment
+import com.example.mylsp.model.api.asesi.AssesmentAsesi
 import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.assesment.AssesmentAsesiManager
@@ -100,7 +101,7 @@ fun MainScreen(
             isRefreshing = true
             try {
                 asesiViewModel.getDataAsesiByUser(userManager.getUserId()?.toInt() ?: 0)
-                aK05ViewModel.getSubmission(asesiManager.getId())
+                aK05ViewModel.getSubmission(assesmentAsesi?.id?: 0)
                 apl01ViewModel.fetchFormApl01Status()
                 assesmentAsesiViewModel.getAssesmentAsesiByAsesi(asesi?.id ?: 0)
 
@@ -266,6 +267,7 @@ fun MainScreen(
                             containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                             contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                         ),
+                        enabled = assesmentAsesi?.status?.lowercase() != "kompeten",
                         elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 6.dp)
                     ) {
                         Icon(
@@ -274,7 +276,7 @@ fun MainScreen(
                             modifier = Modifier.padding(end = 12.dp)
                         )
                         Text(
-                            "Lanjutkan Assessment",
+                            if(assesmentAsesi?.status?.lowercase() == "kompeten") "Assesment Sudah Berakhir" else "Lanjutkan Assessment",
                             fontFamily = AppFont.Poppins,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold

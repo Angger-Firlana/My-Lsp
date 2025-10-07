@@ -152,14 +152,7 @@ fun FRAK03(
                 "PERSETUJUAN ASESMEN DAN KERAHASIAAN"
             )
 
-            SkemaSertifikasi(
-                judulUnit = "Okupasi Junior Custom Made",
-                kodeUnit = "SKM.TBS.OJCM/LSP.SMKN24/2023",
-                TUK = "Sewaktu/Tempat Kerja/Mandiri",
-                namaAsesor = null,
-                namaAsesi = null,
-                tanggalAsesmen = null
-            )
+            SkemaSertifikasi()
 
             Text(
                 "Umpan balik dari asesi (diisi oleh Asesi setelah pengambilan keputusan)",

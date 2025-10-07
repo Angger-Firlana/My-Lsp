@@ -170,12 +170,6 @@ fun FRAK04(
         }
 
         SkemaSertifikasi(
-            judulUnit = skemaSertifikasi,
-            kodeUnit = noSkema,
-            TUK = "Sewaktu/Tempat Kerja/Mandiri",
-            namaAsesor = namaAsesor,
-            namaAsesi = namaAsesi,
-            tanggalAsesmen = tanggalAsesmen
         )
 
         Spacer(Modifier.height(8.dp))

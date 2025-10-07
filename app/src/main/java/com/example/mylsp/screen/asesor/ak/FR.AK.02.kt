@@ -185,12 +185,6 @@ fun FRAK02(
             )
 
             SkemaSertifikasi(
-                judulUnit = "Okupasi Junior Custom Made",
-                kodeUnit = "SKM.TBS.OJCM/LSP.SMKN24/2023",
-                TUK = "Sewaktu/Tempat Kerja/Mandiri",
-                namaAsesor = null,
-                namaAsesi = null,
-                tanggalAsesmen = null
             )
 
             // Status badge jika form sudah disubmit

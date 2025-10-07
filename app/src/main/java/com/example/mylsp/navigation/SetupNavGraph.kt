@@ -40,9 +40,6 @@ import com.example.mylsp.screen.asesor.ia.FRIA01
 import com.example.mylsp.screen.asesor.KelengkapanDataAsesor
 import com.example.mylsp.screen.asesor.AssesmentListScreen
 import com.example.mylsp.screen.asesor.ak.FRAK02
-import com.example.mylsp.screen.asesor.ia.FRIA02
-import com.example.mylsp.screen.asesor.ia.FRIA03
-import com.example.mylsp.screen.asesor.ia.FRIA06C
 import com.example.mylsp.screen.auth.LoginScreen
 import com.example.mylsp.screen.auth.RegisterScreen
 import com.example.mylsp.screen.main.MainScreen
@@ -481,26 +478,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         }
 
         // Tambahkan juga route untuk form-form yang belum ada composable
-        composable(Screen.Ia02.route) {
-            showTopBar(false)
-            showBottomBar(false)
-            // TODO: Buat screen untuk FR.IA.02 - TPO TUGAS PRAKTIK DEMONSTRASI
-            FRIA02()
-        }
 
-        composable(Screen.Ia03.route) {
-            showTopBar(false)
-            showBottomBar(false)
-            // TODO: Buat screen untuk FR.IA.03 - PERTANYAAN UNTUK MENDUKUNG OBSERVASI
-            FRIA03()
-        }
-
-        composable(Screen.Ia06c.route) {
-            showTopBar(false)
-            showBottomBar(false)
-            // TODO: Buat screen untuk FR.IA.06.C - LEMBAR JAWABAN PERTANYAAN TERTULIS
-            FRIA06C(navController = navController)
-        }
 
         composable(Screen.Ak02.route) {
             showTopBar(false)
