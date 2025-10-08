@@ -298,57 +298,88 @@ fun AsesiFormScreen(
                 if (dataAsesi.status == "pending") {
                     ifStatusPending(dataAsesi.status)
                 }else{
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                            .verticalScroll(rememberScrollState())
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                text = "Detail Asesi",
-                                style = TextStyle(
-                                    fontFamily = AppFont.Poppins,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 20.sp
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = "Detail Asesi",
+                                    style = TextStyle(
+                                        fontFamily = AppFont.Poppins,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 20.sp
+                                    )
                                 )
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
 
-                            DetailItem(label = "Nama Lengkap", value = dataAsesi.nama_lengkap)
-                            DetailItem(label = "No KTP", value = dataAsesi.no_ktp)
-                            DetailItem(label = "Tanggal Lahir", value = dataAsesi.tgl_lahir)
-                            DetailItem(label = "Tempat Lahir", value = dataAsesi.tempat_lahir)
-                            DetailItem(label = "Jenis Kelamin", value = dataAsesi.jenis_kelamin)
-                            DetailItem(label = "Kebangsaan", value = dataAsesi.kebangsaan)
-                            DetailItem(label = "Alamat Rumah", value = dataAsesi.alamat_rumah)
-                            DetailItem(label = "Kode Pos", value = dataAsesi.kode_pos)
-                            DetailItem(label = "No Telepon Rumah", value = dataAsesi.no_telepon_rumah)
-                            DetailItem(label = "No Telepon Kantor", value = dataAsesi.no_telepon_kantor)
-                            DetailItem(label = "No Telepon", value = dataAsesi.no_telepon)
-                            DetailItem(label = "Email", value = dataAsesi.email)
-                            DetailItem(label = "Kualifikasi Pendidikan", value = dataAsesi.kualifikasi_pendidikan)
-                            DetailItem(label = "Nama Institusi", value = dataAsesi.nama_institusi)
-                            DetailItem(label = "Jabatan", value = dataAsesi.jabatan)
-                            DetailItem(label = "Alamat Kantor", value = dataAsesi.alamat_kantor)
-                            DetailItem(label = "Kode Pos Kantor", value = dataAsesi.kode_pos_kantor)
-                            DetailItem(label = "Fax Kantor", value = dataAsesi.fax_kantor)
-                            DetailItem(label = "Email Kantor", value = dataAsesi.email_kantor)
-                            DetailItem(label = "Status", value = dataAsesi.status)
+                                Spacer(modifier = Modifier.height(8.dp))
 
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "User Detail",
-                                style = TextStyle(
-                                    fontFamily = AppFont.Poppins,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 16.sp
-                                )
-                            )
-                            DetailItem(label = "Username", value = dataAsesi.user.username)
-                            DetailItem(label = "Email User", value = dataAsesi.user.email)
-                            DetailItem(label = "Role", value = dataAsesi.user.role)
+                                HorizontalDivider()
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                DetailItem(label = "Nama Lengkap", value = dataAsesi.nama_lengkap)
+                                DetailItem(label = "No KTP", value = dataAsesi.no_ktp)
+                                DetailItem(label = "Tanggal Lahir", value = dataAsesi.tgl_lahir)
+                                DetailItem(label = "Tempat Lahir", value = dataAsesi.tempat_lahir)
+                                DetailItem(label = "Jenis Kelamin", value = dataAsesi.jenis_kelamin)
+                                DetailItem(label = "Kebangsaan", value = dataAsesi.kebangsaan)
+                                DetailItem(label = "Alamat Rumah", value = dataAsesi.alamat_rumah)
+                                DetailItem(label = "Kode Pos", value = dataAsesi.kode_pos)
+                                DetailItem(label = "No Telepon Rumah", value = dataAsesi.no_telepon_rumah)
+                                DetailItem(label = "No Telepon Kantor", value = dataAsesi.no_telepon_kantor)
+                                DetailItem(label = "No Telepon", value = dataAsesi.no_telepon)
+                                DetailItem(label = "Email", value = dataAsesi.email)
+                                DetailItem(label = "Kualifikasi Pendidikan", value = dataAsesi.kualifikasi_pendidikan)
+                                DetailItem(label = "Nama Institusi", value = dataAsesi.nama_institusi)
+                                DetailItem(label = "Jabatan", value = dataAsesi.jabatan)
+                                DetailItem(label = "Alamat Kantor", value = dataAsesi.alamat_kantor)
+                                DetailItem(label = "Kode Pos Kantor", value = dataAsesi.kode_pos_kantor)
+                                DetailItem(label = "Fax Kantor", value = dataAsesi.fax_kantor)
+                                DetailItem(label = "Email Kantor", value = dataAsesi.email_kantor)
+                                DetailItem(label = "Status", value = dataAsesi.status)
+                            }
                         }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = "User Detail",
+                                    style = TextStyle(
+                                        fontFamily = AppFont.Poppins,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 20.sp
+                                    )
+                                )
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                HorizontalDivider()
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                DetailItem(label = "Username", value = dataAsesi.user.username)
+                                DetailItem(label = "Email User", value = dataAsesi.user.email)
+                                DetailItem(label = "Role", value = dataAsesi.user.role)
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(80.dp))
                     }
                 }
             } ?: run {
@@ -725,13 +756,21 @@ fun DetailItem(label: String, value: String?) {
             .padding(vertical = 4.dp)
     ) {
         Text(
-            text = "$label:",
+            text = "$label",
             style = TextStyle(
                 fontFamily = AppFont.Poppins,
                 fontWeight = FontWeight.Medium,
                 fontSize = 14.sp
             ),
             modifier = Modifier.width(150.dp)
+        )
+        Text(
+            text = ": ",
+            style = TextStyle(
+                fontFamily = AppFont.Poppins,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp
+            )
         )
         Text(
             text = value ?: "-",

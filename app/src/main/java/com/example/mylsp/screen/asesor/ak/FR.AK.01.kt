@@ -122,18 +122,16 @@ fun FRAK01(
                 // Tampilan untuk data yang sudah ada
             if (!submission.data.isNullOrEmpty()){
 
-                        ExistingSubmissionView(
-                            submissionData = submission.data.first(),
-                            loading = loading,
-                            onApprove = {
-                                // Logic untuk approve (untuk asesi)
-                                // Bisa tambah endpoint khusus untuk approve
-                                aK01ViewModel.approveAk01(submission.data.first().id)
-                                nextForm()
-                            }
-                        )
-
-
+                ExistingSubmissionView(
+                    submissionData = submission.data.first(),
+                    loading = loading,
+                    onApprove = {
+                        // Logic untuk approve (untuk asesi)
+                        // Bisa tambah endpoint khusus untuk approve
+                        aK01ViewModel.approveAk01(submission.data.first().id)
+                        nextForm()
+                    }
+                )
             }else{
                 EmptyFormView(
                     loading = false,
@@ -174,7 +172,12 @@ private fun ExistingSubmissionView(
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)
+                containerColor = when (submissionData.status) {
+                    "pending" -> Color(0xFFFFF9E6)
+                    "approved" -> Color(0xFFE6F4EE)
+                    "rejected" -> Color(0xFFFCEEEF)
+                    else -> Color.Gray.copy(alpha = 0.1f)
+                }
             ),
             shape = RoundedCornerShape(12.dp)
         ) {
@@ -190,7 +193,7 @@ private fun ExistingSubmissionView(
                 ) {
                     Column {
                         Text(
-                            text = "📋 Form FR.AK.01 Sudah Diisi",
+                            text = "Form FR.AK.01 Sudah Diisi",
                             fontSize = 14.sp,
                             fontFamily = AppFont.Poppins,
                             fontWeight = FontWeight.Bold,
@@ -198,7 +201,7 @@ private fun ExistingSubmissionView(
                         )
                         Text(
                             text = "Status: ${submissionData.status} • ${submissionData.submission_date}",
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             fontFamily = AppFont.Poppins,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -218,12 +221,12 @@ private fun ExistingSubmissionView(
                     ) {
                         Text(
                             text = when(submissionData.status) {
-                                "pending" -> "⏳ Menunggu"
-                                "approved" -> "✅ Disetujui"
-                                "rejected" -> "❌ Ditolak"
+                                "pending" -> "Menunggu"
+                                "approved" -> "Disetujui"
+                                "rejected" -> "Ditolak"
                                 else -> "📝 Draft"
                             },
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             fontFamily = AppFont.Poppins,
                             fontWeight = FontWeight.Medium,
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
@@ -257,51 +260,53 @@ private fun ExistingSubmissionView(
 
 @Composable
 private fun SubmissionSummaryCard(submissionData: AK01) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = "📄 Ringkasan Persetujuan",
-                fontSize = 14.sp,
-                fontFamily = AppFont.Poppins,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+        Text(
+            text = "Ringkasan Persetujuan",
+            fontSize = 16.sp,
+            fontFamily = AppFont.Poppins,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
 
-            Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            // Parse dan tampilkan data dari attachments
-            val attachments = submissionData.attachments
-            val evidenceList = mutableListOf<String>()
-            var scheduleInfo = ""
-            var agreementInfo = ""
+        HorizontalDivider()
 
-            attachments.forEach { attachment ->
-                when {
-                    attachment.description.contains("Hasil ") -> {
-                        evidenceList.add(attachment.description)
-                    }
-                    attachment.description.contains("Jadwal") ||
-                            attachment.description.contains("Lokasi") -> {
-                        scheduleInfo += "${attachment.description}\n"
-                    }
-                    attachment.description.contains("Persetujuan") -> {
-                        agreementInfo += "✅ ${attachment.description.split(":")[0]}\n"
-                    }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Parse dan tampilkan data dari attachments
+        val attachments = submissionData.attachments
+        val evidenceList = mutableListOf<String>()
+        var scheduleInfo = ""
+        var agreementInfo = ""
+
+        attachments.forEach { attachment ->
+            when {
+                attachment.description.contains("Hasil ") -> {
+                    evidenceList.add(attachment.description)
+                }
+                attachment.description.contains("Jadwal") ||
+                        attachment.description.contains("Lokasi") -> {
+                    scheduleInfo += "${attachment.description}\n"
+                }
+                attachment.description.contains("Persetujuan") -> {
+                    agreementInfo += "${attachment.description.split(":")[0]}\n"
                 }
             }
+        }
 
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             // Bukti yang dipilih
             if (evidenceList.isNotEmpty()) {
                 SummarySection(
                     title = "📋 Bukti yang Dikumpulkan:",
-                    content = evidenceList.joinToString("\n") { "• ${it.replace("Hasil ", "")}" }
+                    content = evidenceList.joinToString("\n") { "${it.replace("Hasil ", "")}" },
+                    color = Color(0xFFE3F2FD)
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
@@ -310,7 +315,8 @@ private fun SubmissionSummaryCard(submissionData: AK01) {
             if (scheduleInfo.isNotEmpty()) {
                 SummarySection(
                     title = "📅 Jadwal Asesmen:",
-                    content = scheduleInfo.trim()
+                    content = scheduleInfo.trim(),
+                    color = Color(0xFFFFF8E1)
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
@@ -319,7 +325,8 @@ private fun SubmissionSummaryCard(submissionData: AK01) {
             if (agreementInfo.isNotEmpty()) {
                 SummarySection(
                     title = "✅ Status Persetujuan:",
-                    content = agreementInfo.trim()
+                    content = agreementInfo.trim(),
+                    color = Color(0xFFE6F4EA)
                 )
             }
         }
@@ -327,25 +334,49 @@ private fun SubmissionSummaryCard(submissionData: AK01) {
 }
 
 @Composable
-private fun SummarySection(title: String, content: String) {
-    Column {
+private fun SummarySection(
+    title: String,
+    content: String,
+    color: Color
+) {
+    val items = content.split("\n").filter { it.isNotBlank() }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = title,
-            fontSize = 12.sp,
+            fontSize = 14.sp,
             fontFamily = AppFont.Poppins,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.primary
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
         )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = content,
-            fontSize = 11.sp,
-            fontFamily = AppFont.Poppins,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            lineHeight = 14.sp
-        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            items.forEach { item ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("•")
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(color),
+                        shape = RoundedCornerShape(12.dp),
+                    ) {
+                        Text(
+                            text = item.trim(),
+                            fontSize = 13.sp,
+                            fontFamily = AppFont.Poppins,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
+                            lineHeight = 18.sp,
+                            modifier = Modifier.padding(12.dp)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
+
 
 @Composable
 private fun ActionButtonsSection(
@@ -407,8 +438,6 @@ private fun ActionButtonsSection(
                         }
                     }
                 }
-
-
             }
 
             "asesor", "assesor" -> {

@@ -2,6 +2,7 @@ package com.example.mylsp.screen.asesi.ak
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -156,7 +158,7 @@ fun FRAK03(
 
             Text(
                 "Umpan balik dari asesi (diisi oleh Asesi setelah pengambilan keputusan)",
-                fontSize = 10.sp
+                fontSize = 12.sp
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -173,33 +175,12 @@ fun FRAK03(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "⚠️",
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
-                        Text(
-                            text = "Anda login sebagai Asesor. Form ini hanya dapat dilihat, tidak dapat diubah.",
+                            text = "Anda hanya dapat melihat form ini.",
                             color = Color(0xFF856404),
                             fontWeight = FontWeight.Medium,
                             fontSize = 14.sp
                         )
                     }
-                }
-            }
-
-            // Show form status
-            if (isFormSubmitted) {
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                    colors = CardDefaults.cardColors(Color(0xFFE8F5E8)),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(
-                        text = "✓ Form AK03 sudah diisi dan dikirim",
-                        modifier = Modifier.padding(16.dp),
-                        color = Color(0xFF2E7D32),
-                        fontWeight = FontWeight.Medium
-                    )
                 }
             }
 
@@ -213,12 +194,23 @@ fun FRAK03(
                 ak03Submissions = ak03SubmissionData // PERBAIKAN: Langsung pake state yang reactive
             )
 
-            CatatanField(
-                value = catatanTambahan,
-                height = 200.dp,
-                onValueChange = { catatanTambahan = it },
-                enabled = !isFormSubmitted && !isAsesor // UBAH: Disable jika asesor
-            )
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
+                shape = RoundedCornerShape(12.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    CatatanField(
+                        value = catatanTambahan,
+                        height = 200.dp,
+                        onValueChange = { catatanTambahan = it },
+                        enabled = !isFormSubmitted && !isAsesor // UBAH: Disable jika asesor
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             // UBAH: Sembunyikan tombol kirim untuk asesor
             if (!isAsesor) {
@@ -255,21 +247,6 @@ fun FRAK03(
                         Log.d("AK03Submission", allSubmissions.toString())
                     }
                 )
-            } else {
-                // TAMBAHAN: Tampilkan info untuk asesor
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                    colors = CardDefaults.cardColors(Color(0xFFF8F9FA)),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(
-                        text = "Form ini khusus untuk Asesi. Sebagai Asesor, Anda hanya dapat melihat hasil yang telah diisi.",
-                        modifier = Modifier.padding(16.dp),
-                        color = Color(0xFF6C757D),
-                        fontSize = 14.sp,
-                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                    )
-                }
             }
         }
     }
@@ -314,9 +291,6 @@ fun Komponen(
                     }
                 }
             }
-
-
-
     }
 
     Column(modifier = modifier.fillMaxWidth()) {
@@ -349,13 +323,47 @@ fun KomponenList(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Komponen",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = AppFont.Poppins,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Komponen",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = AppFont.Poppins,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = if (isFormSubmitted) {
+                                Color(0xFFA5D6A7)
+                            } else {
+                                Color(0xFFE57373)
+                            },
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = if (isFormSubmitted) {
+                            "✓ Sudah dikirim"
+                        } else {
+                            "× Belum dikirim"
+                        },
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = AppFont.Poppins
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            HorizontalDivider()
 
             items.forEachIndexed { index, item ->
                 KomponenItem(
@@ -393,9 +401,9 @@ fun KomponenList(
 
                 if (index < items.size - 1) {
                     HorizontalDivider(
-                        color = Color.Gray.copy(alpha = 0.2f),
-                        thickness = 0.5.dp,
-                        modifier = Modifier.padding(vertical = 4.dp)
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .padding(top = 8.dp)
                     )
                 }
             }
@@ -416,7 +424,7 @@ fun KomponenItem(
     ) {
         Row(verticalAlignment = Alignment.Top) {
             Text(
-                text = "• ",
+                text = "•",
                 fontSize = 14.sp,
                 fontFamily = AppFont.Poppins,
                 modifier = Modifier.padding(end = 8.dp)
@@ -433,7 +441,7 @@ fun KomponenItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 22.dp, top = 8.dp),
+                .padding(start = 16.dp, top = 8.dp),
             horizontalArrangement = Arrangement.Start
         ) {
             CheckboxHasilOption(
