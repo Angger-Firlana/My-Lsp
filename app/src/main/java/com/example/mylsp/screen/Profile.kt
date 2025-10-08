@@ -43,10 +43,12 @@ import com.example.mylsp.util.user.AsesiManager
 import com.example.mylsp.util.user.TokenManager
 import com.example.mylsp.util.user.UserManager
 import com.example.mylsp.viewmodel.APL01ViewModel
+import com.example.mylsp.viewmodel.AssesmentViewModel
+import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun ProfileScreen(modifier: Modifier, navController: NavController) {
+fun ProfileScreen(modifier: Modifier,assesmentViewModel: AssesmentViewModel, assesmentAsesiViewModel: AssesmentAsesiViewModel, navController: NavController) {
     val context = LocalContext.current
     val userManager = UserManager(context)
     val tokenManager = TokenManager(context)
@@ -56,6 +58,9 @@ fun ProfileScreen(modifier: Modifier, navController: NavController) {
     val ia01SubmissionManager = IA01SubmissionManager(context)
     var showLogout by remember { mutableStateOf(false) }
     var logout by remember { mutableStateOf(false) }
+    val assesments by assesmentViewModel.listAssessment.collectAsState()
+    val assesmentAsesi by assesmentAsesiViewModel.assesmentAsesi.collectAsState()
+    val isAsesi = userManager.getUserRole()?.lowercase() == "asesi" || userManager.getUserRole()?.lowercase() == "assesi"
 
     val user = UserDetail(
         userManager.getUserId()?.toInt() ?: 0,
@@ -64,6 +69,16 @@ fun ProfileScreen(modifier: Modifier, navController: NavController) {
         userManager.getUserRole() ?: "Unknown",
         userManager.getJurusanId()
     )
+    if (isAsesi){
+
+        LaunchedEffect(Unit) {
+            assesmentAsesiViewModel.getAssesmentAsesiByAsesi(asesiManager.getId())
+        }
+    }else{
+        LaunchedEffect(Unit) {
+            assesmentViewModel.getListAssesment()
+        }
+    }
 
     Box(
         modifier = modifier
@@ -149,7 +164,13 @@ fun ProfileScreen(modifier: Modifier, navController: NavController) {
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "48",
+                                text = if(isAsesi){
+                                    if(assesmentAsesi != null) "1" else "0"
+                                } else{
+                                    assesments.count {
+                                        it.assesor.user_id == (userManager.getUserId() ?: 0)
+                                    }.toString()
+                                },
                                 fontFamily = AppFont.Poppins,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 36.sp,
@@ -195,7 +216,7 @@ fun ProfileScreen(modifier: Modifier, navController: NavController) {
 
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = "Quick Actions",
+                            text = "Menu",
                             fontFamily = AppFont.Poppins,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 16.sp,
