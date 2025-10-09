@@ -7,23 +7,44 @@ import com.example.mylsp.model.api.asesi.PatchStatusReq
 import com.example.mylsp.model.api.asesi.PatchStatusResponse
 import com.example.mylsp.model.api.asesi.PostAssesmentAsesiReq
 import com.example.mylsp.model.api.asesi.PostAssesmentAsesiResponse
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.HttpException
+import java.io.IOException
 
 class AssesmentAsesiRepository(context: Context) {
     private val api = APIClient.getClient(context)
 
-    suspend fun postAssesmentAsesi(request: PostAssesmentAsesiReq):Result<PostAssesmentAsesiResponse>{
+    suspend fun postAssesmentAsesi(request: PostAssesmentAsesiReq): Result<PostAssesmentAsesiResponse> {
         return try {
             val response = api.postAssesmentAsesi(request = request)
-            if (response.isSuccessful){
-                Result.success(response.body()!!)
-            }else{
-                Result.failure(Exception(response.message()))
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    Result.success(body)
+                } else {
+                    Result.failure(Exception("Response body is null"))
+                }
+            } else {
+                // Ambil pesan error detail dari response body kalau ada
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (!errorBody.isNullOrEmpty()) {
+                    "Server error: $errorBody"
+                } else {
+                    "HTTP ${response.code()} ${response.message()}"
+                }
+                Result.failure(Exception(errorMessage))
             }
-        }
-        catch (e:Exception){
-            Result.failure(e)
+        } catch (e: IOException) {
+            // error koneksi, misalnya timeout atau no internet
+            Result.failure(Exception("Network error: ${e.localizedMessage}"))
+        } catch (e: HttpException) {
+            // error dari Retrofit kalau status code gak 2xx
+            Result.failure(Exception("HTTP exception: ${e.localizedMessage}"))
+        } catch (e: Exception) {
+            // error tak terduga lainnya
+            Result.failure(Exception("Unexpected error: ${e.localizedMessage}"))
         }
     }
+
 
     suspend fun getAssesmentAsesiByAsesi(asesiId:Int):Result<AssesmentAsesiResponse>{
         return try {

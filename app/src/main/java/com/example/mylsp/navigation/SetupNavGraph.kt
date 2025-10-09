@@ -443,7 +443,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         composable(Screen.DashboardAsesor.route){
             showTopBar(false)
             showBottomBar(true)
-            DashboardAsesor(assesmentViewModel = assessmentViewModel, navController = navController)
+            DashboardAsesor(assesmentAsesiViewModel = assesmentAsesiViewModel ,assesmentViewModel = assessmentViewModel, navController = navController)
         }
 
         composable("scanningBarcode"){

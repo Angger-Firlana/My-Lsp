@@ -35,14 +35,18 @@ import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.util.user.UserManager
 import com.example.mylsp.viewmodel.AssesmentViewModel
+import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
 
 @Composable
 fun DashboardAsesor(
     modifier: Modifier = Modifier,
+    assesmentAsesiViewModel: AssesmentAsesiViewModel,
     assesmentViewModel: AssesmentViewModel,
     navController: NavController
 ) {
+    val listAssesmentAsesi by assesmentAsesiViewModel.listAssesmentAsesi.collectAsState()
     val listAssesment by assesmentViewModel.listAssessment.collectAsState()
+
     val userManager = UserManager(LocalContext.current.applicationContext)
     val username = userManager.getUserName()
     val Blue = Color(0xFF1DA1F2)
@@ -52,6 +56,7 @@ fun DashboardAsesor(
     val ButtonBlue = Color(0xFF2196F3)
 
     LaunchedEffect(Unit) {
+        assesmentAsesiViewModel.getListAsesiByAssesment(if (listAssesment.isNotEmpty()) {listAssesment[0].id}else{0})
         assesmentViewModel.getListAssesmentByUser(userManager.getUserId()?.toInt()?:0)
     }
 
@@ -106,8 +111,8 @@ fun DashboardAsesor(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                StatItem(label = "Jumlah Asesi", value = "7609", orange = Orange, textGray = TextGray)
-                StatItem(label = "Skema", value = "7609", orange = Orange, textGray = TextGray)
+                StatItem(label = "Jumlah Asesi", value = listAssesmentAsesi.size.toString()?: "0", orange = Orange, textGray = TextGray)
+                StatItem(label = "Skema", value = listAssesment.size.toString(), orange = Orange, textGray = TextGray)
             }
 
             Spacer(Modifier.height(28.dp))
