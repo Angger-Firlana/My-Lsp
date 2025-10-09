@@ -102,6 +102,8 @@ fun FRAK05(
                 subTitle = "Keputusan Asesmen"
             )
 
+            SkemaSertifikasi()
+
             Spacer(modifier = Modifier.height(16.dp))
 
             // Form Content

@@ -429,7 +429,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
                 showTopBar(true)
             }
             showBottomBar(false)
-            ProfileScreen(modifier = Modifier, navController = navController)
+            ProfileScreen(modifier = Modifier, assesmentViewModel = assessmentViewModel, assesmentAsesiViewModel = assesmentAsesiViewModel, navController = navController)
         }
         composable(Screen.Main.route) {
             showTopBar(true)
@@ -443,7 +443,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         composable(Screen.DashboardAsesor.route){
             showTopBar(false)
             showBottomBar(true)
-            DashboardAsesor(assesmentViewModel = assessmentViewModel, navController = navController)
+            DashboardAsesor(assesmentAsesiViewModel = assesmentAsesiViewModel ,assesmentViewModel = assessmentViewModel, navController = navController)
         }
 
         composable("scanningBarcode"){
