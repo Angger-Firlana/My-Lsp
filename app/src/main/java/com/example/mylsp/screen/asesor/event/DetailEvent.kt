@@ -440,23 +440,6 @@ fun ParticipantCard(participant: AssesmentAsesi, onClick: (Int) -> Unit) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Info row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text("Waktu mulai", fontSize = 10.sp, color = Color.Gray, fontFamily = AppFont.Poppins)
-                    Text(participant.created_at?: "-", fontSize = 12.sp, color = Color.Black, fontFamily = AppFont.Poppins)
-                }
-                Column {
-                    Text("Waktu selesai", fontSize = 10.sp, color = Color.Gray, fontFamily = AppFont.Poppins)
-                    Text(participant.updated_at?: "-", fontSize = 12.sp, color = Color.Black, fontFamily = AppFont.Poppins)
-                }
-            }
-
             Spacer(modifier = Modifier.height(12.dp))
 
             // Status info

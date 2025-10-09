@@ -24,8 +24,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -62,7 +60,6 @@ fun FRAK01(
     aK01ViewModel: AK01ViewModel,
     nextForm: () -> Unit
 ) {
-    // Collect states from ViewModel
     val context = LocalContext.current
     val loading by aK01ViewModel.loading.collectAsState()
     val state by aK01ViewModel.state.collectAsState()
@@ -72,19 +69,13 @@ fun FRAK01(
     val asesiManager = AsesiManager(context)
     val assesmentAsesiId = assesmentAsesiManager.getAssesmentId()
 
-    // State untuk dialog
     var showSuccessDialog by remember { mutableStateOf(false) }
 
-    // Load existing data jika ada
     LaunchedEffect(assesmentAsesiId) {
         aK01ViewModel.getSubmission(assesmentAsesiId)
-        Log.d(
-            "AK01GetForm",
-            submission.toString()
-        )
+        Log.d("AK01GetForm", submission.toString())
     }
 
-    // Handle successful submission
     LaunchedEffect(state) {
         if (state == true) {
             showSuccessDialog = true
@@ -94,12 +85,9 @@ fun FRAK01(
         aK01ViewModel.clearState()
     }
 
-    // Success Dialog
     if (showSuccessDialog) {
         SuccessDialog(
-            onDismiss = {
-                showSuccessDialog = false
-            },
+            onDismiss = { showSuccessDialog = false },
             onNextForm = {
                 showSuccessDialog = false
                 nextForm()
@@ -113,45 +101,32 @@ fun FRAK01(
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        HeaderForm(
-            "FR.AK.01",
-            "PERSETUJUAN ASESMEN DAN KERAHASIAAN"
-        )
+        HeaderForm("FR.AK.01", "PERSETUJUAN ASESMEN DAN KERAHASIAAN")
+
         submission?.let { submission ->
-
-                // Tampilan untuk data yang sudah ada
             if (!submission.data.isNullOrEmpty()){
-
                 ExistingSubmissionView(
                     submissionData = submission.data.first(),
                     loading = loading,
                     onApprove = {
-                        // Logic untuk approve (untuk asesi)
-                        // Bisa tambah endpoint khusus untuk approve
                         aK01ViewModel.approveAk01(submission.data.first().id)
                         nextForm()
                     }
                 )
-            }else{
+            } else {
                 EmptyFormView(
                     loading = false,
                     state = null,
                     message = "",
-                    onSubmit = {
-                        aK01ViewModel.sendSubmission(it)
-                    }
+                    onSubmit = { aK01ViewModel.sendSubmission(it) }
                 )
             }
-
-
-        }?:run {
+        } ?: run {
             EmptyFormView(
                 loading = false,
                 state = null,
                 message = "",
-                onSubmit = {
-
-                }
+                onSubmit = {}
             )
         }
 
@@ -161,16 +136,13 @@ fun FRAK01(
 
 @Composable
 private fun ExistingSubmissionView(
-    submissionData: AK01, // Ganti dengan tipe data yang sesuai
+    submissionData: AK01,
     loading: Boolean,
     onApprove: () -> Unit
 ) {
     Column {
-        // Status Card
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
             colors = CardDefaults.cardColors(
                 containerColor = when (submissionData.status) {
                     "pending" -> Color(0xFFFFF9E6)
@@ -181,11 +153,7 @@ private fun ExistingSubmissionView(
             ),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
+            Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -207,7 +175,6 @@ private fun ExistingSubmissionView(
                         )
                     }
 
-                    // Status badge
                     Card(
                         colors = CardDefaults.cardColors(
                             containerColor = when(submissionData.status) {
@@ -243,13 +210,8 @@ private fun ExistingSubmissionView(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Summary Card - Tampilkan ringkasan data yang sudah diisi
         SubmissionSummaryCard(submissionData)
-
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Action buttons berdasarkan role dan status
         ActionButtonsSection(
             submissionData = submissionData,
             loading = loading,
@@ -260,11 +222,7 @@ private fun ExistingSubmissionView(
 
 @Composable
 private fun SubmissionSummaryCard(submissionData: AK01) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-    ) {
+    Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
         Text(
             text = "Ringkasan Persetujuan",
             fontSize = 16.sp,
@@ -274,25 +232,17 @@ private fun SubmissionSummaryCard(submissionData: AK01) {
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-
         HorizontalDivider()
-
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Parse dan tampilkan data dari attachments
         val attachments = submissionData.attachments
         val evidenceList = mutableListOf<String>()
-        var scheduleInfo = ""
         var agreementInfo = ""
 
         attachments.forEach { attachment ->
             when {
                 attachment.description.contains("Hasil ") -> {
                     evidenceList.add(attachment.description)
-                }
-                attachment.description.contains("Jadwal") ||
-                        attachment.description.contains("Lokasi") -> {
-                    scheduleInfo += "${attachment.description}\n"
                 }
                 attachment.description.contains("Persetujuan") -> {
                     agreementInfo += "${attachment.description.split(":")[0]}\n"
@@ -301,27 +251,15 @@ private fun SubmissionSummaryCard(submissionData: AK01) {
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            // Bukti yang dipilih
             if (evidenceList.isNotEmpty()) {
                 SummarySection(
                     title = "📋 Bukti yang Dikumpulkan:",
-                    content = evidenceList.joinToString("\n") { "${it.replace("Hasil ", "")}" },
+                    content = evidenceList.joinToString("\n") { it.replace("Hasil ", "") },
                     color = Color(0xFFE3F2FD)
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
-            // Jadwal asesmen
-            if (scheduleInfo.isNotEmpty()) {
-                SummarySection(
-                    title = "📅 Jadwal Asesmen:",
-                    content = scheduleInfo.trim(),
-                    color = Color(0xFFFFF8E1)
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-
-            // Status persetujuan
             if (agreementInfo.isNotEmpty()) {
                 SummarySection(
                     title = "✅ Status Persetujuan:",
@@ -334,11 +272,7 @@ private fun SubmissionSummaryCard(submissionData: AK01) {
 }
 
 @Composable
-private fun SummarySection(
-    title: String,
-    content: String,
-    color: Color
-) {
+private fun SummarySection(title: String, content: String, color: Color) {
     val items = content.split("\n").filter { it.isNotBlank() }
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -377,7 +311,6 @@ private fun SummarySection(
     }
 }
 
-
 @Composable
 private fun ActionButtonsSection(
     submissionData: AK01,
@@ -385,16 +318,12 @@ private fun ActionButtonsSection(
     onApprove: () -> Unit
 ) {
     val context = LocalContext.current
-    val asesiManager = AsesiManager(context)
     val userManager = UserManager(context)
-    val userRole = userManager.getUserRole() // Asumsi ada method untuk get role
+    val userRole = userManager.getUserRole()
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         when (userRole) {
             "asesi", "assesi" -> {
-                // Button untuk asesi
                 when (submissionData.status) {
                     "pending", "draft" -> {
                         Button(
@@ -441,36 +370,29 @@ private fun ActionButtonsSection(
             }
 
             "asesor", "assesor" -> {
-                // Button untuk asesor
-                Row(
+                Button(
+                    onClick = onApprove,
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    enabled = !loading
                 ) {
-                    Button(
-                        onClick = onApprove,
-                        modifier = Modifier.weight(1f),
-                        enabled = !loading
-                    ) {
-                        if (loading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(16.dp),
-                                strokeWidth = 2.dp,
-                                color = MaterialTheme.colorScheme.onPrimary
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                        }
-                        Text(
-                            text = "➡️ Lanjut",
-                            fontSize = 14.sp,
-                            fontFamily = AppFont.Poppins,
-                            fontWeight = FontWeight.Bold
+                    if (loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
+                        Spacer(modifier = Modifier.width(4.dp))
                     }
+                    Text(
+                        text = "➡️ Lanjut",
+                        fontSize = 14.sp,
+                        fontFamily = AppFont.Poppins,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
 
-        // Info text
         Text(
             text = when (userRole) {
                 "asesi" -> "💡 Pastikan semua informasi sudah benar sebelum menyetujui"
@@ -497,7 +419,6 @@ private fun EmptyFormView(
     val assesmentAsesiManager = AssesmentAsesiManager(context)
     val assesmentAsesiId = assesmentAsesiManager.getAssesmentId()
 
-    // Form states
     var evidenceCheckedStates by remember {
         mutableStateOf(
             mutableMapOf(
@@ -506,10 +427,6 @@ private fun EmptyFormView(
             )
         )
     }
-
-    var dayDate by remember { mutableStateOf("") }
-    var time by remember { mutableStateOf("") }
-    var tuk by remember { mutableStateOf("") }
 
     var asesiAgreement by remember { mutableStateOf(false) }
     var asesorAgreement by remember { mutableStateOf(false) }
@@ -524,10 +441,8 @@ private fun EmptyFormView(
         )
 
         SkemaSertifikasi()
-
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Bukti Section
         BuktiSection(
             checkedStates = evidenceCheckedStates,
             onCheckedChange = { index, checked ->
@@ -539,19 +454,6 @@ private fun EmptyFormView(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Pelaksanaan Asesmen Section
-        PelaksanaanAsesmenSection(
-            dayDate = dayDate,
-            onDayDateChange = { dayDate = it },
-            time = time,
-            onTimeChange = { time = it },
-            tuk = tuk,
-            onTukChange = { tuk = it }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Pernyataan Section
         PernyataanSection(
             asesiAgreement = asesiAgreement,
             onAsesiAgreementChange = { asesiAgreement = it },
@@ -563,7 +465,6 @@ private fun EmptyFormView(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Submit Button
         Button(
             onClick = {
                 val attachments = buildList {
@@ -582,10 +483,6 @@ private fun EmptyFormView(
                             add(AttachmentAk01("${evidenceItems[index]}"))
                         }
                     }
-
-                    if (dayDate.isNotEmpty()) add(AttachmentAk01("Jadwal Hari/Tanggal: $dayDate"))
-                    if (time.isNotEmpty()) add(AttachmentAk01("Jadwal Waktu: $time"))
-                    if (tuk.isNotEmpty()) add(AttachmentAk01("Lokasi TUK: $tuk"))
 
                     if (asesiAgreement) {
                         add(AttachmentAk01("Persetujuan Asesi: Telah mendapat penjelasan hak dan prosedur banding - SETUJU"))
@@ -611,7 +508,7 @@ private fun EmptyFormView(
                 onSubmit(submission)
             },
             enabled = !loading && isFormValid(
-                evidenceCheckedStates, dayDate, time, tuk,
+                evidenceCheckedStates,
                 asesiAgreement, asesorAgreement, confidentialityAgreement
             ),
             modifier = Modifier.fillMaxWidth()
@@ -632,7 +529,6 @@ private fun EmptyFormView(
             )
         }
 
-        // Error message
         if (state == false && message.isNotEmpty()) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -647,56 +543,7 @@ private fun EmptyFormView(
 }
 
 @Composable
-private fun FormStatusIndicator(submission: GetAK01Response?) {
-    submission?.let { response ->
-        if (response.success && !response.data.isNullOrEmpty()) {
-            val data = response.data.first()
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)
-                ),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "ℹ️",
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                    Column {
-                        Text(
-                            text = "Form sudah pernah disubmit",
-                            fontSize = 12.sp,
-                            fontFamily = AppFont.Poppins,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Text(
-                            text = "Status: ${data.status} • Tanggal: ${data.submission_date}",
-                            fontSize = 10.sp,
-                            fontFamily = AppFont.Poppins,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SuccessDialog(
-    onDismiss: () -> Unit,
-    onNextForm: () -> Unit
-) {
+private fun SuccessDialog(onDismiss: () -> Unit, onNextForm: () -> Unit) {
     Dialog(onDismissRequest = onDismiss) {
         Card(
             shape = RoundedCornerShape(16.dp),
@@ -706,9 +553,7 @@ private fun SuccessDialog(
             modifier = Modifier.padding(16.dp)
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp),
+                modifier = Modifier.fillMaxWidth().padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -754,9 +599,7 @@ private fun SuccessDialog(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                TextButton(
-                    onClick = onDismiss
-                ) {
+                TextButton(onClick = onDismiss) {
                     Text(
                         text = "Tutup",
                         fontFamily = AppFont.Poppins,
@@ -779,9 +622,7 @@ private fun BuktiSection(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 "Bukti yang akan dikumpulkan:",
                 fontSize = 14.sp,
@@ -804,9 +645,7 @@ private fun BuktiSection(
 
             evidenceItems.forEachIndexed { index, item ->
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Checkbox(
@@ -824,7 +663,6 @@ private fun BuktiSection(
                 }
             }
 
-            // Selected count indicator
             val selectedCount = checkedStates.values.count { it }
             if (selectedCount > 0) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -841,64 +679,6 @@ private fun BuktiSection(
 }
 
 @Composable
-private fun PelaksanaanAsesmenSection(
-    dayDate: String,
-    onDayDateChange: (String) -> Unit,
-    time: String,
-    onTimeChange: (String) -> Unit,
-    tuk: String,
-    onTukChange: (String) -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                "Pelaksanaan asesmen disepakati pada:",
-                fontSize = 14.sp,
-                fontFamily = AppFont.Poppins,
-                fontWeight = FontWeight.Medium
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            OutlinedTextField(
-                value = dayDate,
-                onValueChange = onDayDateChange,
-                label = { Text("Hari/Tanggal", fontSize = 12.sp) },
-                placeholder = { Text("Contoh: Senin, 25 September 2023", fontSize = 11.sp) },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = time,
-                onValueChange = onTimeChange,
-                label = { Text("Waktu", fontSize = 12.sp) },
-                placeholder = { Text("Contoh: 09:00 - 12:00 WIB", fontSize = 11.sp) },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = tuk,
-                onValueChange = onTukChange,
-                label = { Text("TUK (Tempat Uji Kompetensi)", fontSize = 12.sp) },
-                placeholder = { Text("Contoh: Lab Komputer SMK", fontSize = 11.sp) },
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
-}
-
-@Composable
 private fun PernyataanSection(
     asesiAgreement: Boolean,
     onAsesiAgreementChange: (Boolean) -> Unit,
@@ -907,9 +687,7 @@ private fun PernyataanSection(
     confidentialityAgreement: Boolean,
     onConfidentialityAgreementChange: (Boolean) -> Unit
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
             "Pernyataan Persetujuan:",
             fontSize = 14.sp,
@@ -917,7 +695,6 @@ private fun PernyataanSection(
             fontWeight = FontWeight.Medium
         )
 
-        // Asesi Agreement 1
         AgreementCard(
             title = "Asesi:",
             content = "Bahwa saya telah mendapatkan penjelasan terkait hak dan prosedur banding asesmen dari asesor.",
@@ -925,7 +702,6 @@ private fun PernyataanSection(
             onCheckedChange = onAsesiAgreementChange
         )
 
-        // Asesor Agreement
         AgreementCard(
             title = "Asesor:",
             content = "Menyatakan tidak akan membuka hasil pekerjaan yang peroleh karena penguasaan saya sebagai Asesor dalam pekerjaan Asesmen kepada siapapun atau organisasi manapun selain kepada pihak yang berwenang sehubung dengan kewajiban saya sebagai Asesor yang ditugaskan oleh LSP.",
@@ -933,7 +709,6 @@ private fun PernyataanSection(
             onCheckedChange = onAsesorAgreementChange
         )
 
-        // Asesi Agreement 2 (Confidentiality)
         AgreementCard(
             title = "Asesi:",
             content = "Saya setuju mengikuti Asesmen dengan pemahaman bahwa informasi yang dikumpulkan hanya digunakan untuk pengembangan profesional dan hanya dapat diakses oleh orang tertentu saja.",
@@ -968,9 +743,7 @@ private fun AgreementCard(
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = title,
                 fontSize = 14.sp,
@@ -991,9 +764,7 @@ private fun AgreementCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
                     checked = isChecked,
                     onCheckedChange = onCheckedChange
@@ -1010,19 +781,14 @@ private fun AgreementCard(
     }
 }
 
-// Helper function untuk validasi form
 private fun isFormValid(
     evidenceStates: MutableMap<Int, Boolean>,
-    dayDate: String,
-    time: String,
-    tuk: String,
     asesiAgreement: Boolean,
     asesorAgreement: Boolean,
     confidentialityAgreement: Boolean
 ): Boolean {
     val hasSelectedEvidence = evidenceStates.values.any { it }
-    val hasScheduleInfo = dayDate.isNotEmpty() && time.isNotEmpty() && tuk.isNotEmpty()
     val hasAllAgreements = asesiAgreement && asesorAgreement && confidentialityAgreement
 
-    return hasSelectedEvidence && hasScheduleInfo && hasAllAgreements
+    return hasSelectedEvidence && hasAllAgreements
 }

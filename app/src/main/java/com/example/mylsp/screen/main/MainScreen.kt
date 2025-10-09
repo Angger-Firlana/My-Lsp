@@ -239,8 +239,8 @@ fun MainScreen(
                             .height(56.dp)
                             .padding(horizontal = 4.dp),
                         colors = ButtonDefaults.elevatedButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            containerColor = MaterialTheme.colorScheme.tertiary,
+                            contentColor = MaterialTheme.colorScheme.background
                         ),
                         elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 6.dp)
                     ) {
@@ -291,6 +291,8 @@ fun MainScreen(
                     apl01Data = apl01Data,
                     onNavigateToApl01 = { navController.navigate(Screen.Apl01.route) }
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Card(
                     modifier = Modifier
@@ -542,6 +544,10 @@ fun EnhancedApl01Card(
 
                 FilledTonalButton(
                     onClick = onNavigateToApl01,
+                    colors = ButtonDefaults.buttonColors(
+                      containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp)
