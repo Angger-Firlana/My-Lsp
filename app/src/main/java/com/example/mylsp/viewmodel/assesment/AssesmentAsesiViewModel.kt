@@ -4,22 +4,23 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mylsp.model.api.asesi.AssesmentAsesi
-import com.example.mylsp.model.api.asesi.PatchStatusReq
-import com.example.mylsp.model.api.asesi.PostAssesmentAsesiReq
-import com.example.mylsp.repository.assesment.AssesmentAsesiRepository
-import com.example.mylsp.util.assesment.AssesmentAsesiManager
+import com.example.mylsp.data.model.api.asesi.AssesmentAsesi
+import com.example.mylsp.data.model.api.asesi.PatchStatusReq
+import com.example.mylsp.data.model.api.asesi.PostAssesmentAsesiReq
+import com.example.mylsp.data.repository.assesment.AssesmentAsesiRepository
+import com.example.mylsp.data.local.assesment.AssesmentAsesiManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AssesmentAsesiViewModel(application: Application):AndroidViewModel(application) {
-    private val repository = AssesmentAsesiRepository(application.applicationContext)
+    private val repository =
+        com.example.mylsp.data.repository.assesment.AssesmentAsesiRepository(application.applicationContext)
     val assesmentAsesiManager = AssesmentAsesiManager(application.applicationContext)
-    private val _listAsesiAssesment = MutableStateFlow<List<AssesmentAsesi>>(emptyList())
+    private val _listAsesiAssesment = MutableStateFlow<List<com.example.mylsp.data.model.api.asesi.AssesmentAsesi>>(emptyList())
     val listAssesmentAsesi = _listAsesiAssesment.asStateFlow()
 
-    private val _assesmentAsesi = MutableStateFlow<AssesmentAsesi?>(null)
+    private val _assesmentAsesi = MutableStateFlow<com.example.mylsp.data.model.api.asesi.AssesmentAsesi?>(null)
     val assesmentAsesi = _assesmentAsesi.asStateFlow()
 
     private val _message = MutableStateFlow("")
@@ -64,7 +65,8 @@ class AssesmentAsesiViewModel(application: Application):AndroidViewModel(applica
 
     fun daftarAssesment(assesmentId: Int, assesiId:Int){
         viewModelScope.launch {
-            val assesmentAsesiReq = PostAssesmentAsesiReq(assesmentId, assesiId)
+            val assesmentAsesiReq =
+                com.example.mylsp.data.model.api.asesi.PostAssesmentAsesiReq(assesmentId, assesiId)
             val result = repository.postAssesmentAsesi(
                 assesmentAsesiReq
             )
@@ -89,7 +91,7 @@ class AssesmentAsesiViewModel(application: Application):AndroidViewModel(applica
     fun updateStatusAssesmentAsesi(assesmentAsesiId:Int, status:String){
         viewModelScope.launch {
             _loading.value = true
-            val request = PatchStatusReq(status)
+            val request = com.example.mylsp.data.model.api.asesi.PatchStatusReq(status)
             val result = repository.patchStatus(assesmentAsesiId,request)
             result.fold(
                 onSuccess = {

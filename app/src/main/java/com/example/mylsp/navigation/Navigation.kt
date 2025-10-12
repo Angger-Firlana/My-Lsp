@@ -22,10 +22,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.mylsp.component.BottomPillNav
-import com.example.mylsp.component.TopAppBar
+import com.example.mylsp.ui.component.BottomPillNav
+import com.example.mylsp.ui.component.TopAppBar
 import com.example.mylsp.screen.main.ItemBar
-import com.example.mylsp.util.user.UserManager
+import com.example.mylsp.data.local.user.UserManager
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

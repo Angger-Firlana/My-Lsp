@@ -5,13 +5,13 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mylsp.model.api.Jurusan
-import com.example.mylsp.repository.auth.JurusanRepository
+import com.example.mylsp.data.repository.auth.JurusanRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class JurusanViewModel(application:Application):AndroidViewModel(application) {
-    private val repository = JurusanRepository(application)
+    private val repository = com.example.mylsp.data.repository.auth.JurusanRepository(application)
 
     private val _jurusans = MutableStateFlow<List<Jurusan>>(emptyList())
     val jurusans = _jurusans.asStateFlow()

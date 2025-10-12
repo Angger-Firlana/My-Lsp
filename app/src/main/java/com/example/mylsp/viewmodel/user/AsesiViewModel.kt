@@ -9,7 +9,7 @@ import com.example.mylsp.model.api.Asesi
 import com.example.mylsp.model.api.AsesiRequest
 import com.example.mylsp.model.api.AsesiResponse
 import com.example.mylsp.repository.auth.AsesiRepository
-import com.example.mylsp.util.user.UserManager
+import com.example.mylsp.data.local.user.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch

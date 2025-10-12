@@ -4,7 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mylsp.model.api.SkemaDetail
+import com.example.mylsp.data.model.api.SkemaDetail
 import com.example.mylsp.repository.assesment.SkemaRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 class SkemaViewModel(application: Application):AndroidViewModel(application) {
     private val repository = SkemaRepository(application.applicationContext)
 
-    private val _skemas = MutableStateFlow<List<SkemaDetail>>(emptyList())
+    private val _skemas = MutableStateFlow<List<com.example.mylsp.data.model.api.SkemaDetail>>(emptyList())
     val skemas = _skemas.asStateFlow()
 
     fun getListSkema() {

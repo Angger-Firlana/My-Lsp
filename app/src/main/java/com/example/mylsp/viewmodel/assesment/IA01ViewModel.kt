@@ -4,9 +4,9 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mylsp.model.api.assesment.IA01Detail
-import com.example.mylsp.model.api.assesment.IA01GetData
-import com.example.mylsp.model.api.assesment.IA01Request
+import com.example.mylsp.data.api.assesment.IA01Detail
+import com.example.mylsp.data.api.assesment.IA01GetData
+import com.example.mylsp.data.api.assesment.IA01Request
 import com.example.mylsp.repository.assesment.Ia01Repository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,13 +19,13 @@ class IA01ViewModel(application: Application) : AndroidViewModel(application) {
     val state = _state.asStateFlow()
 
     // Ubah struktur: List<IA01Detail> (flat list dari semua details)
-    private val _submissions = MutableStateFlow<IA01GetData?>(null)
+    private val _submissions = MutableStateFlow<com.example.mylsp.data.api.assesment.IA01GetData?>(null)
     val submissions = _submissions.asStateFlow()
 
     private val _message = MutableStateFlow<String>("")
     val message = _message.asStateFlow()
 
-    fun SendSubmissionIA01(iA01Request: IA01Request) {
+    fun SendSubmissionIA01(iA01Request: com.example.mylsp.data.api.assesment.IA01Request) {
         viewModelScope.launch {
             val result = repository.postIa01(iA01Request)
             result.fold(

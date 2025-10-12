@@ -44,20 +44,20 @@ import com.example.mylsp.screen.auth.LoginScreen
 import com.example.mylsp.screen.auth.RegisterScreen
 import com.example.mylsp.screen.main.MainScreen
 import com.example.mylsp.screen.waiting_approval.WaitingApprovalScreen
-import com.example.mylsp.util.assesment.AssessmentManager
-import com.example.mylsp.util.user.AsesiManager
-import com.example.mylsp.util.user.UserManager
+import com.example.mylsp.data.local.assesment.AssessmentManager
+import com.example.mylsp.data.local.user.AsesiManager
+import com.example.mylsp.data.local.user.UserManager
 import com.example.mylsp.viewmodel.AK01ViewModel
-import com.example.mylsp.viewmodel.APL01ViewModel
-import com.example.mylsp.viewmodel.APL02ViewModel
+import com.example.mylsp.viewmodel.assesment.apl.APL01ViewModel
+import com.example.mylsp.viewmodel.assesment.apl.APL02ViewModel
 import com.example.mylsp.viewmodel.AsesiViewModel
 import com.example.mylsp.viewmodel.AssesmentViewModel
 import com.example.mylsp.viewmodel.SkemaViewModel
 import com.example.mylsp.viewmodel.UserViewModel
-import com.example.mylsp.viewmodel.assesment.AK02ViewModel
-import com.example.mylsp.viewmodel.assesment.AK03ViewModel
-import com.example.mylsp.viewmodel.assesment.AK05ViewModel
-import com.example.mylsp.viewmodel.assesment.Ak04ViewModel
+import com.example.mylsp.viewmodel.assesment.ak.AK02ViewModel
+import com.example.mylsp.viewmodel.assesment.ak.AK03ViewModel
+import com.example.mylsp.viewmodel.assesment.ak.AK05ViewModel
+import com.example.mylsp.viewmodel.assesment.ak.Ak04ViewModel
 import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
 import com.example.mylsp.viewmodel.assesment.IA01ViewModel
 import com.example.mylsp.viewmodel.assesment.KomponenViewModel
@@ -104,11 +104,11 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
     )
 
-    val aK02ViewModel:AK02ViewModel = viewModel(
+    val aK02ViewModel: AK02ViewModel = viewModel(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
     )
 
-    val aK03ViewModel:AK03ViewModel = viewModel(
+    val aK03ViewModel: AK03ViewModel = viewModel(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
     )
 
@@ -119,7 +119,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
     val aK05ViewModel: AK05ViewModel = viewModel(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
     )
-    val ak04ViewModel:Ak04ViewModel = viewModel(
+    val ak04ViewModel: Ak04ViewModel = viewModel(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
     )
 

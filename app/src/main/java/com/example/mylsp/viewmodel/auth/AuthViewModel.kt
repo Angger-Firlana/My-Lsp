@@ -4,12 +4,12 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mylsp.model.api.auth.LoginRequest
-import com.example.mylsp.model.api.auth.RegisterRequest
+import com.example.mylsp.data.api.auth.LoginRequest
+import com.example.mylsp.data.model.api.auth.RegisterRequest
 import com.example.mylsp.repository.auth.AuthRepository
 import com.example.mylsp.repository.auth.UserRepository
-import com.example.mylsp.util.user.TokenManager
-import com.example.mylsp.util.user.UserManager
+import com.example.mylsp.data.local.user.TokenManager
+import com.example.mylsp.data.local.user.UserManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -29,7 +29,7 @@ class AuthViewModel(
     private val _message = MutableStateFlow<String?>(null)
     val message = _message.asStateFlow()
 
-    fun login(loginRequest: LoginRequest) {
+    fun login(loginRequest: com.example.mylsp.data.api.auth.LoginRequest) {
         viewModelScope.launch {
             val result = repository.login(loginRequest)
             result.fold(
@@ -58,7 +58,7 @@ class AuthViewModel(
         }
     }
 
-    fun register(registerRequest: RegisterRequest){
+    fun register(registerRequest: com.example.mylsp.data.model.api.auth.RegisterRequest){
         viewModelScope.launch {
             val result = repository.register(registerRequest)
             result.fold(
