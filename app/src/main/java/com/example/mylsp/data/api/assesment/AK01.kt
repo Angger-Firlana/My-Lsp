@@ -1,17 +1,17 @@
-package com.example.mylsp.data.model.api.assesment
+package com.example.mylsp.data.api.assesment
 
 import com.google.gson.annotations.SerializedName
 
 data class AK01Submission(
     @SerializedName("assesment_asesi_id")
     val assesmentAsesiId: Int,
-    val attachments: List<com.example.mylsp.data.model.api.assesment.AttachmentAk01>
+    val attachments: List<AttachmentAk01>
 )
 
 data class GetAK01Response(
     val message: String,
     val success: Boolean,
-    val data: List<com.example.mylsp.data.model.api.assesment.AK01>? = null
+    val data: List<AK01>? = null
 )
 
 data class AK01(
@@ -22,7 +22,7 @@ data class AK01(
     val ttd_assesor:Int,
     val status: String,
     val submission_date: String,
-    val attachments: List<com.example.mylsp.data.model.api.assesment.AttachmentAk01>
+    val attachments: List<AttachmentAk01>
 )
 
 data class AttachmentAk01(

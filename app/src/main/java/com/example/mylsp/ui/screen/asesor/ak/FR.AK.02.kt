@@ -48,12 +48,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.mylsp.ui.component.HeaderForm
-import com.example.mylsp.ui.component.SkemaSertifikasi
-import com.example.mylsp.data.model.api.assesment.AK02GetBukti
-import com.example.mylsp.data.model.api.assesment.Ak02Request
-import com.example.mylsp.data.model.api.assesment.AK02GetSubmission
-import com.example.mylsp.data.model.api.assesment.UnitApl02
+import com.example.mylsp.data.api.assesment.AK02GetBukti
+import com.example.mylsp.data.api.assesment.AK02GetSubmission
+import com.example.mylsp.data.api.assesment.Ak02Request
+import com.example.mylsp.data.api.assesment.UnitApl02
+import com.example.mylsp.ui.component.form.HeaderForm
+import com.example.mylsp.ui.component.form.SkemaSertifikasi
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.data.local.assesment.AK02Manager
 import com.example.mylsp.data.local.assesment.AssesmentAsesiManager
@@ -284,7 +284,7 @@ fun FRAK02(
                 ) {
                     val ak02UnitSubmissions = ak02Manager.getAK02Submission(assesmentAsesi?.id ?: 0)
                     aK02ViewModel.postSubmission(
-                        com.example.mylsp.data.model.api.assesment.Ak02Request(
+                        Ak02Request(
                             assesment_asesi_id = assesmentAsesi?.id ?: 0,
                             rekomendasi_hasil = if (isKompeten) "kompeten" else if (isBelumKompeten) "tidak_kompeten" else "invalid",
                             ttd_asesi = "belum",
@@ -444,9 +444,9 @@ fun FRAK02(
 @Composable
 fun UnitKompetensi(
     assesmentAsesiId: Int,
-    unitKompetensiList: List<_root_ide_package_.com.example.mylsp.data.model.api.assesment.UnitApl02>,
+    unitKompetensiList: List<UnitApl02>,
     isReadOnly: Boolean = false,
-    existingSubmission: com.example.mylsp.data.model.api.assesment.AK02GetSubmission? = null,
+    existingSubmission: AK02GetSubmission? = null,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -472,9 +472,9 @@ fun UnitKompetensi(
 @Composable
 fun UnitKompetensiCard(
     assesmentAsesiId: Int,
-    item: _root_ide_package_.com.example.mylsp.data.model.api.assesment.UnitApl02,
+    item: UnitApl02,
     isReadOnly: Boolean = false,
-    submittedBukti: List<com.example.mylsp.data.model.api.assesment.AK02GetBukti>,
+    submittedBukti: List<AK02GetBukti>,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current

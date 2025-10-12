@@ -1,4 +1,4 @@
-package com.example.mylsp.data.model.api.assesment
+package com.example.mylsp.data.api.assesment
 
 data class AssessmentResponse(
     val success: Boolean,

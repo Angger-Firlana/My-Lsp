@@ -42,12 +42,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.mylsp.ui.component.HeaderForm
-import com.example.mylsp.ui.component.SkemaSertifikasi
-import com.example.mylsp.data.model.api.assesment.AK01
-import com.example.mylsp.data.model.api.assesment.AK01Submission
-import com.example.mylsp.data.model.api.assesment.AttachmentAk01
-import com.example.mylsp.data.model.api.assesment.GetAK01Response
+import com.example.mylsp.data.api.assesment.AK01
+import com.example.mylsp.data.api.assesment.AK01Submission
+import com.example.mylsp.data.api.assesment.AttachmentAk01
+import com.example.mylsp.ui.component.form.HeaderForm
+import com.example.mylsp.ui.component.form.SkemaSertifikasi
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.data.local.assesment.AssesmentAsesiManager
 import com.example.mylsp.data.local.user.AsesiManager
@@ -136,7 +135,7 @@ fun FRAK01(
 
 @Composable
 private fun ExistingSubmissionView(
-    submissionData: com.example.mylsp.data.model.api.assesment.AK01,
+    submissionData: AK01,
     loading: Boolean,
     onApprove: () -> Unit
 ) {
@@ -221,7 +220,7 @@ private fun ExistingSubmissionView(
 }
 
 @Composable
-private fun SubmissionSummaryCard(submissionData: com.example.mylsp.data.model.api.assesment.AK01) {
+private fun SubmissionSummaryCard(submissionData: AK01) {
     Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
         Text(
             text = "Ringkasan Persetujuan",
@@ -313,7 +312,7 @@ private fun SummarySection(title: String, content: String, color: Color) {
 
 @Composable
 private fun ActionButtonsSection(
-    submissionData: com.example.mylsp.data.model.api.assesment.AK01,
+    submissionData: AK01,
     loading: Boolean,
     onApprove: () -> Unit
 ) {
@@ -413,7 +412,7 @@ private fun EmptyFormView(
     loading: Boolean,
     state: Boolean?,
     message: String,
-    onSubmit: (com.example.mylsp.data.model.api.assesment.AK01Submission) -> Unit
+    onSubmit: (AK01Submission) -> Unit
 ) {
     val context = LocalContext.current
     val assesmentAsesiManager = AssesmentAsesiManager(context)
@@ -480,18 +479,18 @@ private fun EmptyFormView(
 
                     evidenceCheckedStates.forEach { (index, isChecked) ->
                         if (isChecked && index < evidenceItems.size) {
-                            add(com.example.mylsp.data.model.api.assesment.AttachmentAk01("${evidenceItems[index]}"))
+                            add(AttachmentAk01("${evidenceItems[index]}"))
                         }
                     }
 
                     if (asesiAgreement) {
-                        add(com.example.mylsp.data.model.api.assesment.AttachmentAk01("Persetujuan Asesi: Telah mendapat penjelasan hak dan prosedur banding - SETUJU"))
+                        add(AttachmentAk01("Persetujuan Asesi: Telah mendapat penjelasan hak dan prosedur banding - SETUJU"))
                     }
                     if (asesorAgreement) {
-                        add(com.example.mylsp.data.model.api.assesment.AttachmentAk01("Persetujuan Asesor: Menjaga kerahasiaan hasil asesmen - SETUJU"))
+                        add(AttachmentAk01("Persetujuan Asesor: Menjaga kerahasiaan hasil asesmen - SETUJU"))
                     }
                     if (confidentialityAgreement) {
-                        add(com.example.mylsp.data.model.api.assesment.AttachmentAk01("Persetujuan Kerahasiaan Asesi: Mengikuti asesmen dengan pemahaman penggunaan informasi - SETUJU"))
+                        add(AttachmentAk01("Persetujuan Kerahasiaan Asesi: Mengikuti asesmen dengan pemahaman penggunaan informasi - SETUJU"))
                     }
                 }
 
@@ -500,7 +499,7 @@ private fun EmptyFormView(
                     return@Button
                 }
 
-                val submission = com.example.mylsp.data.model.api.assesment.AK01Submission(
+                val submission = AK01Submission(
                     assesmentAsesiId = assesmentAsesiId,
                     attachments = attachments
                 )

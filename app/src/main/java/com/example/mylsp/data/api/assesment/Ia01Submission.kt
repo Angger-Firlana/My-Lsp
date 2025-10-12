@@ -1,4 +1,4 @@
-package com.example.mylsp.data.model.api.assesment
+package com.example.mylsp.data.api.assesment
 
 import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.math.IntMath
 

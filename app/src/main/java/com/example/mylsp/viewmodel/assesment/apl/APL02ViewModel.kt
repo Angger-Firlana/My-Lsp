@@ -4,10 +4,10 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mylsp.data.model.api.assesment.DataApl02
-import com.example.mylsp.data.model.api.assesment.GetAPL02Response
-import com.example.mylsp.data.model.api.assesment.PostApproveRequest
-import com.example.mylsp.repository.assesment.APL02Repository
+import com.example.mylsp.data.api.assesment.DataApl02
+import com.example.mylsp.data.api.assesment.GetAPL02Response
+import com.example.mylsp.data.api.assesment.PostApproveRequest
+import com.example.mylsp.data.repository.assesment.APL02Repository
 import com.example.mylsp.util.Util
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,13 +16,13 @@ import kotlinx.coroutines.launch
 class APL02ViewModel(application: Application):AndroidViewModel(application) {
     private val repository = APL02Repository(application)
 
-    private val _apl02 = MutableStateFlow<_root_ide_package_.com.example.mylsp.data.model.api.assesment.DataApl02?>(null)
+    private val _apl02 = MutableStateFlow<DataApl02?>(null)
     val apl02 = _apl02.asStateFlow()
 
     private val _state = MutableStateFlow<Boolean?>(null)
     val state = _state.asStateFlow()
 
-    private val _apl02Submission = MutableStateFlow<_root_ide_package_.com.example.mylsp.data.model.api.assesment.GetAPL02Response?>(null)
+    private val _apl02Submission = MutableStateFlow<GetAPL02Response?>(null)
     val apl02Submission = _apl02Submission.asStateFlow()
 
     private val _message = MutableStateFlow("")
@@ -57,7 +57,7 @@ class APL02ViewModel(application: Application):AndroidViewModel(application) {
         }
     }
 
-    fun approveApl02(assesiId:Int, approveReq: _root_ide_package_.com.example.mylsp.data.model.api.assesment.PostApproveRequest){
+    fun approveApl02(assesiId:Int, approveReq: PostApproveRequest){
         viewModelScope.launch {
             val result = repository.approveApl02(assesiId, approveReq)
             result.fold(

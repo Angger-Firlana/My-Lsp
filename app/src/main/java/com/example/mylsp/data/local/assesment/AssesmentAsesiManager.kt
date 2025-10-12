@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import com.example.mylsp.data.model.api.asesi.AssesmentAsesi
+import com.example.mylsp.data.api.asesi.AssesmentAsesi
 import com.google.gson.Gson
 
 class AssesmentAsesiManager(context: Context) {
@@ -28,7 +28,7 @@ class AssesmentAsesiManager(context: Context) {
         }
     }
 
-    fun saveAssesmentAsesi(assesmentAsesi: com.example.mylsp.data.model.api.asesi.AssesmentAsesi) {
+    fun saveAssesmentAsesi(assesmentAsesi: AssesmentAsesi) {
         val json = gson.toJson(assesmentAsesi)
         prefs.edit {
             putString("assesment_asesi", json)
@@ -36,10 +36,10 @@ class AssesmentAsesiManager(context: Context) {
         }
     }
 
-    fun getAssesmentAsesi(): com.example.mylsp.data.model.api.asesi.AssesmentAsesi? {
+    fun getAssesmentAsesi(): AssesmentAsesi? {
         val json = prefs.getString("assesment_asesi", null)
         return json?.let {
-            gson.fromJson(it, com.example.mylsp.data.model.api.asesi.AssesmentAsesi::class.java)
+            gson.fromJson(it, AssesmentAsesi::class.java)
         }
     }
 

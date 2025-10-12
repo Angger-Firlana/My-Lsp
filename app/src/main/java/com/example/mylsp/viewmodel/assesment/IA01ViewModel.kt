@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.mylsp.data.api.assesment.IA01Detail
 import com.example.mylsp.data.api.assesment.IA01GetData
 import com.example.mylsp.data.api.assesment.IA01Request
-import com.example.mylsp.repository.assesment.Ia01Repository
+import com.example.mylsp.data.repository.assesment.Ia01Repository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch

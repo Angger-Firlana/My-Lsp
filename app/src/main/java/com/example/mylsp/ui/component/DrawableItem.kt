@@ -18,11 +18,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.mylsp.screen.main.ItemBar
+import com.example.mylsp.ui.screen.main.ItemBar
 import com.example.mylsp.util.AppFont
 
 @Composable
-fun DrawableItem(navController: NavController,item: ItemBar, isExpanded: Boolean) {
+fun DrawableItem(navController: NavController, item: ItemBar, isExpanded: Boolean) {
     Card(
         onClick = {
             navController.navigate(item.route)

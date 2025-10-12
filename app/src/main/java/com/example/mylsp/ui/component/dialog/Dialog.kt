@@ -1,4 +1,4 @@
-package com.example.mylsp.ui.component
+package com.example.mylsp.ui.component.dialog
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

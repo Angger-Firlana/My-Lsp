@@ -8,7 +8,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,9 +21,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.mylsp.ui.component.AlertCard
-import com.example.mylsp.ui.component.HeaderForm
-import com.example.mylsp.ui.component.SkemaSertifikasi
+import com.example.mylsp.ui.component.alert.AlertCard
+import com.example.mylsp.ui.component.form.HeaderForm
+import com.example.mylsp.ui.component.form.SkemaSertifikasi
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.data.local.assesment.Ak04SubmissionManager
 import com.example.mylsp.data.local.assesment.AssesmentAsesiManager

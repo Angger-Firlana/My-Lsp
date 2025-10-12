@@ -2,14 +2,14 @@ package com.example.mylsp.data.repository.assesment
 
 import android.content.Context
 import com.example.mylsp.data.remote.api.APIClient
-import com.example.mylsp.data.model.api.assesment.Ak05SubmissionRequest
-import com.example.mylsp.data.model.api.assesment.Ak05SubmissionResponse
-import com.example.mylsp.data.model.api.assesment.GetAk05Response
+import com.example.mylsp.data.api.assesment.Ak05SubmissionRequest
+import com.example.mylsp.data.api.assesment.Ak05SubmissionResponse
+import com.example.mylsp.data.api.assesment.GetAk05Response
 
 class Ak05Repository(private val context: Context) {
     private val api = APIClient.getClient(context)
 
-    suspend fun sendSubmission(request: com.example.mylsp.data.model.api.assesment.Ak05SubmissionRequest): Result<com.example.mylsp.data.model.api.assesment.Ak05SubmissionResponse> {
+    suspend fun sendSubmission(request: Ak05SubmissionRequest): Result<Ak05SubmissionResponse> {
         return try {
             val response = api.postAk05(bodyRequestBody = request)
             if (response.isSuccessful) {
@@ -28,7 +28,7 @@ class Ak05Repository(private val context: Context) {
         }
     }
 
-    suspend fun getSubmission(id: Int): Result<com.example.mylsp.data.model.api.assesment.GetAk05Response> {
+    suspend fun getSubmission(id: Int): Result<GetAk05Response> {
         return try {
             val response = api.getAk05(id = id)
             if (response.isSuccessful) {

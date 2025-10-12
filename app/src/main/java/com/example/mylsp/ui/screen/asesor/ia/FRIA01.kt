@@ -17,7 +17,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.mylsp.ui.component.HeaderForm
+import com.example.mylsp.data.api.assesment.DataApl02
+import com.example.mylsp.data.api.assesment.ElemenAPL02
+import com.example.mylsp.data.api.assesment.KriteriaUntukKerja
+import com.example.mylsp.data.api.assesment.UnitApl02
+import com.example.mylsp.ui.component.form.HeaderForm
 import com.example.mylsp.ui.component.LoadingScreen
 import com.example.mylsp.model.api.assesment.*
 import com.example.mylsp.util.AppFont
@@ -425,7 +429,7 @@ private fun SuccessDialog(
 }
 
 @Composable
-private fun SchemaInfoSection(apl02Data: _root_ide_package_.com.example.mylsp.data.model.api.assesment.DataApl02) {
+private fun SchemaInfoSection(apl02Data: DataApl02) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -510,7 +514,7 @@ private fun InstructionsCard() {
 
 @Composable
 private fun UnitsSection(
-    units: List<_root_ide_package_.com.example.mylsp.data.model.api.assesment.UnitApl02>?,
+    units: List<UnitApl02>?,
     pilihan: List<String>,
     iA01SubmissionManager: IA01SubmissionManager,
     assesmentAsesiId: Int,
@@ -531,7 +535,7 @@ private fun UnitsSection(
 
 @Composable
 private fun UnitCard(
-    unit: _root_ide_package_.com.example.mylsp.data.model.api.assesment.UnitApl02,
+    unit: UnitApl02,
     pilihan: List<String>,
     iA01SubmissionManager: IA01SubmissionManager,
     assesmentAsesiId: Int,
@@ -594,7 +598,7 @@ private fun UnitCard(
 
 @Composable
 private fun ElementCard(
-    elemen: _root_ide_package_.com.example.mylsp.data.model.api.assesment.ElemenAPL02,
+    elemen: ElemenAPL02,
     pilihan: List<String>,
     iA01SubmissionManager: IA01SubmissionManager,
     assesmentAsesiId: Int,
@@ -736,8 +740,8 @@ private fun ElementCard(
 
 @Composable
 private fun KUKItem(
-    kukItem: _root_ide_package_.com.example.mylsp.data.model.api.assesment.KriteriaUntukKerja,
-    elemen: _root_ide_package_.com.example.mylsp.data.model.api.assesment.ElemenAPL02,
+    kukItem: KriteriaUntukKerja,
+    elemen: ElemenAPL02,
     pilihan: List<String>,
     assesmentAsesiId: Int,
     kodeUnit: String,
@@ -909,7 +913,7 @@ private fun SubmitButtonIa01(
     ia01ViewModel: IA01ViewModel,
     assesmentAsesiId: Int,
     iA01SubmissionManager: IA01SubmissionManager,
-    apl02Data: _root_ide_package_.com.example.mylsp.data.model.api.assesment.DataApl02,
+    apl02Data: DataApl02,
     isFormSubmitted: Boolean,
     onShowSuccessDialog: () -> Unit,
     onShowValidationDialog: (String) -> Unit,

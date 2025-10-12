@@ -3,16 +3,16 @@ package com.example.mylsp.data.repository.assesment
 import android.content.Context
 import android.util.Log
 import com.example.mylsp.data.remote.api.APIClient
-import com.example.mylsp.data.model.api.assesment.Ak02Request
-import com.example.mylsp.data.model.api.assesment.Ak02Response
-import com.example.mylsp.data.model.api.assesment.Ak02GetResponse
+import com.example.mylsp.data.api.assesment.Ak02Request
+import com.example.mylsp.data.api.assesment.Ak02Response
+import com.example.mylsp.data.api.assesment.Ak02GetResponse
 
 class AK02Repository(private val context: Context) {
 
     private val api = APIClient.getClient(context)
 
     // POST Form AK02
-    suspend fun postAK02(request: com.example.mylsp.data.model.api.assesment.Ak02Request): Result<com.example.mylsp.data.model.api.assesment.Ak02Response> {
+    suspend fun postAK02(request: Ak02Request): Result<Ak02Response> {
         return try {
             val response = api.postSubmissionAk02(bodyRequestBody = request)
 
@@ -35,7 +35,7 @@ class AK02Repository(private val context: Context) {
     }
 
     // GET Ak02 by Assesi
-    suspend fun getAk02ByAssesi(assesiId: Int): Result<com.example.mylsp.data.model.api.assesment.Ak02GetResponse> {
+    suspend fun getAk02ByAssesi(assesiId: Int): Result<Ak02GetResponse> {
         return try {
             val response = api.getAK02ByAsesi(id = assesiId)
 
@@ -57,7 +57,7 @@ class AK02Repository(private val context: Context) {
         }
     }
 
-    suspend fun patchTtdAsesi(submissionId: Int): Result<com.example.mylsp.data.model.api.assesment.Ak02Response> {
+    suspend fun patchTtdAsesi(submissionId: Int): Result<Ak02Response> {
         return try{
             val response = api.updateStatusAsesi(id = submissionId)
             if (response.isSuccessful){

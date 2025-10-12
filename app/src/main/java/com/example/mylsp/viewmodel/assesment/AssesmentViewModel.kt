@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mylsp.data.api.assesment.Assessment
-import com.example.mylsp.repository.assesment.AssesmentRepository
+import com.example.mylsp.data.repository.assesment.AssesmentRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -13,10 +13,10 @@ import kotlinx.coroutines.launch
 class AssesmentViewModel(application: Application):AndroidViewModel(application) {
     private val repository = AssesmentRepository(application.applicationContext)
 
-    private val _listAssesment = MutableStateFlow<List<com.example.mylsp.data.api.assesment.Assessment>>(emptyList())
+    private val _listAssesment = MutableStateFlow<List<Assessment>>(emptyList())
     val listAssessment = _listAssesment.asStateFlow()
 
-    private val _assesment = MutableStateFlow<com.example.mylsp.data.api.assesment.Assessment?>(null)
+    private val _assesment = MutableStateFlow<Assessment?>(null)
     val assesment = _assesment.asStateFlow()
 
     private val _message = MutableStateFlow("")

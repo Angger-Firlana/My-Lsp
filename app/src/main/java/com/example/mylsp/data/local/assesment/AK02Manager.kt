@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import com.example.mylsp.data.model.api.assesment.Ak02Bukti
-import com.example.mylsp.data.model.api.assesment.Ak02Unit
+import com.example.mylsp.data.api.assesment.Ak02Bukti
+import com.example.mylsp.data.api.assesment.Ak02Unit
 import com.google.gson.Gson
 
 class AK02Manager(context: Context) {
@@ -44,7 +44,7 @@ class AK02Manager(context: Context) {
                 // Add bukti if not exists
                 if (existingBuktiIndex == -1) {
                     currentListBukti.add(
-                        com.example.mylsp.data.model.api.assesment.Ak02Bukti(bukti_description = bukti)
+                        Ak02Bukti(bukti_description = bukti)
                     )
                 }
             } else {
@@ -62,7 +62,7 @@ class AK02Manager(context: Context) {
                 )
             } else {
                 listUnits.add(
-                    com.example.mylsp.data.model.api.assesment.Ak02Unit(
+                    Ak02Unit(
                         unit_id = unitId,
                         bukti_yang_relevan = currentListBukti
                     )
@@ -80,7 +80,7 @@ class AK02Manager(context: Context) {
 
     fun setAK02Submission(
         assesmentAsesiId: Int,
-        units: List<com.example.mylsp.data.model.api.assesment.Ak02Unit>
+        units: List<Ak02Unit>
     ) {
         val json = gson.toJson(units)
         prefs.edit {
@@ -90,10 +90,10 @@ class AK02Manager(context: Context) {
 
     fun getAK02Submission(
         assesmentAsesiId: Int
-    ): List<com.example.mylsp.data.model.api.assesment.Ak02Unit> {
+    ): List<Ak02Unit> {
         val json = prefs.getString("AK02Submission_$assesmentAsesiId", null)
         return json?.let {
-            val array = gson.fromJson(json, Array<com.example.mylsp.data.model.api.assesment.Ak02Unit>::class.java)
+            val array = gson.fromJson(json, Array<Ak02Unit>::class.java)
             array.toList()
         } ?: emptyList()
     }

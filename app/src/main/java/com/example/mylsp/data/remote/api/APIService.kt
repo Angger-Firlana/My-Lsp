@@ -1,7 +1,7 @@
 package com.example.mylsp.data.remote.api
 
-import com.example.mylsp.data.model.api.assesment.AK01SubmissionResponse
-import com.example.mylsp.data.model.api.assesment.Apl02
+import com.example.mylsp.data.api.assesment.AK01SubmissionResponse
+import com.example.mylsp.data.api.assesment.Apl02
 import com.example.mylsp.model.api.Apl01
 import com.example.mylsp.model.api.AsesiResponse
 import com.example.mylsp.data.api.assesment.AssessmentResponse
@@ -11,40 +11,40 @@ import com.example.mylsp.data.api.assesment.IA01Response
 import com.example.mylsp.model.api.JurusanResponse
 import com.example.mylsp.data.api.auth.LoginRequest
 import com.example.mylsp.data.api.auth.LoginResponse
-import com.example.mylsp.data.model.api.auth.RegisterRequest
-import com.example.mylsp.data.model.api.auth.RegisterResponse
+import com.example.mylsp.data.api.auth.RegisterRequest
+import com.example.mylsp.data.api.auth.RegisterResponse
 import com.example.mylsp.model.api.ResponseSubmission
 import com.example.mylsp.data.model.api.Skemas
 import com.example.mylsp.model.api.SubmissionGroup
 import com.example.mylsp.model.api.User
-import com.example.mylsp.data.model.api.asesi.AssesmentAsesiResponse
-import com.example.mylsp.data.model.api.asesi.PatchStatusReq
-import com.example.mylsp.data.model.api.asesi.PatchStatusResponse
-import com.example.mylsp.data.model.api.asesi.PostAssesmentAsesiReq
-import com.example.mylsp.data.model.api.asesi.PostAssesmentAsesiResponse
-import com.example.mylsp.data.model.api.assesment.AK01Submission
-import com.example.mylsp.data.model.api.assesment.AK04
-import com.example.mylsp.data.model.api.assesment.Ak02GetResponse
-import com.example.mylsp.data.model.api.assesment.Ak02Request
-import com.example.mylsp.data.model.api.assesment.Ak02Response
-import com.example.mylsp.data.model.api.assesment.Ak05SubmissionRequest
-import com.example.mylsp.data.model.api.assesment.Ak05SubmissionResponse
-import com.example.mylsp.data.model.api.assesment.Apl02Response
+import com.example.mylsp.data.api.asesi.AssesmentAsesiResponse
+import com.example.mylsp.data.api.asesi.PatchStatusReq
+import com.example.mylsp.data.api.asesi.PatchStatusResponse
+import com.example.mylsp.data.api.asesi.PostAssesmentAsesiReq
+import com.example.mylsp.data.api.asesi.PostAssesmentAsesiResponse
+import com.example.mylsp.data.api.assesment.AK01Submission
+import com.example.mylsp.data.api.assesment.AK04
+import com.example.mylsp.data.api.assesment.Ak02GetResponse
+import com.example.mylsp.data.api.assesment.Ak02Request
+import com.example.mylsp.data.api.assesment.Ak02Response
+import com.example.mylsp.data.api.assesment.Ak05SubmissionRequest
+import com.example.mylsp.data.api.assesment.Ak05SubmissionResponse
+import com.example.mylsp.data.api.assesment.Apl02Response
 import com.example.mylsp.data.api.assesment.Assessment
-import com.example.mylsp.data.model.api.assesment.GetAK01Response
-import com.example.mylsp.data.model.api.assesment.GetAK03Response
-import com.example.mylsp.data.model.api.assesment.GetAK04QuestionResponse
-import com.example.mylsp.data.model.api.assesment.GetAK04Response
-import com.example.mylsp.data.model.api.assesment.GetAPL02Response
-import com.example.mylsp.data.model.api.assesment.GetAk05Response
+import com.example.mylsp.data.api.assesment.GetAK01Response
+import com.example.mylsp.data.api.assesment.GetAK03Response
+import com.example.mylsp.data.api.assesment.GetAK04QuestionResponse
+import com.example.mylsp.data.api.assesment.GetAK04Response
+import com.example.mylsp.data.api.assesment.GetAPL02Response
+import com.example.mylsp.data.api.assesment.GetAk05Response
 import com.example.mylsp.data.api.assesment.GetAssesmentResponse
 import com.example.mylsp.data.api.assesment.IA01GetResponse
 import com.example.mylsp.data.api.assesment.KomponenResponse
-import com.example.mylsp.data.model.api.assesment.PostAK03Request
-import com.example.mylsp.data.model.api.assesment.PostAK03Response
-import com.example.mylsp.data.model.api.assesment.PostAK04Response
-import com.example.mylsp.data.model.api.assesment.PostApproveRequest
-import com.example.mylsp.data.model.api.assesment.PostApproveResponse
+import com.example.mylsp.data.api.assesment.PostAK03Request
+import com.example.mylsp.data.api.assesment.PostAK03Response
+import com.example.mylsp.data.api.assesment.PostAK04Response
+import com.example.mylsp.data.api.assesment.PostApproveRequest
+import com.example.mylsp.data.api.assesment.PostApproveResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -66,8 +66,8 @@ interface APIService {
     @POST("auth/register")
     suspend fun register(
         @Header("Accept") accept: String = "application/json",
-        @Body registerRequest: com.example.mylsp.data.model.api.auth.RegisterRequest
-    ): Response<com.example.mylsp.data.model.api.auth.RegisterResponse>
+        @Body registerRequest: RegisterRequest
+    ): Response<RegisterResponse>
 
     //User
     @GET("user")
@@ -152,27 +152,27 @@ interface APIService {
 
     //Assesment ASESI
     @GET("asesi/assesment-asesi/{id}")
-    suspend fun getAssesmentAsesiByAsesi(@Path("id") id: Int): Response<com.example.mylsp.data.model.api.asesi.AssesmentAsesiResponse>
+    suspend fun getAssesmentAsesiByAsesi(@Path("id") id: Int): Response<AssesmentAsesiResponse>
 
     @GET("assesor/assesment-asesi/{id}")
-    suspend fun getAssesmentAsesiByAssesment(@Path("id") id: Int): Response<com.example.mylsp.data.model.api.asesi.AssesmentAsesiResponse>
+    suspend fun getAssesmentAsesiByAssesment(@Path("id") id: Int): Response<AssesmentAsesiResponse>
 
     @POST("asesi/assesment-asesi")
     suspend fun postAssesmentAsesi(
         @Header("Accept") accept: String = "application/json",
-        @Body request: com.example.mylsp.data.model.api.asesi.PostAssesmentAsesiReq
-    ):Response<com.example.mylsp.data.model.api.asesi.PostAssesmentAsesiResponse>
+        @Body request: PostAssesmentAsesiReq
+    ):Response<PostAssesmentAsesiResponse>
 
     @PATCH("assesment/asesi/{id}/updateStatus")
     suspend fun patchStatusAssesmentAsesi(
         @Header("Accept") accept: String = "application/json",
         @Path("id") id: Int,
-        @Body request: com.example.mylsp.data.model.api.asesi.PatchStatusReq
-    ):Response<com.example.mylsp.data.model.api.asesi.PatchStatusResponse>
+        @Body request: PatchStatusReq
+    ):Response<PatchStatusResponse>
 
     //APL02
     @GET("apl02/{id}")
-    suspend fun getAPL02(@Path("id") id: Int): Response<_root_ide_package_.com.example.mylsp.data.model.api.assesment.Apl02>
+    suspend fun getAPL02(@Path("id") id: Int): Response<Apl02>
 
     @POST("assesment/formapl02")
     suspend fun sendSubmission(
@@ -184,96 +184,96 @@ interface APIService {
     suspend fun getApl02ByAsesi(
         @Header("Accept") accept: String = "application/json",
         @Path("id") id: Int
-    ):Response<_root_ide_package_.com.example.mylsp.data.model.api.assesment.GetAPL02Response>
+    ):Response<GetAPL02Response>
 
     @POST("approvement/assesment/formapl02/{id}")
     suspend fun postApproveApl02(
 
         @Header("Accept") accept: String = "application/json",
         @Path("id") id: Int,
-        @Body request: _root_ide_package_.com.example.mylsp.data.model.api.assesment.PostApproveRequest
-    ):Response<_root_ide_package_.com.example.mylsp.data.model.api.assesment.PostApproveResponse>
+        @Body request: PostApproveRequest
+    ):Response<PostApproveResponse>
 
     //AK01
     @POST("assesment/formak01")
     suspend fun sendSubmissionAk01(
         @Header("Accept") accept: String = "application/json",
-        @Body bodyRequestBody: com.example.mylsp.data.model.api.assesment.AK01Submission
-    ):Response<com.example.mylsp.data.model.api.assesment.AK01SubmissionResponse>
+        @Body bodyRequestBody: AK01Submission
+    ):Response<AK01SubmissionResponse>
 
     @GET("assesment/formak01/{id}")
     suspend fun getAk01ByAsesi(
         @Header("Accept") accept: String = "application/json",
         @Path("id") id: Int
-    ):Response<com.example.mylsp.data.model.api.assesment.GetAK01Response>
+    ):Response<GetAK01Response>
 
     @POST("user/assesment/formak01/{id}")
     suspend fun postApproveAk01(
         @Header("Accept") accept: String = "application/json",
         @Path("id") id: Int,
-    ):Response<_root_ide_package_.com.example.mylsp.data.model.api.assesment.PostApproveResponse>
+    ):Response<PostApproveResponse>
 
     //AK02
     @POST("assesment/formak02")
     suspend fun postSubmissionAk02(
         @Header("Accept") accept: String = "application/json",
-        @Body bodyRequestBody: com.example.mylsp.data.model.api.assesment.Ak02Request
-    ):Response<com.example.mylsp.data.model.api.assesment.Ak02Response>
+        @Body bodyRequestBody: Ak02Request
+    ):Response<Ak02Response>
 
     @GET("assesment/formak02/{id}")
     suspend fun getAK02ByAsesi(
         @Header("Accept") accept: String = "application/json",
         @Path("id") id:Int
-    ):Response<com.example.mylsp.data.model.api.assesment.Ak02GetResponse>
+    ):Response<Ak02GetResponse>
 
     @POST("user/assesment/formak02/{id}")
     suspend fun updateStatusAsesi(
         @Header("Accept") accept: String = "application/json",
         @Path("id") id: Int,
-    ):Response<com.example.mylsp.data.model.api.assesment.Ak02Response>
+    ):Response<Ak02Response>
 
     //AK03
     @POST("assesment/formak03")
     suspend fun postSubmissionAk03(
         @Header("Accept") accept: String = "application/json",
-        @Body bodyRequestBody: com.example.mylsp.data.model.api.assesment.PostAK03Request
-    ):Response<com.example.mylsp.data.model.api.assesment.PostAK03Response>
+        @Body bodyRequestBody: PostAK03Request
+    ):Response<PostAK03Response>
 
     @GET("assesment/formak03/{id}")
     suspend fun getAk03ByAsesi(
         @Header("Accept") accept: String = "application/json",
         @Path("id") id: Int
-    ):Response<com.example.mylsp.data.model.api.assesment.GetAK03Response>
+    ):Response<GetAK03Response>
 
     //AK04
     @GET("ak04/questions")
-    suspend fun getAk04Questions():Response<com.example.mylsp.data.model.api.assesment.GetAK04QuestionResponse>
+    suspend fun getAk04Questions():Response<GetAK04QuestionResponse>
 
     @GET("assesment/formak04/{id}")
     suspend fun getAk04ByAsesi(
         @Header("Accept") accept: String = "application/json",
         @Path("id") id: Int
-    ):Response<com.example.mylsp.data.model.api.assesment.GetAK04Response>
+    ):Response<GetAK04Response>
 
     @POST("assesment/formak04")
     suspend fun postAk04(
         @Header("Accept") accept: String = "application/json",
-        @Body bodyRequestBody: com.example.mylsp.data.model.api.assesment.AK04
-    ):Response<com.example.mylsp.data.model.api.assesment.PostAK04Response>
+        @Body bodyRequestBody: AK04
+    ):Response<PostAK04Response>
 
     //AK05
     @POST("assesment/formak05")
     suspend fun postAk05(
         @Header("Accept") accept: String = "application/json",
-        @Body bodyRequestBody: com.example.mylsp.data.model.api.assesment.Ak05SubmissionRequest
+        @Body bodyRequestBody: Ak05SubmissionRequest
 
-    ):Response<com.example.mylsp.data.model.api.assesment.Ak05SubmissionResponse>
+    ):Response<Ak05SubmissionResponse>
 
     @GET("assesment/formak05/{id}")
     suspend fun getAk05(
         @Header("Accept") accept: String = "application/json",
         @Path("id") id: Int
-    ):Response<com.example.mylsp.data.model.api.assesment.GetAk05Response>
+    ):Response<GetAk05Response>
 
     //IA01
     @POST("assesment/formia01")

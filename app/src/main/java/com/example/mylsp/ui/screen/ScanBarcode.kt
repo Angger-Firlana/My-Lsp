@@ -29,7 +29,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
-import com.example.mylsp.ui.component.HeaderForm
+import com.example.mylsp.ui.component.form.HeaderForm
 import com.example.mylsp.ui.component.LoadingScreen
 import com.example.mylsp.ui.component.ScannerConfig
 import com.example.mylsp.ui.component.ScannerDefaults

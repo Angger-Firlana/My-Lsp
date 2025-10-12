@@ -4,10 +4,10 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mylsp.data.model.api.assesment.AK04
-import com.example.mylsp.data.model.api.assesment.GetAK04Response
-import com.example.mylsp.data.model.api.assesment.GetAK04QuestionResponse
-import com.example.mylsp.repository.assesment.Ak04Repository
+import com.example.mylsp.data.api.assesment.AK04
+import com.example.mylsp.data.api.assesment.GetAK04Response
+import com.example.mylsp.data.api.assesment.GetAK04QuestionResponse
+import com.example.mylsp.data.repository.assesment.Ak04Repository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -24,14 +24,14 @@ class Ak04ViewModel(application: Application) : AndroidViewModel(application) {
     val message = _message.asStateFlow()
 
     // data ak04 (submissions)
-    private val _submissions = MutableStateFlow<List<com.example.mylsp.data.model.api.assesment.AK04>?>(null)
+    private val _submissions = MutableStateFlow<List<AK04>?>(null)
     val submissions = _submissions.asStateFlow()
 
     // pertanyaan
-    private val _questions = MutableStateFlow<com.example.mylsp.data.model.api.assesment.GetAK04QuestionResponse?>(null)
+    private val _questions = MutableStateFlow<GetAK04QuestionResponse?>(null)
     val questions = _questions.asStateFlow()
 
-    fun sendSubmissionAk04(request: com.example.mylsp.data.model.api.assesment.AK04) {
+    fun sendSubmissionAk04(request: AK04) {
         viewModelScope.launch {
             val result = repository.postAk04(request)
             result.fold(
@@ -53,7 +53,7 @@ class Ak04ViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             val result = repository.getAk04ByAsesi(asesiId)
             result.fold(
-                onSuccess = { response: com.example.mylsp.data.model.api.assesment.GetAK04Response ->
+                onSuccess = { response: GetAK04Response ->
                     if (response.data.isNotEmpty()) {
                         _submissions.value = response.data
                         _message.value = "Data berhasil diambil"

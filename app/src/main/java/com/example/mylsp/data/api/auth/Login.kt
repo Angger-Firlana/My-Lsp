@@ -1,4 +1,4 @@
-package com.example.mylsp.data.model.api.auth
+package com.example.mylsp.data.api.auth
 
 data class LoginRequest(val input:String, val password:String)
 

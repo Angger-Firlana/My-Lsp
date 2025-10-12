@@ -1,15 +1,15 @@
-package com.example.mylsp.data.model.api.assesment
+package com.example.mylsp.data.api.assesment
 
 data class GetAK04Response(
     val success: Boolean,
     val message: String,
-    val data: List<com.example.mylsp.data.model.api.assesment.AK04>
+    val data: List<AK04>
 )
 data class AK04(
     val id:Int? = null,
     val assesment_asesi_id: Int,
     val alasan_banding: String,
-    val questions: List<com.example.mylsp.data.model.api.assesment.SubmissionQuestion>
+    val questions: List<SubmissionQuestion>
 )
 
 data class SubmissionQuestion(
@@ -24,7 +24,7 @@ data class PostAK04Response(
 data class GetAK04QuestionResponse(
     val success: Boolean,
     val message: String,
-    val data: List<com.example.mylsp.data.model.api.assesment.AK04Question>
+    val data: List<AK04Question>
 )
 data class AK04Question(
     val id:Int,

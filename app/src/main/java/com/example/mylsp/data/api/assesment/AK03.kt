@@ -1,9 +1,9 @@
-package com.example.mylsp.data.model.api.assesment
+package com.example.mylsp.data.api.assesment
 
 data class PostAK03Request(
     val assesment_asesi_id:Int,
     val catatan_tambahan:String,
-    val komponen: List<com.example.mylsp.data.model.api.assesment.KomponenPostReq>
+    val komponen: List<KomponenPostReq>
 )
 
 data class KomponenPostReq(
@@ -21,14 +21,14 @@ data class PostAK03Response(
 data class GetAK03Response(
     val success: Boolean,
     val message: String,
-    val data: List<com.example.mylsp.data.model.api.assesment.GetAK03Data>
+    val data: List<GetAK03Data>
 )
 
 data class GetAK03Data(
     val id: Int,
     val assesment_asesi_id: Int,
     val catatan_tambahan: String,
-    val details: List<com.example.mylsp.data.model.api.assesment.KomponenGetReq>
+    val details: List<KomponenGetReq>
 )
 
 data class KomponenGetReq(
@@ -37,5 +37,5 @@ data class KomponenGetReq(
     val komponen_id: Int,
     val hasil: String,
     val catatan_asesi: String,
-    val komponen: com.example.mylsp.data.model.api.assesment.KomponenData
+    val komponen: KomponenData
 )

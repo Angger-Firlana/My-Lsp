@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mylsp.data.api.auth.LoginRequest
-import com.example.mylsp.data.model.api.auth.RegisterRequest
+import com.example.mylsp.data.api.auth.RegisterRequest
 import com.example.mylsp.repository.auth.AuthRepository
 import com.example.mylsp.repository.auth.UserRepository
 import com.example.mylsp.data.local.user.TokenManager
@@ -58,7 +58,7 @@ class AuthViewModel(
         }
     }
 
-    fun register(registerRequest: com.example.mylsp.data.model.api.auth.RegisterRequest){
+    fun register(registerRequest: RegisterRequest){
         viewModelScope.launch {
             val result = repository.register(registerRequest)
             result.fold(

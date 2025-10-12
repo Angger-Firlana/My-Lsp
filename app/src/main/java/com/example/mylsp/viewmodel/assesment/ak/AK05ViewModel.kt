@@ -4,9 +4,9 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mylsp.data.model.api.assesment.Ak05SubmissionRequest
-import com.example.mylsp.data.model.api.assesment.GetAk05Response
-import com.example.mylsp.repository.assesment.Ak05Repository
+import com.example.mylsp.data.api.assesment.Ak05SubmissionRequest
+import com.example.mylsp.data.api.assesment.GetAk05Response
+import com.example.mylsp.data.repository.assesment.Ak05Repository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -23,10 +23,10 @@ class AK05ViewModel(application: Application) : AndroidViewModel(application) {
     private val _message = MutableStateFlow("")
     val message = _message.asStateFlow()
 
-    private val _submission = MutableStateFlow<com.example.mylsp.data.model.api.assesment.GetAk05Response?>(null)
+    private val _submission = MutableStateFlow<GetAk05Response?>(null)
     val submission = _submission.asStateFlow()
 
-    fun sendSubmission(request: com.example.mylsp.data.model.api.assesment.Ak05SubmissionRequest) {
+    fun sendSubmission(request: Ak05SubmissionRequest) {
         viewModelScope.launch {
             _loading.value = true
             val result = repository.sendSubmission(request)

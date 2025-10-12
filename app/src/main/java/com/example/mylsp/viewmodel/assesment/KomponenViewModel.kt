@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mylsp.data.api.assesment.KomponenData
-import com.example.mylsp.repository.assesment.KomponenRepository
+import com.example.mylsp.data.repository.assesment.KomponenRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch

@@ -2,18 +2,18 @@ package com.example.mylsp.data.repository.assesment
 
 import android.content.Context
 import com.example.mylsp.data.remote.api.APIClient
-import com.example.mylsp.data.model.api.assesment.Apl02
+import com.example.mylsp.data.api.assesment.Apl02
 import com.example.mylsp.model.api.ResponseSubmission
 import com.example.mylsp.model.api.SubmissionGroup
-import com.example.mylsp.data.model.api.assesment.Apl02Response
-import com.example.mylsp.data.model.api.assesment.GetAPL02Response
-import com.example.mylsp.data.model.api.assesment.PostApproveRequest
-import com.example.mylsp.data.model.api.assesment.PostApproveResponse
+import com.example.mylsp.data.api.assesment.Apl02Response
+import com.example.mylsp.data.api.assesment.GetAPL02Response
+import com.example.mylsp.data.api.assesment.PostApproveRequest
+import com.example.mylsp.data.api.assesment.PostApproveResponse
 
 class APL02Repository(context: Context) {
     private val api = APIClient.getClient(context)
 
-    suspend fun getApl02(id: Int): Result<_root_ide_package_.com.example.mylsp.data.model.api.assesment.Apl02> {
+    suspend fun getApl02(id: Int): Result<Apl02> {
         return try {
             val response = api.getAPL02(id)
             if (response.isSuccessful) {
@@ -51,7 +51,7 @@ class APL02Repository(context: Context) {
         }
     }
 
-    suspend fun getSubmissionByAsesi(asesiId: Int): Result<_root_ide_package_.com.example.mylsp.data.model.api.assesment.GetAPL02Response?> {
+    suspend fun getSubmissionByAsesi(asesiId: Int): Result<GetAPL02Response?> {
         return try {
             val response = api.getApl02ByAsesi(id = asesiId)
             if (response.isSuccessful) {
@@ -76,7 +76,7 @@ class APL02Repository(context: Context) {
         }
     }
 
-    suspend fun approveApl02(assesiId: Int, postApproveRequest: _root_ide_package_.com.example.mylsp.data.model.api.assesment.PostApproveRequest): Result<_root_ide_package_.com.example.mylsp.data.model.api.assesment.PostApproveResponse> {
+    suspend fun approveApl02(assesiId: Int, postApproveRequest: PostApproveRequest): Result<PostApproveResponse> {
         return try {
             val response = api.postApproveApl02(id = assesiId, request = postApproveRequest)
             if (response.isSuccessful) {

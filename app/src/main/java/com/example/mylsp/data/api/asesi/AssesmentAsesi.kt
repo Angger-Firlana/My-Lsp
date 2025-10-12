@@ -1,8 +1,8 @@
-package com.example.mylsp.data.model.api.asesi
+package com.example.mylsp.data.api.asesi
 
 import com.example.mylsp.model.api.Apl01
 import com.example.mylsp.model.api.Asesi
-import com.example.mylsp.data.model.api.assesment.AsesiData
+import com.example.mylsp.data.api.assesment.AsesiData
 
 data class PostAssesmentAsesiReq(
     val assesment_id: Int,
@@ -12,7 +12,7 @@ data class PostAssesmentAsesiReq(
 data class AssesmentAsesiResponse(
     val success: Boolean,
     val message: String,
-    val data: List<com.example.mylsp.data.model.api.asesi.AssesmentAsesi>
+    val data: List<AssesmentAsesi>
 )
 
 data class AssesmentAsesi(
@@ -32,7 +32,7 @@ data class PatchStatusReq(
 data class PatchStatusResponse(
     val success: Boolean,
     val message: String,
-    val data: com.example.mylsp.data.model.api.asesi.DataPatchStatusReponse
+    val data: DataPatchStatusReponse
 )
 
 data class DataPatchStatusReponse(
@@ -40,12 +40,12 @@ data class DataPatchStatusReponse(
     val assesment_id: Int,
     val assesi_id: Int,
     val status: String,
-    val assesment: com.example.mylsp.data.model.api.asesi.AssesmentAsesi,
+    val assesment: AssesmentAsesi,
     val assesi: Asesi
 )
 
 data class PostAssesmentAsesiResponse(
     val success: Boolean,
     val message: String,
-    val data: com.example.mylsp.data.model.api.asesi.AssesmentAsesi? = null
+    val data: AssesmentAsesi? = null
 )

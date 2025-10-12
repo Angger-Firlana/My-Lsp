@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mylsp.R
 import com.example.mylsp.model.api.Apl01
-import com.example.mylsp.data.model.api.asesi.AssesmentAsesi
+import com.example.mylsp.data.api.asesi.AssesmentAsesi
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.data.local.assesment.AssesmentAsesiManager
 import com.example.mylsp.data.local.user.AsesiManager
@@ -357,7 +357,7 @@ fun StatCard(
 }
 
 @Composable
-fun ParticipantsList(participants: List<com.example.mylsp.data.model.api.asesi.AssesmentAsesi>, onClick: (Int, Apl01) -> Unit) {
+fun ParticipantsList(participants: List<AssesmentAsesi>, onClick: (Int, Apl01) -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -376,7 +376,7 @@ fun ParticipantsList(participants: List<com.example.mylsp.data.model.api.asesi.A
 }
 
 @Composable
-fun ParticipantCard(participant: com.example.mylsp.data.model.api.asesi.AssesmentAsesi, onClick: (Int) -> Unit) {
+fun ParticipantCard(participant: AssesmentAsesi, onClick: (Int) -> Unit) {
     val context = LocalContext.current
     val assesmentAsesiManager = AssesmentAsesiManager(context = context)
     val asesiManager = AsesiManager(context)
@@ -467,7 +467,7 @@ fun ParticipantCard(participant: com.example.mylsp.data.model.api.asesi.Assesmen
 }
 
 // Helper functions
-fun getStatusColor(participant: com.example.mylsp.data.model.api.asesi.AssesmentAsesi): Color {
+fun getStatusColor(participant: AssesmentAsesi): Color {
     // Sesuaikan dengan status dari AssesmentAsesi
     return when (participant.status?.lowercase()) {
         "selesai", "completed", "lulus", "kompeten" -> Color.Green
@@ -478,12 +478,12 @@ fun getStatusColor(participant: com.example.mylsp.data.model.api.asesi.Assesment
     }
 }
 
-fun getStatusText(participant: com.example.mylsp.data.model.api.asesi.AssesmentAsesi): String {
+fun getStatusText(participant: AssesmentAsesi): String {
     // Menggunakan status dari AssesmentAsesi
     return participant.status ?: "Status Tidak Diketahui"
 }
 
-fun getStatusTextColor(participant: com.example.mylsp.data.model.api.asesi.AssesmentAsesi): Color {
+fun getStatusTextColor(participant: AssesmentAsesi): Color {
     // Warna teks untuk status di bagian bawah card
     return when (participant.status?.lowercase()) {
         "selesai", "completed", "lulus" -> Color(0xFF4CAF50)

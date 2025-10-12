@@ -5,7 +5,7 @@ import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.example.mylsp.data.api.assesment.KomponenData
-import com.example.mylsp.data.model.api.assesment.KomponenPostReq
+import com.example.mylsp.data.api.assesment.KomponenPostReq
 import com.google.gson.Gson
 
 class AK03SubmissionManager(context: Context) {
@@ -39,7 +39,7 @@ class AK03SubmissionManager(context: Context) {
                 catatan_asesi = catatanAsesi
             )
         }else{
-            val newKomponen = com.example.mylsp.data.model.api.assesment.KomponenPostReq(
+            val newKomponen = KomponenPostReq(
                 komponen_id = komponen.id,
                 hasil = hasil.lowercase(),
                 catatan_asesi = catatanAsesi
@@ -50,17 +50,17 @@ class AK03SubmissionManager(context: Context) {
         saveAllSubmission(assesment_asesi_id, allSubmission)
     }
 
-    fun getAllSubmissionAK03(assesment_asesi_id: Int):List<com.example.mylsp.data.model.api.assesment.KomponenPostReq>{
+    fun getAllSubmissionAK03(assesment_asesi_id: Int):List<KomponenPostReq>{
         val json = prefs.getString("AK03Submission_$assesment_asesi_id", null)
         return json?.let {
-            val array = gson.fromJson(it, Array<com.example.mylsp.data.model.api.assesment.KomponenPostReq>::class.java)
+            val array = gson.fromJson(it, Array<KomponenPostReq>::class.java)
             array.toList()
         }?:run {
             emptyList()
         }
     }
 
-    fun saveAllSubmission(assesment_asesi_id: Int, listKomponen:List<com.example.mylsp.data.model.api.assesment.KomponenPostReq>){
+    fun saveAllSubmission(assesment_asesi_id: Int, listKomponen:List<KomponenPostReq>){
         val json = gson.toJson(listKomponen)
         prefs.edit{
             putString("AK03Submission_$assesment_asesi_id",json)

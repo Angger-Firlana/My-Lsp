@@ -3,16 +3,16 @@ package com.example.mylsp.data.repository.assesment
 import android.content.Context
 import android.util.Log
 import com.example.mylsp.data.remote.api.APIClient
-import com.example.mylsp.data.model.api.assesment.AK04
-import com.example.mylsp.data.model.api.assesment.GetAK04QuestionResponse
-import com.example.mylsp.data.model.api.assesment.GetAK04Response
-import com.example.mylsp.data.model.api.assesment.PostAK04Response
+import com.example.mylsp.data.api.assesment.AK04
+import com.example.mylsp.data.api.assesment.GetAK04QuestionResponse
+import com.example.mylsp.data.api.assesment.GetAK04Response
+import com.example.mylsp.data.api.assesment.PostAK04Response
 
 class Ak04Repository(context: Context) {
     private val api = APIClient.getClient(context)
 
     // Post AK04
-    suspend fun postAk04(request: com.example.mylsp.data.model.api.assesment.AK04): Result<com.example.mylsp.data.model.api.assesment.PostAK04Response> {
+    suspend fun postAk04(request: AK04): Result<PostAK04Response> {
         return try {
             val response = api.postAk04(bodyRequestBody = request)
             if (response.isSuccessful) {
@@ -29,7 +29,7 @@ class Ak04Repository(context: Context) {
     }
 
     // Get AK04 by Asesi
-    suspend fun getAk04ByAsesi(asesiId: Int): Result<com.example.mylsp.data.model.api.assesment.GetAK04Response> {
+    suspend fun getAk04ByAsesi(asesiId: Int): Result<GetAK04Response> {
         return try {
             val response = api.getAk04ByAsesi(id = asesiId)
             Log.d("Ak04Repository", "Response: ${response.body()}")
@@ -48,7 +48,7 @@ class Ak04Repository(context: Context) {
     }
 
     // Get list pertanyaan AK04
-    suspend fun getAk04Questions(): Result<com.example.mylsp.data.model.api.assesment.GetAK04QuestionResponse> {
+    suspend fun getAk04Questions(): Result<GetAK04QuestionResponse> {
         return try {
             val response = api.getAk04Questions()
             if (response.isSuccessful) {

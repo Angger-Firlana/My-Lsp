@@ -1,4 +1,4 @@
-package com.example.mylsp.ui.component
+package com.example.mylsp.ui.component.form
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

@@ -44,11 +44,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.mylsp.ui.component.HeaderForm
-import com.example.mylsp.ui.component.SkemaSertifikasi
+import com.example.mylsp.ui.component.form.HeaderForm
+import com.example.mylsp.ui.component.form.SkemaSertifikasi
 import com.example.mylsp.data.api.assesment.KomponenData
-import com.example.mylsp.data.model.api.assesment.KomponenGetReq
-import com.example.mylsp.data.model.api.assesment.PostAK03Request
+import com.example.mylsp.data.api.assesment.KomponenGetReq
+import com.example.mylsp.data.api.assesment.PostAK03Request
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.data.local.assesment.AK03SubmissionManager
 import com.example.mylsp.data.local.assesment.AssesmentAsesiManager
@@ -78,7 +78,7 @@ fun FRAK03(
     val isAsesor = userManager.getUserRole() == "asesor" || userManager.getUserRole() == "assesor"
 
     // UBAH: Jadikan state yang reactive
-    var ak03SubmissionData by remember { mutableStateOf<List<com.example.mylsp.data.model.api.assesment.KomponenGetReq>?>(null) }
+    var ak03SubmissionData by remember { mutableStateOf<List<KomponenGetReq>?>(null) }
     var showDialogSuccess by remember { mutableStateOf(false) }
     var catatanTambahan by remember { mutableStateOf("") }
     var isFormSubmitted by remember { mutableStateOf(false) }
@@ -237,7 +237,7 @@ fun FRAK03(
 
                         // All validations passed, send the form
                         aK03ViewModel.sendSubmissionAK03(
-                            com.example.mylsp.data.model.api.assesment.PostAK03Request(
+                            PostAK03Request(
                                 assesment_asesi_id = assesmentAsesiManager.getAssesmentId(),
                                 catatan_tambahan = catatanTambahan,
                                 komponen = allSubmissions
@@ -259,7 +259,7 @@ fun Komponen(
     aK03SubmissionManager: AK03SubmissionManager,
     navController: NavController,
     isFormSubmitted: Boolean = false,
-    ak03Submissions: List<com.example.mylsp.data.model.api.assesment.KomponenGetReq>? = null
+    ak03Submissions: List<KomponenGetReq>? = null
 ) {
 
     val checkboxStates = remember { mutableStateMapOf<Int, String?>() }

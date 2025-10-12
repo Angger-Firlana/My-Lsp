@@ -1,4 +1,4 @@
-package com.example.mylsp.data.model.api.auth
+package com.example.mylsp.data.api.auth
 
 import com.example.mylsp.model.api.User
 

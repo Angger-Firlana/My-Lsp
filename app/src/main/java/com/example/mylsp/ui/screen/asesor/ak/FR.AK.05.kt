@@ -15,9 +15,9 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mylsp.ui.component.HeaderForm
-import com.example.mylsp.ui.component.SkemaSertifikasi
-import com.example.mylsp.data.model.api.assesment.Ak05SubmissionRequest
+import com.example.mylsp.data.api.assesment.Ak05SubmissionRequest
+import com.example.mylsp.ui.component.form.HeaderForm
+import com.example.mylsp.ui.component.form.SkemaSertifikasi
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.data.local.assesment.AssesmentAsesiManager
 import com.example.mylsp.viewmodel.assesment.ak.AK05ViewModel
@@ -262,7 +262,7 @@ fun FRAK05(
                     onClick = {
                         if (assesmentAsesiId != -1) {
                             val request =
-                                com.example.mylsp.data.model.api.assesment.Ak05SubmissionRequest(
+                                Ak05SubmissionRequest(
                                     assesmentAsesiId = assesmentAsesiId,
                                     keputusan = if (keputusan == "KOMPETEN") "k" else "bk",
                                     keterangan = keterangan.ifEmpty { null },

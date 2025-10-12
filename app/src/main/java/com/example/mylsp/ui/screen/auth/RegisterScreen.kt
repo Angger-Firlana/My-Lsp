@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mylsp.R
-import com.example.mylsp.data.model.api.auth.RegisterRequest
+import com.example.mylsp.data.api.auth.RegisterRequest
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.viewmodel.AuthViewModel
 import com.example.mylsp.viewmodel.JurusanViewModel
@@ -265,7 +265,7 @@ fun RegisterScreen(
                 onClick = {
                     isLoading = true
                     viewModel.register(
-                        com.example.mylsp.data.model.api.auth.RegisterRequest(
+                        RegisterRequest(
                             email, username, password, jurusanId
                         )
                     )

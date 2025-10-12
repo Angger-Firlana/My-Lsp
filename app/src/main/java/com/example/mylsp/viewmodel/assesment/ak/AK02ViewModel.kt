@@ -4,9 +4,9 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mylsp.data.model.api.assesment.AK02GetSubmission
-import com.example.mylsp.data.model.api.assesment.Ak02Request
-import com.example.mylsp.repository.assesment.AK02Repository
+import com.example.mylsp.data.api.assesment.AK02GetSubmission
+import com.example.mylsp.data.api.assesment.Ak02Request
+import com.example.mylsp.data.repository.assesment.AK02Repository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -23,10 +23,10 @@ class AK02ViewModel(application: Application) : AndroidViewModel(application) {
     private val _message = MutableStateFlow("")
     val message = _message.asStateFlow()
 
-    private val _submission = MutableStateFlow<com.example.mylsp.data.model.api.assesment.AK02GetSubmission?>(null)
+    private val _submission = MutableStateFlow<AK02GetSubmission?>(null)
     val submission = _submission.asStateFlow()
 
-    fun postSubmission(request: com.example.mylsp.data.model.api.assesment.Ak02Request) {
+    fun postSubmission(request: Ak02Request) {
         viewModelScope.launch {
             _loading.value = true
             val result = repository.postAK02(request)

@@ -1,8 +1,8 @@
-package com.example.mylsp.data.model.api.assesment
+package com.example.mylsp.data.api.assesment
 
 data class FormApl01Response(
     val message: String,
-    val data: com.example.mylsp.data.model.api.assesment.FormApl01Data
+    val data: FormApl01Data
 )
 
 data class FormApl01Data(

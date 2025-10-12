@@ -1,6 +1,6 @@
-package com.example.mylsp.data.model.api.assesment
+package com.example.mylsp.data.api.assesment
 
-import com.example.mylsp.data.model.api.asesi.AssesmentAsesi
+import com.example.mylsp.data.api.asesi.AssesmentAsesi
 
 data class Ak02Request(
     val assesment_asesi_id: Int,
@@ -9,12 +9,12 @@ data class Ak02Request(
     val rekomendasi_hasil: String, // "kompeten" | "tidak_kompeten"
     val tindak_lanjut: String?,
     val komentar_asesor: String?,// "belum" | "sudah" | null
-    val units: List<com.example.mylsp.data.model.api.assesment.Ak02Unit>
+    val units: List<Ak02Unit>
 )
 
 data class Ak02Unit(
     val unit_id: Int,
-    val bukti_yang_relevan: List<com.example.mylsp.data.model.api.assesment.Ak02Bukti>
+    val bukti_yang_relevan: List<Ak02Bukti>
 )
 
 data class Ak02Bukti(
@@ -30,7 +30,7 @@ data class Ak02Response(
 data class Ak02GetResponse(
     val success: Boolean,
     val message: String,
-    val data: List<com.example.mylsp.data.model.api.assesment.AK02GetSubmission>?
+    val data: List<AK02GetSubmission>?
 )
 
 data class AK02GetSubmission(
@@ -41,16 +41,16 @@ data class AK02GetSubmission(
 
     val rekomendasi_hasil: String,
     val tindak_lanjut: String?,
-    val assesmentAsesi: com.example.mylsp.data.model.api.asesi.AssesmentAsesi?,
-    val details: List<com.example.mylsp.data.model.api.assesment.Ak02Detail>
+    val assesmentAsesi: AssesmentAsesi?,
+    val details: List<Ak02Detail>
 )
 
 data class Ak02Detail(
     val id: Int,
     val ak02_detail_id: Int,
     val unit_id: Int,
-    val unit: com.example.mylsp.data.model.api.assesment.Unit,
-    val bukti: List<com.example.mylsp.data.model.api.assesment.AK02GetBukti>
+    val unit: Unit,
+    val bukti: List<AK02GetBukti>
 )
 
 data class AK02GetBukti(

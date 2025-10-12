@@ -1,4 +1,4 @@
-package com.example.mylsp.ui.component
+package com.example.mylsp.ui.component.bar
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -25,8 +25,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.mylsp.screen.main.ItemBar
 import com.example.mylsp.data.local.user.UserManager
+import com.example.mylsp.ui.screen.main.ItemBar
 
 @Composable
 fun BottomPillNav(bottomBar: List<ItemBar>, orange: Color, modifier: Modifier = Modifier, navController: NavController) {

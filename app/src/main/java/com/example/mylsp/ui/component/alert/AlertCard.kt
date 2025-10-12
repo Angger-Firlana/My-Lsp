@@ -1,4 +1,4 @@
-package com.example.mylsp.ui.component
+package com.example.mylsp.ui.component.alert
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

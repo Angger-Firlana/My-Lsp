@@ -4,8 +4,8 @@ import android.content.Context
 import com.example.mylsp.data.remote.api.APIClient
 import com.example.mylsp.data.api.auth.LoginRequest
 import com.example.mylsp.data.api.auth.LoginResponse
-import com.example.mylsp.data.model.api.auth.RegisterRequest
-import com.example.mylsp.data.model.api.auth.RegisterResponse
+import com.example.mylsp.data.api.auth.RegisterRequest
+import com.example.mylsp.data.api.auth.RegisterResponse
 import com.google.gson.stream.JsonReader
 
 class AuthRepository(context: Context) {
@@ -29,7 +29,7 @@ class AuthRepository(context: Context) {
         }
     }
 
-    suspend fun register(registerRequest: com.example.mylsp.data.model.api.auth.RegisterRequest): Result<com.example.mylsp.data.model.api.auth.RegisterResponse> {
+    suspend fun register(registerRequest: RegisterRequest): Result<RegisterResponse> {
         return try {
             val response = api.register("application/json",registerRequest)
 

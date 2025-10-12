@@ -5,8 +5,8 @@ import android.util.Log
 import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import com.example.mylsp.data.model.api.assesment.AK04
-import com.example.mylsp.data.model.api.assesment.SubmissionQuestion
+import com.example.mylsp.data.api.assesment.AK04
+import com.example.mylsp.data.api.assesment.SubmissionQuestion
 import com.google.gson.Gson
 
 class Ak04SubmissionManager(context: Context) {
@@ -30,7 +30,7 @@ class Ak04SubmissionManager(context: Context) {
 
         // update / replace jawaban
         val index = allSubmissions.indexOfFirst { it.ak04_question_id == questionId }
-        val updated = com.example.mylsp.data.model.api.assesment.SubmissionQuestion(
+        val updated = SubmissionQuestion(
             ak04_question_id = questionId,
             selected_option = selectedOption
         )
@@ -55,15 +55,15 @@ class Ak04SubmissionManager(context: Context) {
         return prefs.getString("ak04_reason_$assesmentAsesiId", "") ?: ""
     }
 
-    fun getAllSubmissions(assesmentAsesiId: Int): List<com.example.mylsp.data.model.api.assesment.SubmissionQuestion> {
+    fun getAllSubmissions(assesmentAsesiId: Int): List<SubmissionQuestion> {
         val json = prefs.getString("ak04_submissions_$assesmentAsesiId", null)
         return json?.let {
-            val array = gson.fromJson(it, Array<com.example.mylsp.data.model.api.assesment.SubmissionQuestion>::class.java)
+            val array = gson.fromJson(it, Array<SubmissionQuestion>::class.java)
             array.toList()
         } ?: emptyList()
     }
 
-    private fun saveAllSubmissions(assesmentAsesiId: Int, submissions: List<com.example.mylsp.data.model.api.assesment.SubmissionQuestion>) {
+    private fun saveAllSubmissions(assesmentAsesiId: Int, submissions: List<SubmissionQuestion>) {
         val json = gson.toJson(submissions)
         prefs.edit {
             putString("ak04_submissions_$assesmentAsesiId", json)
@@ -77,8 +77,8 @@ class Ak04SubmissionManager(context: Context) {
         }
     }
 
-    fun buildRequest(assesmentAsesiId: Int): com.example.mylsp.data.model.api.assesment.AK04 {
-        return com.example.mylsp.data.model.api.assesment.AK04(
+    fun buildRequest(assesmentAsesiId: Int): AK04 {
+        return AK04(
             assesment_asesi_id = assesmentAsesiId,
             alasan_banding = getReason(assesmentAsesiId),
             questions = getAllSubmissions(assesmentAsesiId)

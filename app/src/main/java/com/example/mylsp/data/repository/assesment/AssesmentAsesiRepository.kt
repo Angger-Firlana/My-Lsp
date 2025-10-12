@@ -2,18 +2,18 @@ package com.example.mylsp.data.repository.assesment
 
 import android.content.Context
 import com.example.mylsp.data.remote.api.APIClient
-import com.example.mylsp.data.model.api.asesi.AssesmentAsesiResponse
-import com.example.mylsp.data.model.api.asesi.PatchStatusReq
-import com.example.mylsp.data.model.api.asesi.PatchStatusResponse
-import com.example.mylsp.data.model.api.asesi.PostAssesmentAsesiReq
-import com.example.mylsp.data.model.api.asesi.PostAssesmentAsesiResponse
+import com.example.mylsp.data.api.asesi.AssesmentAsesiResponse
+import com.example.mylsp.data.api.asesi.PatchStatusReq
+import com.example.mylsp.data.api.asesi.PatchStatusResponse
+import com.example.mylsp.data.api.asesi.PostAssesmentAsesiReq
+import com.example.mylsp.data.api.asesi.PostAssesmentAsesiResponse
 import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.HttpException
 import java.io.IOException
 
 class AssesmentAsesiRepository(context: Context) {
     private val api = APIClient.getClient(context)
 
-    suspend fun postAssesmentAsesi(request: com.example.mylsp.data.model.api.asesi.PostAssesmentAsesiReq): Result<com.example.mylsp.data.model.api.asesi.PostAssesmentAsesiResponse> {
+    suspend fun postAssesmentAsesi(request: PostAssesmentAsesiReq): Result<PostAssesmentAsesiResponse> {
         return try {
             val response = api.postAssesmentAsesi(request = request)
             if (response.isSuccessful) {
@@ -46,7 +46,7 @@ class AssesmentAsesiRepository(context: Context) {
     }
 
 
-    suspend fun getAssesmentAsesiByAsesi(asesiId:Int):Result<com.example.mylsp.data.model.api.asesi.AssesmentAsesiResponse>{
+    suspend fun getAssesmentAsesiByAsesi(asesiId:Int):Result<AssesmentAsesiResponse>{
         return try {
             val response = api.getAssesmentAsesiByAsesi(asesiId)
             if (response.isSuccessful){
@@ -60,7 +60,7 @@ class AssesmentAsesiRepository(context: Context) {
         }
     }
 
-    suspend fun getAssesmentAsesiByAssesment(assesmentId: Int):Result<com.example.mylsp.data.model.api.asesi.AssesmentAsesiResponse>{
+    suspend fun getAssesmentAsesiByAssesment(assesmentId: Int):Result<AssesmentAsesiResponse>{
         return try {
             val response = api.getAssesmentAsesiByAssesment(assesmentId)
             if (response.isSuccessful){
@@ -74,7 +74,7 @@ class AssesmentAsesiRepository(context: Context) {
         }
     }
 
-    suspend fun patchStatus(assesmentAsesiId: Int,request: com.example.mylsp.data.model.api.asesi.PatchStatusReq):Result<com.example.mylsp.data.model.api.asesi.PatchStatusResponse>{
+    suspend fun patchStatus(assesmentAsesiId: Int,request: PatchStatusReq):Result<PatchStatusResponse>{
         return try {
             val response = api.patchStatusAssesmentAsesi(id = assesmentAsesiId, request = request)
             if (response.isSuccessful) {

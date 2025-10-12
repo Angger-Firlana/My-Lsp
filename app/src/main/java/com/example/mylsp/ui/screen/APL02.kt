@@ -17,22 +17,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.mylsp.ui.component.ErrorCard
-import com.example.mylsp.ui.component.HeaderForm
+import com.example.mylsp.common.enums.TypeAlert
+import com.example.mylsp.data.api.assesment.DataApl02
+import com.example.mylsp.data.api.assesment.ElemenAPL02
+import com.example.mylsp.data.api.assesment.GetAPL02Response
+import com.example.mylsp.data.api.assesment.PostApproveRequest
+import com.example.mylsp.data.api.assesment.UnitApl02
+import com.example.mylsp.data.api.assesment.UnitGetResponse
+import com.example.mylsp.ui.component.form.HeaderForm
 import com.example.mylsp.ui.component.LoadingScreen
-import com.example.mylsp.ui.component.SkemaSertifikasi
+import com.example.mylsp.ui.component.form.SkemaSertifikasi
 import com.example.mylsp.model.api.Attachment
-import com.example.mylsp.data.model.api.assesment.DataApl02
-import com.example.mylsp.data.model.api.assesment.ElemenAPL02
-import com.example.mylsp.data.model.api.assesment.UnitApl02
-import com.example.mylsp.data.model.api.assesment.GetAPL02Response
-import com.example.mylsp.data.model.api.assesment.PostApproveRequest
-import com.example.mylsp.data.model.api.assesment.UnitGetResponse
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.data.local.assesment.AssesmentAsesiManager
 import com.example.mylsp.data.local.assesment.JawabanManager
 import com.example.mylsp.data.local.user.AsesiManager
 import com.example.mylsp.data.local.user.UserManager
+import com.example.mylsp.ui.component.alert.AlertCard
 import com.example.mylsp.viewmodel.assesment.apl.APL01ViewModel
 import com.example.mylsp.viewmodel.assesment.apl.APL02ViewModel
 import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
@@ -160,6 +161,12 @@ fun APL02(
                 }
 
                 SkemaSertifikasi()
+                if (message.isNotEmpty()) {
+                    AlertCard(
+                        message,
+                        TypeAlert.Error
+                    )
+                }
                 InstructionCard()
 
                 UnitsSection(
@@ -180,12 +187,7 @@ fun APL02(
                     role = userManager.getUserRole()!!
                 )
 
-                if (message.isNotEmpty()) {
-                    ErrorCard(
-                        errorMessage = message,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
+
             }
         } ?: run {
             LoadingScreen()
@@ -276,7 +278,7 @@ private fun SuccessDialog(
 // Update SubmissionStatusCard untuk UnitGetResponse
 @Composable
 private fun SubmissionStatusCard(
-    submission: _root_ide_package_.com.example.mylsp.data.model.api.assesment.UnitGetResponse,
+    submission: UnitGetResponse,
     userRole: String
 ) {
     Card(
@@ -315,10 +317,10 @@ private fun SubmissionStatusCard(
 @Composable
 private fun UnitCompetensiSection(
     assesmentAsesiId: Int,
-    unit: _root_ide_package_.com.example.mylsp.data.model.api.assesment.UnitApl02,
+    unit: UnitApl02,
     listAttachment: List<Attachment>,
     jawabanManager: JawabanManager,
-    submission: _root_ide_package_.com.example.mylsp.data.model.api.assesment.GetAPL02Response?,
+    submission: GetAPL02Response?,
     isReadOnly: Boolean
 ) {
     Column(
@@ -409,7 +411,7 @@ private fun UnitCompetensiSection(
 
 @Composable
 private fun ElemenCard(
-    elemen: _root_ide_package_.com.example.mylsp.data.model.api.assesment.ElemenAPL02,
+    elemen: ElemenAPL02,
     buktiList: List<Attachment>,
     existingKompetensinitas: String?,
     existingBuktiNames: List<String>,
@@ -545,7 +547,7 @@ private fun ElemenCard(
 
 @Composable
 private fun SubmissionStatusCard(
-    submission: _root_ide_package_.com.example.mylsp.data.model.api.assesment.GetAPL02Response,
+    submission: GetAPL02Response,
     userRole: String
 ) {
     Card(
@@ -582,7 +584,7 @@ private fun SubmissionStatusCard(
 }
 
 @Composable
-private fun SchemaSection(data: _root_ide_package_.com.example.mylsp.data.model.api.assesment.DataApl02) {
+private fun SchemaSection(data: DataApl02) {
     Text(
         text = "Skema Sertifikasi",
         fontFamily = AppFont.Poppins,
@@ -672,10 +674,10 @@ private fun InstructionCard() {
 @Composable
 private fun UnitsSection(
     assesmentAsesiId: Int,
-    data: _root_ide_package_.com.example.mylsp.data.model.api.assesment.DataApl02,
+    data: DataApl02,
     listAttachment: List<Attachment>,
     jawabanManager: JawabanManager,
-    submission: _root_ide_package_.com.example.mylsp.data.model.api.assesment.GetAPL02Response?,
+    submission: GetAPL02Response?,
     isReadOnly: Boolean
 ) {
     data.units.forEach { unit ->
@@ -868,7 +870,7 @@ private fun SubmitButton(
         Button(
             onClick = {
                 apL02ViewModel.approveApl02(asesiId,
-                    _root_ide_package_.com.example.mylsp.data.model.api.assesment.PostApproveRequest(
+                    PostApproveRequest(
                         "approved"
                     )
                 )
@@ -886,7 +888,7 @@ private fun SubmitButton(
         Button(
             onClick = {
                 apL02ViewModel.approveApl02(asesiId,
-                    _root_ide_package_.com.example.mylsp.data.model.api.assesment.PostApproveRequest(
+                    PostApproveRequest(
                         "rejected"
                     )
                 )
