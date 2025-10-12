@@ -30,9 +30,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mylsp.common.enums.TypeAlert
+import com.example.mylsp.common.enums.TypeDialog
 import com.example.mylsp.ui.component.LoadingScreen
 import com.example.mylsp.model.api.AsesiRequest
 import com.example.mylsp.model.api.AttachmentRequest
+import com.example.mylsp.ui.component.alert.AlertCard
+import com.example.mylsp.ui.component.dialog.StatusDialog
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.viewmodel.assesment.apl.APL01ViewModel
 import com.example.mylsp.viewmodel.AsesiViewModel
@@ -186,6 +190,8 @@ fun AsesiFormScreen(
 ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsState()
+    var successDialog by remember { mutableStateOf(false) }
+    var errorDialog by remember { mutableStateOf(false) }
     val message by viewModel.message.collectAsState()
     val asesi by apl01ViewModel.formData.collectAsState()
     val loading by apl01ViewModel.loading.collectAsState()
@@ -199,25 +205,26 @@ fun AsesiFormScreen(
     var showCustomTujuan by remember { mutableStateOf(false) }
 
     val skemas by skemaViewModel.skemas.collectAsState()
-    var namaLengkap by remember { mutableStateOf("Budi Santoso") }
-    var nik by remember { mutableStateOf("3201010101010001") }
-    var tanggalLahir by remember { mutableStateOf("1998-05-05") }
-    var tempatLahir by remember { mutableStateOf("Jakarta") }
-    var jenisKelamin by remember { mutableStateOf("Laki-laki") }
-    var kebangsaan by remember { mutableStateOf("Indonesia") }
-    var alamatRumah by remember { mutableStateOf("Jl. Melati No. 10, Jakarta Barat") }
-    var kodePos by remember { mutableStateOf("11510") }
-    var noTeleponRumah by remember { mutableStateOf("0215551234") }
-    var noTeleponKantor by remember { mutableStateOf("0215551234") }
-    var noTelepon by remember { mutableStateOf("081234567890") }
-    var email by remember { mutableStateOf("budi.santoso@example.com") }
-    var kualifikasiPendidikan by remember { mutableStateOf("S1 Teknik Informatika") }
-    var namaInstitusi by remember { mutableStateOf("Universitas Indonesia") }
-    var jabatan by remember { mutableStateOf("Software Engineer") }
-    var alamatKantor by remember { mutableStateOf("Jl. Sudirman No. 25, Jakarta Pusat") }
-    var kodePosKantor by remember { mutableStateOf("10210") }
-    var faxKantor by remember { mutableStateOf("0215554321") }
-    var emailKantor by remember { mutableStateOf("budi.santoso@kantor.com") }
+    var namaLengkap by remember { mutableStateOf(asesi?.nama_lengkap ?: "") }
+    var nik by remember { mutableStateOf(asesi?.no_ktp ?: "") }
+    var tanggalLahir by remember { mutableStateOf(asesi?.tgl_lahir ?: "") }
+    var tempatLahir by remember { mutableStateOf(asesi?.tempat_lahir ?: "") }
+    var jenisKelamin by remember { mutableStateOf(asesi?.jenis_kelamin ?: "") }
+    var kebangsaan by remember { mutableStateOf(asesi?.kebangsaan ?: "") }
+    var alamatRumah by remember { mutableStateOf(asesi?.alamat_rumah ?: "") }
+    var kodePos by remember { mutableStateOf(asesi?.kode_pos ?: "") }
+    var noTeleponRumah by remember { mutableStateOf(asesi?.no_telepon_rumah ?: "") }
+    var noTeleponKantor by remember { mutableStateOf(asesi?.no_telepon_kantor ?: "") }
+    var noTelepon by remember { mutableStateOf(asesi?.no_telepon ?: "") }
+    var email by remember { mutableStateOf(asesi?.email ?: "") }
+    var kualifikasiPendidikan by remember { mutableStateOf(asesi?.kualifikasi_pendidikan ?: "") }
+    var namaInstitusi by remember { mutableStateOf(asesi?.nama_institusi ?: "") }
+    var jabatan by remember { mutableStateOf(asesi?.jabatan ?: "") }
+    var alamatKantor by remember { mutableStateOf(asesi?.alamat_kantor ?: "") }
+    var kodePosKantor by remember { mutableStateOf(asesi?.kode_pos_kantor ?: "") }
+    var faxKantor by remember { mutableStateOf(asesi?.fax_kantor ?: "") }
+    var emailKantor by remember { mutableStateOf(asesi?.email_kantor ?: "") }
+
 
     var fileUploads by remember {
         mutableStateOf(
@@ -256,16 +263,6 @@ fun AsesiFormScreen(
         }
     }
 
-    LaunchedEffect(loading) {
-        loading?.let { loading ->
-            if (loading){
-
-            }else{
-
-            }
-        }
-    }
-
     LaunchedEffect(Unit) {
         apl01ViewModel.fetchFormApl01Status()
         skemaViewModel.getListSkema()
@@ -275,10 +272,12 @@ fun AsesiFormScreen(
     LaunchedEffect(state) {
         state?.let { success ->
             if (success) {
-                successSendingData()
+                successDialog = true
             } else {
+                errorDialog = true
                 Toast.makeText(context, message, Toast.LENGTH_LONG).show()
             }
+            apl01ViewModel.clearState()
         }
     }
 
@@ -295,94 +294,356 @@ fun AsesiFormScreen(
             }
         }?:run{
             asesi?.let { dataAsesi ->
-                if (dataAsesi.status == "pending") {
-                    ifStatusPending(dataAsesi.status)
-                }else{
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                when (dataAsesi.status) {
+                    "pending" -> {
+                        ifStatusPending(dataAsesi.status)
+                    }
+                    "rejected" -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState())
+                                .padding(24.dp)
                         ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Text(
-                                    text = "Detail Asesi",
-                                    style = TextStyle(
+                            AlertCard(
+                                "Data ditolak, mohon untuk melakukan pengisian ulang APL01",
+                                type = TypeAlert.Error
+                            )
+
+                            SectionHeader("Data Pribadi")
+                            ModernTextField(value = namaLengkap, onValueChange = { namaLengkap = it }, placeholder = "Nama Lengkap", label = "Nama Lengkap")
+                            Spacer(Modifier.height(16.dp))
+                            ModernTextField(value = nik, onValueChange = { nik = it }, placeholder = "NIK", label = "NIK")
+                            Spacer(Modifier.height(16.dp))
+                            ModernTextField(value = tanggalLahir, onValueChange = { tanggalLahir = it }, placeholder = "16 Februari 2008", label = "Tanggal Lahir")
+                            Spacer(Modifier.height(16.dp))
+                            ModernTextField(value = tempatLahir, onValueChange = { tempatLahir = it }, placeholder = "Tempat Lahir", label = "Tempat Lahir")
+                            Spacer(Modifier.height(24.dp))
+
+                            Text("Jenis Kelamin", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(bottom = 12.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                                GenderOption("Laki-laki", jenisKelamin == "Laki-laki") { jenisKelamin = "Laki-laki" }
+                                GenderOption("Perempuan", jenisKelamin == "Perempuan") { jenisKelamin = "Perempuan" }
+                            }
+                            Spacer(Modifier.height(16.dp))
+
+                            ModernTextField(value = kebangsaan, onValueChange = { kebangsaan = it }, placeholder = "Kebangsaan", label = "Kebangsaan")
+                            Spacer(Modifier.height(16.dp))
+                            ModernTextField(value = alamatRumah, onValueChange = { alamatRumah = it }, placeholder = "Alamat lengkap tempat tinggal", label = "Alamat Rumah", minLines = 3)
+                            Spacer(Modifier.height(16.dp))
+                            ModernTextField(value = kodePos, onValueChange = { kodePos = it }, placeholder = "Kode Pos", label = "Kode Pos")
+                            Spacer(Modifier.height(16.dp))
+                            ModernTextField(value = noTeleponRumah, onValueChange = { noTeleponRumah = it }, placeholder = "No Telepon Rumah", label = "No Telepon Rumah")
+                            Spacer(Modifier.height(16.dp))
+                            ModernTextField(value = noTelepon, onValueChange = { noTelepon = it }, placeholder = "No Telepon/HP", label = "No Telepon")
+                            Spacer(Modifier.height(16.dp))
+                            ModernTextField(value = email, onValueChange = { email = it }, placeholder = "Email", label = "Email")
+                            Spacer(Modifier.height(24.dp))
+
+                            SectionHeader("Data Pendidikan")
+                            ModernTextField(value = kualifikasiPendidikan, onValueChange = { kualifikasiPendidikan = it }, placeholder = "Kualifikasi Pendidikan", label = "Kualifikasi Pendidikan")
+                            Spacer(Modifier.height(16.dp))
+                            ModernTextField(value = namaInstitusi, onValueChange = { namaInstitusi = it }, placeholder = "Nama Institusi/Sekolah", label = "Nama Institusi")
+                            Spacer(Modifier.height(24.dp))
+
+                            SectionHeader("Data Pekerjaan")
+                            ModernTextField(value = jabatan, onValueChange = { jabatan = it }, placeholder = "Jabatan", label = "Jabatan")
+                            Spacer(Modifier.height(16.dp))
+                            ModernTextField(value = alamatKantor, onValueChange = { alamatKantor = it }, placeholder = "Alamat Kantor", label = "Alamat Kantor", minLines = 2)
+                            Spacer(Modifier.height(16.dp))
+                            ModernTextField(value = kodePosKantor, onValueChange = { kodePosKantor = it }, placeholder = "Kode Pos Kantor", label = "Kode Pos Kantor")
+                            Spacer(Modifier.height(16.dp))
+                            ModernTextField(value = faxKantor, onValueChange = { faxKantor = it }, placeholder = "Fax Kantor", label = "Fax Kantor")
+                            Spacer(Modifier.height(16.dp))
+                            ModernTextField(value = emailKantor, onValueChange = { emailKantor = it }, placeholder = "Email Kantor", label = "Email Kantor")
+                            Spacer(Modifier.height(16.dp))
+
+                            ExposedDropdownMenuBox(
+                                expanded = dropSkema,
+                                onExpandedChange = { dropSkema = !dropSkema }
+                            ) {
+                                OutlinedTextField(
+                                    value = skemaTitle,
+                                    onValueChange = { },
+                                    readOnly = true,
+                                    label = {
+                                        Text(
+                                            text = "Select Skema",
+                                            fontFamily = AppFont.Poppins
+                                        )
+                                    },
+                                    placeholder = {
+                                        Text(
+                                            text = "Pilih Skema",
+                                            fontFamily = AppFont.Poppins,
+                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                        )
+                                    },
+                                    trailingIcon = {
+                                        Icon(
+                                            imageVector = if (dropSkema) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                            contentDescription = if (dropSkema) "Collapse" else "Expand",
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .menuAnchor(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                                    ),
+                                    textStyle = TextStyle(
                                         fontFamily = AppFont.Poppins,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 20.sp
+                                        fontSize = 16.sp
                                     )
                                 )
 
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                HorizontalDivider()
-
-                                Spacer(modifier = Modifier.height(12.dp))
-
-                                DetailItem(label = "Nama Lengkap", value = dataAsesi.nama_lengkap)
-                                DetailItem(label = "No KTP", value = dataAsesi.no_ktp)
-                                DetailItem(label = "Tanggal Lahir", value = dataAsesi.tgl_lahir)
-                                DetailItem(label = "Tempat Lahir", value = dataAsesi.tempat_lahir)
-                                DetailItem(label = "Jenis Kelamin", value = dataAsesi.jenis_kelamin)
-                                DetailItem(label = "Kebangsaan", value = dataAsesi.kebangsaan)
-                                DetailItem(label = "Alamat Rumah", value = dataAsesi.alamat_rumah)
-                                DetailItem(label = "Kode Pos", value = dataAsesi.kode_pos)
-                                DetailItem(label = "No Telepon Rumah", value = dataAsesi.no_telepon_rumah)
-                                DetailItem(label = "No Telepon Kantor", value = dataAsesi.no_telepon_kantor)
-                                DetailItem(label = "No Telepon", value = dataAsesi.no_telepon)
-                                DetailItem(label = "Email", value = dataAsesi.email)
-                                DetailItem(label = "Kualifikasi Pendidikan", value = dataAsesi.kualifikasi_pendidikan)
-                                DetailItem(label = "Nama Institusi", value = dataAsesi.nama_institusi)
-                                DetailItem(label = "Jabatan", value = dataAsesi.jabatan)
-                                DetailItem(label = "Alamat Kantor", value = dataAsesi.alamat_kantor)
-                                DetailItem(label = "Kode Pos Kantor", value = dataAsesi.kode_pos_kantor)
-                                DetailItem(label = "Fax Kantor", value = dataAsesi.fax_kantor)
-                                DetailItem(label = "Email Kantor", value = dataAsesi.email_kantor)
-                                DetailItem(label = "Status", value = dataAsesi.status)
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Text(
-                                    text = "User Detail",
-                                    style = TextStyle(
-                                        fontFamily = AppFont.Poppins,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontSize = 20.sp
+                                ExposedDropdownMenu(
+                                    expanded = dropSkema,
+                                    onDismissRequest = { dropSkema = false },
+                                    modifier = Modifier.background(
+                                        color = MaterialTheme.colorScheme.surface,
+                                        shape = RoundedCornerShape(12.dp)
                                     )
-                                )
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                HorizontalDivider()
-
-                                Spacer(modifier = Modifier.height(12.dp))
-
-                                DetailItem(label = "Username", value = dataAsesi.user.username)
-                                DetailItem(label = "Email User", value = dataAsesi.user.email)
-                                DetailItem(label = "Role", value = dataAsesi.user.role)
+                                ) {
+                                    if (skemas.isEmpty()) {
+                                        DropdownMenuItem(
+                                            text = {
+                                                Text(
+                                                    text = "No jurusan available",
+                                                    fontFamily = AppFont.Poppins,
+                                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                                    fontSize = 14.sp
+                                                )
+                                            },
+                                            onClick = { },
+                                            enabled = false
+                                        )
+                                    } else {
+                                        skemas.forEach { skema ->
+                                            DropdownMenuItem(
+                                                text = {
+                                                    Text(
+                                                        text = "${skema.judul_skema}(${skema.jurusan.nama_jurusan})",
+                                                        fontFamily = AppFont.Poppins,
+                                                        fontSize = 16.sp,
+                                                        color = if (skemaTitle == skema.judul_skema) {
+                                                            MaterialTheme.colorScheme.primary
+                                                        } else {
+                                                            MaterialTheme.colorScheme.onSurface
+                                                        }
+                                                    )
+                                                },
+                                                onClick = {
+                                                    skemaTitle = skema.judul_skema
+                                                    skemaId = skema.id
+                                                    dropSkema = false
+                                                },
+                                                leadingIcon = if (skemaTitle == skema.judul_skema) {
+                                                    {
+                                                        Icon(
+                                                            imageVector = Icons.Default.Check,
+                                                            contentDescription = "Selected",
+                                                            tint = MaterialTheme.colorScheme.primary,
+                                                            modifier = Modifier.size(20.dp)
+                                                        )
+                                                    }
+                                                } else null,
+                                                modifier = Modifier.fillMaxWidth()
+                                            )
+                                        }
+                                    }
+                                }
                             }
-                        }
 
-                        Spacer(modifier = Modifier.height(80.dp))
+                            Spacer(Modifier.height(24.dp))
+
+                            // Tujuan Asesmen Section
+                            TujuanAsesmenSection(
+                                selectedTujuan = tujuanAsesmen,
+                                customTujuan = customTujuanAsesmen,
+                                showCustom = showCustomTujuan,
+                                onTujuanSelected = { tujuanAsesmen = it },
+                                onCustomTujuanChange = { customTujuanAsesmen = it },
+                                onShowCustomChange = { showCustomTujuan = it }
+                            )
+
+                            Spacer(Modifier.height(32.dp))
+
+                            Text("Dokumen Pendukung", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(bottom = 16.dp))
+                            fileUploads.forEachIndexed { index, fileUpload ->
+                                FileUploadCard(fileUpload) {
+                                    currentUploadIndex = index
+                                    launcher.launch("*/*")
+                                }
+                                Spacer(Modifier.height(12.dp))
+                            }
+
+                            Spacer(Modifier.height(40.dp))
+                            Button(
+                                onClick = {
+                                    val attachments = fileUploads.mapNotNull { fu ->
+                                        fu.file?.let { filePart ->
+                                            AttachmentRequest(
+                                                file = filePart,
+                                                description = fu.name.toRequestBody("text/plain".toMediaTypeOrNull())
+                                            )
+                                        }
+                                    }
+
+                                    // Determine the final tujuan value
+                                    val finalTujuanAsesmen = if (showCustomTujuan) {
+                                        customTujuanAsesmen
+                                    } else {
+                                        tujuanAsesmen
+                                    }
+
+                                    val request = AsesiRequest(
+                                        nama_lengkap = namaLengkap,
+                                        nik = nik,
+                                        tgl_lahir = tanggalLahir,
+                                        tempat_lahir = tempatLahir,
+                                        jenis_kelamin = jenisKelamin,
+                                        kebangsaan = kebangsaan,
+                                        alamat_rumah = alamatRumah,
+                                        kode_pos = kodePos,
+                                        no_telepon_rumah = noTeleponRumah,
+                                        no_telepon_kantor = noTeleponKantor,
+                                        no_telepon = noTelepon,
+                                        email = email,
+                                        kualifikasi_pendidikan = kualifikasiPendidikan,
+                                        nama_institusi = namaInstitusi,
+                                        jabatan = jabatan,
+                                        alamat_kantor = alamatKantor,
+                                        kode_pos_kantor = kodePosKantor,
+                                        fax_kantor = faxKantor,
+                                        email_kantor = emailKantor,
+                                        status = "pending",
+                                        attachments = attachments,
+                                        tujuan_asesmen = finalTujuanAsesmen,
+                                        schema_id = skemaId
+                                    )
+                                    viewModel.updateDataAsesi(dataAsesi.id,request)
+                                },
+                                modifier = Modifier.fillMaxWidth().height(56.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                ),
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Text("🔗 Update data", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                            }
+
+                            Spacer(Modifier.height(16.dp))
+                            message.takeIf { it.isNotEmpty() }?.let {
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = if (state == true) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.errorContainer
+                                    ),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Text(
+                                        text = it,
+                                        color = if (state == true) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onErrorContainer,
+                                        modifier = Modifier.padding(16.dp),
+                                        fontSize = 14.sp
+                                    )
+                                }
+                            }
+                            Spacer(Modifier.height(32.dp))
+                        }
+                    }
+                    else -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp)
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                            ) {
+                                Column(modifier = Modifier.padding(16.dp)) {
+                                    Text(
+                                        text = "Detail Asesi",
+                                        style = TextStyle(
+                                            fontFamily = AppFont.Poppins,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 20.sp
+                                        )
+                                    )
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+
+                                    HorizontalDivider()
+
+                                    Spacer(modifier = Modifier.height(12.dp))
+
+                                    DetailItem(label = "Nama Lengkap", value = dataAsesi.nama_lengkap)
+                                    DetailItem(label = "No KTP", value = dataAsesi.no_ktp)
+                                    DetailItem(label = "Tanggal Lahir", value = dataAsesi.tgl_lahir)
+                                    DetailItem(label = "Tempat Lahir", value = dataAsesi.tempat_lahir)
+                                    DetailItem(label = "Jenis Kelamin", value = dataAsesi.jenis_kelamin)
+                                    DetailItem(label = "Kebangsaan", value = dataAsesi.kebangsaan)
+                                    DetailItem(label = "Alamat Rumah", value = dataAsesi.alamat_rumah)
+                                    DetailItem(label = "Kode Pos", value = dataAsesi.kode_pos)
+                                    DetailItem(label = "No Telepon Rumah", value = dataAsesi.no_telepon_rumah)
+                                    DetailItem(label = "No Telepon Kantor", value = dataAsesi.no_telepon_kantor)
+                                    DetailItem(label = "No Telepon", value = dataAsesi.no_telepon)
+                                    DetailItem(label = "Email", value = dataAsesi.email)
+                                    DetailItem(label = "Kualifikasi Pendidikan", value = dataAsesi.kualifikasi_pendidikan)
+                                    DetailItem(label = "Nama Institusi", value = dataAsesi.nama_institusi)
+                                    DetailItem(label = "Jabatan", value = dataAsesi.jabatan)
+                                    DetailItem(label = "Alamat Kantor", value = dataAsesi.alamat_kantor)
+                                    DetailItem(label = "Kode Pos Kantor", value = dataAsesi.kode_pos_kantor)
+                                    DetailItem(label = "Fax Kantor", value = dataAsesi.fax_kantor)
+                                    DetailItem(label = "Email Kantor", value = dataAsesi.email_kantor)
+                                    DetailItem(label = "Status", value = dataAsesi.status)
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                            ) {
+                                Column(modifier = Modifier.padding(16.dp)) {
+                                    Text(
+                                        text = "User Detail",
+                                        style = TextStyle(
+                                            fontFamily = AppFont.Poppins,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 20.sp
+                                        )
+                                    )
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+
+                                    HorizontalDivider()
+
+                                    Spacer(modifier = Modifier.height(12.dp))
+
+                                    DetailItem(label = "Username", value = dataAsesi.user.username)
+                                    DetailItem(label = "Email User", value = dataAsesi.user.email)
+                                    DetailItem(label = "Role", value = dataAsesi.user.role)
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(80.dp))
+                        }
                     }
                 }
-            } ?: run {
+            }?: run {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -636,6 +897,32 @@ fun AsesiFormScreen(
                     Spacer(Modifier.height(32.dp))
                 }
             }
+        }
+
+        if (successDialog){
+            StatusDialog(
+                "Data APL01 Berhasil dikirim",
+                type = TypeDialog.Success,
+                onClick = {
+                    successSendingData()
+                },
+                onDismiss = {
+                    successSendingData()
+                }
+            )
+        }
+
+        if(errorDialog){
+            StatusDialog(
+                "Data APL01 Gagal Dikirim : ${message}",
+                type = TypeDialog.Failed,
+                onClick = {
+                    errorDialog = false
+                },
+                onDismiss = {
+                    errorDialog = false
+                }
+            )
         }
     }
 }

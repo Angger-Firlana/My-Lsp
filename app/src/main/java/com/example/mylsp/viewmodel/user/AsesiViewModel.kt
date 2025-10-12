@@ -8,8 +8,8 @@ import com.example.mylsp.model.api.Apl01
 import com.example.mylsp.model.api.Asesi
 import com.example.mylsp.model.api.AsesiRequest
 import com.example.mylsp.model.api.AsesiResponse
-import com.example.mylsp.repository.auth.AsesiRepository
 import com.example.mylsp.data.local.user.UserManager
+import com.example.mylsp.data.repository.auth.AsesiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -70,6 +70,23 @@ class AsesiViewModel(application: Application):AndroidViewModel(application) {
                 },
                 onFailure = { error ->
                     _message.value = error.message?: "Error Unknown"
+                }
+            )
+        }
+    }
+
+    fun updateDataAsesi(id:Int,asesiRequest: AsesiRequest){
+        viewModelScope.launch {
+            val result = repository.updateDataAsesi(id,asesiRequest)
+            result.fold(
+                onSuccess = { body ->
+                    _state.value = true
+                    _message.value = body.message
+                },
+                onFailure = { error ->
+                    _state.value = false
+                    _message.value = error.message?: "Unknown error"
+                    Log.e("Error", _message.value)
                 }
             )
         }

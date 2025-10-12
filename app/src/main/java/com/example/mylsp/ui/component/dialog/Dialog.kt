@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
@@ -39,7 +41,9 @@ fun ValidationDialog(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ConfirmationDialog(show:(Boolean)-> Unit, title: String, text: String, type: TypeDialog, onClick:()-> Unit, onDismiss: () -> Unit, modifier: Modifier = Modifier) {
+fun StatusDialog(text: String, type: TypeDialog, onClick:()-> Unit, onDismiss: () -> Unit, modifier: Modifier = Modifier) {
+    val isSuccess = type == TypeDialog.Success
+    val isFailed = type == TypeDialog.Failed
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
@@ -53,11 +57,9 @@ fun ConfirmationDialog(show:(Boolean)-> Unit, title: String, text: String, type:
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                if(type == TypeDialog.Success){
 
-                }
                 androidx.compose.material3.Icon(
-                    imageVector = Icons.Default.CheckCircle,
+                    imageVector = if(isSuccess)Icons.Default.CheckCircle else Icons.Default.Error,
                     contentDescription = null,
                     modifier = Modifier.size(64.dp),
                     tint = Color(0xFF10B981)
@@ -66,7 +68,7 @@ fun ConfirmationDialog(show:(Boolean)-> Unit, title: String, text: String, type:
                 Spacer(Modifier.height(16.dp))
 
                 androidx.compose.material3.Text(
-                    "Berhasil!",
+                    if(isSuccess) "Berhasil" else "Gagal",
                     fontFamily = AppFont.Poppins,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
@@ -76,7 +78,7 @@ fun ConfirmationDialog(show:(Boolean)-> Unit, title: String, text: String, type:
                 Spacer(Modifier.height(8.dp))
 
                 androidx.compose.material3.Text(
-                    "Formulir banding asesmen berhasil dikirim",
+                    text,
                     fontFamily = AppFont.Poppins,
                     fontSize = 14.sp,
                     color = Color(0xFF6B7280),
@@ -85,14 +87,15 @@ fun ConfirmationDialog(show:(Boolean)-> Unit, title: String, text: String, type:
 
                 Spacer(Modifier.height(24.dp))
 
+
                 androidx.compose.material3.Button(
-                    onClick = onDismiss,
+                    onClick = onClick,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(Color(0xFF10B981))
+                    colors = if(isSuccess) androidx.compose.material3.ButtonDefaults.buttonColors(Color(0xFF10B981)) else ButtonDefaults.buttonColors(Color(0xFFEF4444))
                 ) {
                     androidx.compose.material3.Text(
-                        "Lanjutkan",
+                        if(isSuccess) "Lanjutkan" else "Kembali",
                         fontFamily = AppFont.Poppins,
                         fontSize = 14.sp,
                         color = Color.White

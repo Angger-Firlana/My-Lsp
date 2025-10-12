@@ -7,20 +7,17 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
+import com.example.mylsp.common.enums.TypeAlert
+import com.example.mylsp.common.enums.TypeDialog
 import com.example.mylsp.ui.component.alert.AlertCard
 import com.example.mylsp.ui.component.form.HeaderForm
 import com.example.mylsp.ui.component.form.SkemaSertifikasi
@@ -28,6 +25,7 @@ import com.example.mylsp.util.AppFont
 import com.example.mylsp.data.local.assesment.Ak04SubmissionManager
 import com.example.mylsp.data.local.assesment.AssesmentAsesiManager
 import com.example.mylsp.data.local.user.UserManager
+import com.example.mylsp.ui.component.dialog.StatusDialog
 import com.example.mylsp.viewmodel.assesment.ak.Ak04ViewModel
 
 @Composable
@@ -126,7 +124,14 @@ fun FRAK04(
 
     // Dialog Sukses
     if (showSuccessDialog) {
-        SuccessDialog(
+        StatusDialog(
+            text = "Jawaban FR.AK.04 berhasil dikirim",
+            type = TypeDialog.Success,
+            onClick = {
+                showSuccessDialog = false
+                manager.clear(assesmentAsesiId)
+                nextForm()
+            },
             onDismiss = {
                 showSuccessDialog = false
                 manager.clear(assesmentAsesiId)
@@ -137,9 +142,11 @@ fun FRAK04(
 
     // Dialog Gagal
     if (showErrorDialog) {
-        ErrorDialog(
-            message = errorMessage,
-            onDismiss = { showErrorDialog = false }
+        StatusDialog(
+            text = errorMessage,
+            type = TypeDialog.Failed,
+            onClick = {showErrorDialog = false},
+            onDismiss = { showErrorDialog = false}
         )
     }
 
@@ -155,7 +162,7 @@ fun FRAK04(
         if (!isAsesi) {
             AlertCard(
                 message = "Hanya Asesi yang dapat mengisi formulir ini",
-                type = "warning"
+                type = TypeAlert.Warning
             )
             Spacer(Modifier.height(8.dp))
         }
@@ -164,7 +171,7 @@ fun FRAK04(
         if (isFormFilled) {
             AlertCard(
                 message = "Formulir ini sudah diisi dan dikirim. Berikut adalah data yang telah Anda kirimkan.",
-                type = "info"
+                type = TypeAlert.Info
             )
             Spacer(Modifier.height(8.dp))
         }
@@ -321,67 +328,6 @@ fun FRAK04(
         }
 
         Spacer(Modifier.height(24.dp))
-    }
-}
-
-@Composable
-private fun ErrorDialog(message: String, onDismiss: () -> Unit) {
-    Dialog(onDismissRequest = onDismiss) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
-        ) {
-            Column(
-                modifier = Modifier.padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Error,
-                    contentDescription = null,
-                    modifier = Modifier.size(64.dp),
-                    tint = Color(0xFFEF4444)
-                )
-
-                Spacer(Modifier.height(16.dp))
-
-                Text(
-                    "Gagal!",
-                    fontFamily = AppFont.Poppins,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF111827)
-                )
-
-                Spacer(Modifier.height(8.dp))
-
-                Text(
-                    message.ifEmpty { "Terjadi kesalahan saat mengirim formulir" },
-                    fontFamily = AppFont.Poppins,
-                    fontSize = 14.sp,
-                    color = Color(0xFF6B7280),
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(Modifier.height(24.dp))
-
-                Button(
-                    onClick = onDismiss,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(Color(0xFFEF4444))
-                ) {
-                    Text(
-                        "Tutup",
-                        fontFamily = AppFont.Poppins,
-                        fontSize = 14.sp,
-                        color = Color.White
-                    )
-                }
-            }
-        }
     }
 }
 

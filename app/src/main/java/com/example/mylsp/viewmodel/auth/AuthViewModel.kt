@@ -6,10 +6,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mylsp.data.api.auth.LoginRequest
 import com.example.mylsp.data.api.auth.RegisterRequest
-import com.example.mylsp.repository.auth.AuthRepository
-import com.example.mylsp.repository.auth.UserRepository
 import com.example.mylsp.data.local.user.TokenManager
 import com.example.mylsp.data.local.user.UserManager
+import com.example.mylsp.data.repository.auth.AuthRepository
+import com.example.mylsp.data.repository.auth.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
