@@ -18,6 +18,9 @@ class IA01ViewModel(application: Application) : AndroidViewModel(application) {
     private val _state = MutableStateFlow<Boolean?>(null)
     val state = _state.asStateFlow()
 
+    private val _stateApproved = MutableStateFlow<Boolean?>(null)
+    val stateApproved = _stateApproved.asStateFlow()
+
     // Ubah struktur: List<IA01Detail> (flat list dari semua details)
     private val _submissions = MutableStateFlow<com.example.mylsp.data.api.assesment.IA01GetData?>(null)
     val submissions = _submissions.asStateFlow()
@@ -69,8 +72,23 @@ class IA01ViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun approveIa01ByAsesi(id:Int){
+        viewModelScope.launch {
+            val result = repository.postApproveAsesi(id)
+            result.fold(
+                onSuccess = {
+                    _stateApproved.value = true
+                },
+                onFailure = {
+                    _stateApproved.value = false
+                }
+            )
+        }
+    }
+
     fun resetState() {
         _state.value = null
+        _stateApproved.value = null
     }
 
     fun clearSubmissions() {

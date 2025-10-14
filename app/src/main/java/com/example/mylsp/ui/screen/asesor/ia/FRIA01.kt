@@ -17,6 +17,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.mylsp.common.enums.TypeAlert
+import com.example.mylsp.common.enums.TypeDialog
 import com.example.mylsp.data.api.assesment.DataApl02
 import com.example.mylsp.data.api.assesment.ElemenAPL02
 import com.example.mylsp.data.api.assesment.KriteriaUntukKerja
@@ -27,6 +29,10 @@ import com.example.mylsp.util.AppFont
 import com.example.mylsp.data.local.assesment.AssesmentAsesiManager
 import com.example.mylsp.data.local.assesment.IA01SubmissionManager
 import com.example.mylsp.data.local.user.AsesiManager
+import com.example.mylsp.data.local.user.UserManager
+import com.example.mylsp.ui.component.alert.AlertCard
+import com.example.mylsp.ui.component.dialog.StatusDialog
+import com.example.mylsp.ui.component.form.SkemaSertifikasi
 import com.example.mylsp.viewmodel.assesment.apl.APL02ViewModel
 import com.example.mylsp.viewmodel.AssesmentViewModel
 import com.example.mylsp.viewmodel.assesment.IA01ViewModel
@@ -42,13 +48,19 @@ fun FRIA01(
 ) {
     val context = LocalContext.current
     val asesiManager = AsesiManager(context)
+    val userManager = UserManager(context)
+    val role = userManager.getUserRole()?: "unknown"
+
+    //assesment asesi
     val assesmentAsesiManager = AssesmentAsesiManager(context)
     val assesmentAsesiId by remember { mutableStateOf(assesmentAsesiManager.getAssesmentId()) }
-    val iA01SubmissionManager = remember { IA01SubmissionManager(context) }
 
+    //Soal dan ia01ViewModel
+    val iA01SubmissionManager = remember { IA01SubmissionManager(context) }
     val apl02 by apL02ViewModel.apl02.collectAsState()
     val ia01SubmissionData by ia01ViewModel.submissions.collectAsState()
     val pilihan = listOf("IYA", "TIDAK")
+    val stateApproved by ia01ViewModel.stateApproved.collectAsState()
 
     var showSuccessDialog by remember { mutableStateOf(false) }
     var showValidationDialog by remember { mutableStateOf(false) }
@@ -58,10 +70,27 @@ fun FRIA01(
     // State untuk tracking apakah form sudah pernah disubmit
     var isFormSubmitted by remember { mutableStateOf(false) }
 
+    var isAsesi = role.lowercase() == "asesi" || role.lowercase() == "assesi"
+    var isAsesor = role.lowercase() == "asesor" || role.lowercase() == "assesor"
+    var signedByAsesi = ia01SubmissionData?.ttd_asesi == 1
+    var signedByAsesor = ia01SubmissionData?.ttd_asesor == 1
+
     LaunchedEffect(Unit) {
         apL02ViewModel.getAPL02(idAssesment)
         ia01ViewModel.getIA01ByAsesi(asesiManager.getId())
         Log.d("IA01InScreen", ia01SubmissionData.toString())
+    }
+
+    LaunchedEffect(stateApproved) {
+        stateApproved?.let {
+            if (it){
+                showSuccessDialog = true
+            }else{
+                Toast.makeText(context, "Error Approved : ",Toast.LENGTH_LONG).show()
+            }
+
+            ia01ViewModel.resetState()
+        }
     }
 
     // LaunchedEffect untuk memantau perubahan data submission dari ViewModel
@@ -94,17 +123,32 @@ fun FRIA01(
     val ia01Submissions = ia01SubmissionData?.details
 
     if (showSuccessDialog) {
-        SuccessDialog(
-            onDismiss = {
-                showSuccessDialog = false
-                ia01ViewModel.resetState()
-            },
-            onNextForm = {
-                showSuccessDialog = false
-                ia01ViewModel.resetState()
-                nextForm()
-            }
-        )
+        if (isAsesi){
+            StatusDialog(
+                "Berhasil di setujui",
+                type = TypeDialog.Success,
+                onClick = {
+                    showSuccessDialog = false
+                    nextForm()
+                },
+                onDismiss = {
+                    showSuccessDialog = false
+                }
+            )
+        }else{
+            SuccessDialog(
+                onDismiss = {
+                    showSuccessDialog = false
+                    ia01ViewModel.resetState()
+                },
+                onNextForm = {
+                    showSuccessDialog = false
+                    ia01ViewModel.resetState()
+                    nextForm()
+                }
+            )
+        }
+
     }
 
     if (showValidationDialog) {
@@ -140,52 +184,64 @@ fun FRIA01(
                     subTitle = "CEKLIS OBSERVASI AKTIVITAS DI TEMPAT KERJA ATAU TEMPAT KERJA SIMULASI"
                 )
 
-                HorizontalDivider(
-                    thickness = 1.dp,
-                    color = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
+                if (isFormSubmitted && isAsesor && !signedByAsesi) {
+                    AlertCard(
+                        "Form IA 01 Sudah Diisi, Silahkan meminta persetujuan dari asesi",
+                        type = TypeAlert.Info
+                    )
+                }else if(isFormSubmitted && isAsesi && !signedByAsesi){
+                    AlertCard(
+                        "Form IA 01 Sudah Diisi, Silahkan setujui hasil observasi berikut",
+                        type = TypeAlert.Info
+                    )
 
-                // Info banner jika form sudah disubmit
-                if (isFormSubmitted) {
-                    Card(
+                    Button(
+                        onClick = {
+                            ia01ViewModel.approveIa01ByAsesi(ia01SubmissionData?.id?: 0)
+                        },
+                        shape = RoundedCornerShape(8.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                            .padding(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isFormSubmitted)
+                                MaterialTheme.colorScheme.secondary
+                            else
+                                MaterialTheme.colorScheme.primary
                         )
                     ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "ℹ️",
-                                fontSize = 24.sp,
-                                modifier = Modifier.padding(end = 12.dp)
-                            )
-                            Column {
-                                Text(
-                                    text = "Form Sudah Terisi",
-                                    fontFamily = AppFont.Poppins,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 14.sp,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                                )
-                                Text(
-                                    text = "Data penilaian sudah pernah dikirim sebelumnya",
-                                    fontFamily = AppFont.Poppins,
-                                    fontSize = 12.sp,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                                )
-                            }
-                        }
+                        Text(
+                            text = "Setujui",
+                            fontFamily = AppFont.Poppins,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 14.sp
+                        )
                     }
+                } else if (isFormSubmitted && isAsesi) {
+                    AlertCard(
+                        "Form IA 01 Sudah Diisi Asesor",
+                        type = TypeAlert.Info
+                    )
+                } else if (isFormSubmitted && isAsesor) {
+                    AlertCard(
+                        "Form IA 01 Sudah Diisi, Silahkan meminta persetujuan dari asesi",
+                        type = TypeAlert.Info
+                    )
+                } else if (!isFormSubmitted && isAsesi) {
+                    AlertCard(
+                        "Mohon Tunggu Pengisian Dari Asesor",
+                        type = TypeAlert.Warning
+                    )
+                }else{
+                    AlertCard(
+                        "Form Belum Diisi",
+                        type = TypeAlert.Error
+                    )
                 }
 
-                SchemaInfoSection(apl02Data)
+
+                SkemaSertifikasi(modifier = Modifier.padding(horizontal = 16.dp))
+
                 InstructionsCard()
 
                 UnitsSection(
@@ -194,7 +250,8 @@ fun FRIA01(
                     iA01SubmissionManager = iA01SubmissionManager,
                     assesmentAsesiId = assesmentAsesiId,
                     ia01SubmissionsFromVM = ia01Submissions,
-                    isFormSubmitted = isFormSubmitted
+                    isFormSubmitted = isFormSubmitted,
+                    isAsesi = isAsesi
                 )
 
                 SubmitButtonIa01(
@@ -518,7 +575,8 @@ private fun UnitsSection(
     iA01SubmissionManager: IA01SubmissionManager,
     assesmentAsesiId: Int,
     ia01SubmissionsFromVM: List<com.example.mylsp.data.api.assesment.IA01Detail>?,
-    isFormSubmitted: Boolean
+    isFormSubmitted: Boolean,
+    isAsesi: Boolean
 ) {
     units?.forEach { unit ->
         UnitCard(
@@ -527,7 +585,8 @@ private fun UnitsSection(
             iA01SubmissionManager = iA01SubmissionManager,
             assesmentAsesiId = assesmentAsesiId,
             ia01SubmissionsFromVM = ia01SubmissionsFromVM,
-            isFormSubmitted = isFormSubmitted
+            isFormSubmitted = isFormSubmitted,
+            isAsesi = isAsesi
         )
     }
 }
@@ -539,7 +598,8 @@ private fun UnitCard(
     iA01SubmissionManager: IA01SubmissionManager,
     assesmentAsesiId: Int,
     ia01SubmissionsFromVM: List<com.example.mylsp.data.api.assesment.IA01Detail>?,
-    isFormSubmitted: Boolean
+    isFormSubmitted: Boolean,
+    isAsesi: Boolean
 ) {
     Column(
         modifier = Modifier
@@ -589,7 +649,8 @@ private fun UnitCard(
                 kodeUnit = unit.kode_unit,
                 unitKe = unit.unit_ke,
                 ia01SubmissionsFromVM = ia01SubmissionsFromVM,
-                isFormSubmitted = isFormSubmitted
+                isFormSubmitted = isFormSubmitted,
+                isAsesi = isAsesi
             )
         }
     }
@@ -604,7 +665,8 @@ private fun ElementCard(
     kodeUnit: String,
     unitKe: Int,
     ia01SubmissionsFromVM: List<com.example.mylsp.data.api.assesment.IA01Detail>?,
-    isFormSubmitted: Boolean
+    isFormSubmitted: Boolean,
+    isAsesi: Boolean
 ) {
     // State untuk tracking "Check All IYA"
     var checkAllState by remember { mutableStateOf<String?>(null) }
@@ -617,7 +679,8 @@ private fun ElementCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(6.dp)
+        elevation = CardDefaults.cardElevation(6.dp),
+
     ) {
         Column(
             modifier = Modifier
@@ -665,7 +728,8 @@ private fun ElementCard(
                             containerColor = if (checkAllState == "IYA")
                                 MaterialTheme.colorScheme.primaryContainer
                             else Color.Transparent
-                        )
+                        ),
+                        enabled = !isAsesi
                     ) {
                         Text(
                             text = "✓ Semua IYA",
@@ -698,7 +762,8 @@ private fun ElementCard(
                             containerColor = if (checkAllState == "TIDAK")
                                 MaterialTheme.colorScheme.errorContainer
                             else Color.Transparent
-                        )
+                        ),
+                        enabled = !isAsesi
                     ) {
                         Text(
                             text = "✗ Semua TIDAK",
@@ -730,7 +795,8 @@ private fun ElementCard(
                     submissionManager = iA01SubmissionManager,
                     ia01SubmissionsFromVM = ia01SubmissionsFromVM,
                     isFormSubmitted = isFormSubmitted,
-                    checkAllTrigger = checkAllState
+                    checkAllTrigger = checkAllState,
+                    isAsesi = isAsesi
                 )
             }
         }
@@ -748,7 +814,8 @@ private fun KUKItem(
     submissionManager: IA01SubmissionManager,
     ia01SubmissionsFromVM: List<com.example.mylsp.data.api.assesment.IA01Detail>?,
     isFormSubmitted: Boolean,
-    checkAllTrigger: String?
+    checkAllTrigger: String?,
+    isAsesi: Boolean
 ) {
     val displayToApiValue = mapOf("IYA" to "ya", "TIDAK" to "tidak")
     val apiToDisplayValue = mapOf("ya" to "IYA", "tidak" to "TIDAK")
@@ -850,7 +917,11 @@ private fun KUKItem(
                                 Log.d("KUKItem", "Selected - KUK ID: ${kukItem.id}, Value: $apiValue")
                             }
                         },
-                        enabled = !isFormSubmitted
+                        enabled = if(isAsesi){
+                            false
+                        }else{
+                            !isFormSubmitted
+                        }
                     )
                     Text(
                         text = option,
@@ -897,7 +968,11 @@ private fun KUKItem(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
             minLines = 2,
-            enabled = !isFormSubmitted,
+            enabled = if(isAsesi){
+                false
+            }else{
+                !isFormSubmitted
+            },
             colors = OutlinedTextFieldDefaults.colors(
                 disabledTextColor = Color.Gray,
                 disabledBorderColor = Color.LightGray,

@@ -1,6 +1,5 @@
 package com.example.mylsp.data.api.asesi
 
-import com.example.mylsp.data.api.assesment.AsesiData
 import com.example.mylsp.data.model.api.Apl01
 import com.example.mylsp.data.model.api.Asesi
 
@@ -22,7 +21,7 @@ data class AssesmentAsesi(
     val status: String,
     val created_at: String,
     val updated_at: String,
-    val asesi: Apl01
+    val assesi: Apl01
 )
 
 data class PatchStatusReq(

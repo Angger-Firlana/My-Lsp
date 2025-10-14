@@ -368,7 +368,7 @@ fun ParticipantsList(participants: List<AssesmentAsesi>, onClick: (Int, Apl01) -
             ParticipantCard(
                 participant = participant,
                 onClick = {
-                    onClick(participant.id, participant.asesi)
+                    onClick(participant.id, participant.assesi)
                 }
             )
         }
@@ -408,14 +408,14 @@ fun ParticipantCard(participant: AssesmentAsesi, onClick: (Int) -> Unit) {
             ) {
                 Column {
                     Text(
-                        text = participant.asesi.nama_lengkap?: "Nama Asesi",
+                        text = participant.assesi.nama_lengkap?: "Nama Asesi",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black,
                         fontFamily = AppFont.Poppins
                     )
                     Text(
-                        text = "NIK: ${participant.asesi.no_ktp}",
+                        text = "NIK: ${participant.assesi.no_ktp}",
                         fontSize = 12.sp,
                         color = Color.Gray,
                         fontFamily = AppFont.Poppins

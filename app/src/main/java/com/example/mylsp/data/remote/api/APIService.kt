@@ -39,6 +39,7 @@ import com.example.mylsp.data.api.assesment.KomponenResponse
 import com.example.mylsp.data.api.assesment.PostAK03Request
 import com.example.mylsp.data.api.assesment.PostAK03Response
 import com.example.mylsp.data.api.assesment.PostAK04Response
+import com.example.mylsp.data.api.assesment.PostApproveIa01Response
 import com.example.mylsp.data.api.assesment.PostApproveRequest
 import com.example.mylsp.data.api.assesment.PostApproveResponse
 import com.example.mylsp.data.api.assesment.QuestionResponse
@@ -290,6 +291,11 @@ interface APIService {
         @Path("id") id: Int
     ):Response<com.example.mylsp.data.api.assesment.IA01GetResponse>
 
+    @POST("/approvement/assesment/formia01/{id}")
+    suspend fun postApproveIa01ByAsesi(
+        @Header("Accept") accept: String = "application/json",
+        @Path("id") id: Int
+    ):Response<PostApproveIa01Response>
 
     //Komponen
     @GET("komponen")

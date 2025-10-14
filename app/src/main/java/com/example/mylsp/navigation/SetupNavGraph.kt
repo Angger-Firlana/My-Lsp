@@ -190,6 +190,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
                 assesmentAsesiViewModel = assesmentAsesiViewModel,
                 apl02ViewModel = apL02ViewModel,
                 ak01ViewModel = ak01ViewModel,
+                ia01ViewModel = iA01ViewModel,
                 ak02ViewModel = aK02ViewModel,
                 ak03ViewModel = aK03ViewModel,
                 ak04ViewModel = ak04ViewModel,

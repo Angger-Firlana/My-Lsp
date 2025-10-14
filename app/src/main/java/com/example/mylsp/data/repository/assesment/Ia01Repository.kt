@@ -6,6 +6,7 @@ import com.example.mylsp.data.remote.api.APIClient
 import com.example.mylsp.data.api.assesment.IA01GetResponse
 import com.example.mylsp.data.api.assesment.IA01Request
 import com.example.mylsp.data.api.assesment.IA01Response
+import com.example.mylsp.data.api.assesment.PostApproveIa01Response
 
 class Ia01Repository(context: Context) {
     private val api = APIClient.getClient(context)
@@ -45,6 +46,24 @@ class Ia01Repository(context: Context) {
                 Result.failure(Exception(errorBody))
             }
         } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun postApproveAsesi(id:Int):Result<PostApproveIa01Response>{
+        return try{
+            val response = api.postApproveIa01ByAsesi(id = id)
+            if(response.isSuccessful){
+                val body = response.body()
+                if(body != null){
+                    Result.success(body)
+                }else{
+                    Result.failure(Exception("Response body is null"))
+                }
+            }else{
+                Result.failure(Exception(response.errorBody()?.string() ?: "Unknown Error"))
+            }
+        }catch (e:Exception){
             Result.failure(e)
         }
     }

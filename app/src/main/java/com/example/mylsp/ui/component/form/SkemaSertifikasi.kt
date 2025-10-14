@@ -1,5 +1,6 @@
 package com.example.mylsp.ui.component.form
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
@@ -47,6 +49,7 @@ fun SkemaSertifikasi(
     val assesmentAsesi = assesmentAsesiManager.getAssesmentAsesi()
     LaunchedEffect(assesmentAsesi) {
         assesmentViewModel.getAssesmentById(assesmentAsesi?.assesment_id?: 0)
+        Log.d("SkemaSertifikasi", assesmentAsesi.toString())
     }
     Column(
         modifier = modifier
@@ -90,12 +93,12 @@ fun SkemaSertifikasi(
             Spacer(modifier = Modifier.width(8.dp))
 
             Column {
-                Text(skema?.judul_skema?: "unknown judul schema", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text(skema?.nomor_skema?: "nomor skema", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text(assesment?.tuk?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                 Text(assesment?.assesor?.nama_lengkap?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-                Text(assesmentAsesi?.asesi?.nama_lengkap?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins)
-               Text(assesment?.tanggal_assesment?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins)
+                Text(skema?.judul_skema?: "unknown judul schema", fontSize = 12.sp, fontFamily = AppFont.Poppins, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(skema?.nomor_skema?: "nomor skema", fontSize = 12.sp, fontFamily = AppFont.Poppins,maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(assesment?.tuk?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                 Text(assesment?.assesor?.nama_lengkap?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(assesmentAsesi?.assesi?.nama_lengkap?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins, maxLines = 1, overflow = TextOverflow.Ellipsis)
+               Text(assesment?.tanggal_assesment?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
 
         }

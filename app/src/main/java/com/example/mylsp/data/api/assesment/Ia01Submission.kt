@@ -54,6 +54,11 @@ data class IA01KUKSubmission(
     val teks_penilaian: String
 )
 
+data class PostApproveIa01Response(
+    val success: Boolean,
+    val message: String
+)
+
 // Penilaian lanjut per KUK
 data class IA01PenilaianLanjut(
     val teks_penilaian: String

@@ -36,6 +36,7 @@ import com.example.mylsp.viewmodel.assesment.ak.AK03ViewModel
 import com.example.mylsp.viewmodel.assesment.ak.AK05ViewModel
 import com.example.mylsp.viewmodel.assesment.ak.Ak04ViewModel
 import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
+import com.example.mylsp.viewmodel.assesment.IA01ViewModel
 
 
 data class ApprovalItem(
@@ -53,6 +54,7 @@ fun ListFormScreen(
     assesmentAsesiViewModel: AssesmentAsesiViewModel,
     apl02ViewModel: APL02ViewModel,
     ak01ViewModel: AK01ViewModel,
+    ia01ViewModel: IA01ViewModel,
     ak02ViewModel: AK02ViewModel,
     ak03ViewModel: AK03ViewModel,
     ak04ViewModel: Ak04ViewModel,
@@ -72,7 +74,7 @@ fun ListFormScreen(
     val ak03Submission by ak03ViewModel.submissions.collectAsState()
     val ak04Submission by ak04ViewModel.submissions.collectAsState()
     val ak05Submission by ak05ViewModel.submission.collectAsState()
-
+    val ia01Submission by ia01ViewModel.submissions.collectAsState()
     // Gradient full-bleed
     val bgGradient = Brush.verticalGradient(
         colors = listOf(
@@ -133,6 +135,13 @@ fun ListFormScreen(
                 null
             },
             route = Screen.Ak01.createRoute("asesi")
+        ),
+        ApprovalItem(
+            "FR.IA.01.CL",
+            "CEKLIST OBSERVASI AKTIVITAS DI TEMPAT KERJA/SIMULASI",
+            "NIS: 8880",
+            if (ia01Submission != null) true else null,
+            Screen.Ia01.createRoute(assesment?.schema?.id ?: 0)
         ),
         ApprovalItem(
             code = "FR.AK.02",
