@@ -47,6 +47,7 @@ import com.example.mylsp.data.local.assesment.AssessmentManager
 import com.example.mylsp.data.local.user.AsesiManager
 import com.example.mylsp.data.local.user.UserManager
 import com.example.mylsp.screen.asesor.AssesmentListScreen
+import com.example.mylsp.ui.screen.asesor.UploadSoal
 import com.example.mylsp.viewmodel.AK01ViewModel
 import com.example.mylsp.viewmodel.assesment.apl.APL01ViewModel
 import com.example.mylsp.viewmodel.assesment.apl.APL02ViewModel
@@ -515,6 +516,11 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
                     navController.navigate(Screen.ApprovedUnapproved.route)
                 }
             )
+        }
+        composable(Screen.UploadSoal.route) {
+            showTopBar(true)
+            showBottomBar(false)
+            UploadSoal()
         }
     }
 }

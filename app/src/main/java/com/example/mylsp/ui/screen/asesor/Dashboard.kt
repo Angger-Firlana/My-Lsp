@@ -137,7 +137,9 @@ fun DashboardAsesor(
                 navController.navigate(Screen.AssessmentList.route)
             })
             Spacer(Modifier.height(12.dp))
-            MenuButton("Penilaian Asesi", ButtonBlue, onClick = {})
+            MenuButton("Soal apa ya", ButtonBlue, onClick = {
+                navController.navigate("upload_soal")
+            })
         }
 
         // BOTTOM NAV PIL
@@ -216,8 +218,6 @@ enum class StatusType { Running, Pending }
 
 @Composable
 private fun CardsRow(modifier: Modifier = Modifier, listAssesment: List<com.example.mylsp.data.api.assesment.Assessment>, clickAssesment: (Int) -> Unit) {
-
-
     LazyRow(
         modifier = modifier,
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
