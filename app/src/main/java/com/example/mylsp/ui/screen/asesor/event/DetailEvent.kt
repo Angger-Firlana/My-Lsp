@@ -187,10 +187,13 @@ fun DetailEvent(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    ParticipantsList(
-                        participants = listAssesmentAsesi,
-                        onClick = { id, asesi -> onDetailAssessi(id, asesi)}
-                    )
+                    if (listAssesmentAsesi.isNotEmpty()){
+                        ParticipantsList(
+                            participants = listAssesmentAsesi,
+                            onClick = { id, asesi -> onDetailAssessi(id, asesi)}
+                        )
+                    }
+
                 }
 
                 // Pull refresh indicator
@@ -368,7 +371,7 @@ fun ParticipantsList(participants: List<AssesmentAsesi>, onClick: (Int, Apl01) -
             ParticipantCard(
                 participant = participant,
                 onClick = {
-                    onClick(participant.id, participant.assesi)
+                    onClick(participant.id, participant.asesi)
                 }
             )
         }
@@ -408,14 +411,14 @@ fun ParticipantCard(participant: AssesmentAsesi, onClick: (Int) -> Unit) {
             ) {
                 Column {
                     Text(
-                        text = participant.assesi.nama_lengkap?: "Nama Asesi",
+                        text = participant.asesi.nama_lengkap?: "Nama Asesi",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black,
                         fontFamily = AppFont.Poppins
                     )
                     Text(
-                        text = "NIK: ${participant.assesi.no_ktp}",
+                        text = "NIK: ${participant.asesi.no_ktp}",
                         fontSize = 12.sp,
                         color = Color.Gray,
                         fontFamily = AppFont.Poppins

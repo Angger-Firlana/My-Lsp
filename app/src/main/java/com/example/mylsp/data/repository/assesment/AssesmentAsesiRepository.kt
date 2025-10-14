@@ -3,6 +3,7 @@ package com.example.mylsp.data.repository.assesment
 import android.content.Context
 import com.example.mylsp.data.remote.api.APIClient
 import com.example.mylsp.data.api.asesi.AssesmentAsesiResponse
+import com.example.mylsp.data.api.asesi.DeleteAssesmentAsesiResponse
 import com.example.mylsp.data.api.asesi.PatchStatusReq
 import com.example.mylsp.data.api.asesi.PatchStatusResponse
 import com.example.mylsp.data.api.asesi.PostAssesmentAsesiReq
@@ -80,6 +81,25 @@ class AssesmentAsesiRepository(context: Context) {
             if (response.isSuccessful) {
                 Result.success(response.body()!!)
             } else {
+                val errorBody = response.errorBody()
+                Result.failure(Exception(errorBody.toString()))
+            }
+        }catch (e:Exception){
+            Result.failure(e)
+        }
+    }
+
+    suspend fun deleteAssesmentAsesi(id:Int):Result<DeleteAssesmentAsesiResponse>{
+        return try {
+            val response = api.deleteAssesmentAsesi(id = id)
+            if (response.isSuccessful){
+                val body = response.body()
+                if (body != null){
+                    Result.success(body)
+                }else{
+                    Result.failure(Exception("Response body is null"))
+                }
+            }else{
                 val errorBody = response.errorBody()
                 Result.failure(Exception(errorBody.toString()))
             }

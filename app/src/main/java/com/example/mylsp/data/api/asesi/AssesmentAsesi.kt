@@ -21,7 +21,7 @@ data class AssesmentAsesi(
     val status: String,
     val created_at: String,
     val updated_at: String,
-    val assesi: Apl01
+    val asesi: Apl01
 )
 
 data class PatchStatusReq(

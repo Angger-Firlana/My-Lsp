@@ -35,7 +35,8 @@ fun FRAK04(
     modifier: Modifier = Modifier,
     viewModel: Ak04ViewModel,
     assesmentAsesiViewModel:AssesmentAsesiViewModel,
-    nextForm: () -> Unit
+    nextForm: () -> Unit,
+    backToDetailEvent:()->Unit
 ) {
     val context = LocalContext.current
     val userManager = UserManager(context)
@@ -68,11 +69,9 @@ fun FRAK04(
     // Validasi role - hanya asesi yang bisa mengisi
     val isAsesi = role.equals("asesi", ignoreCase = true) || role.equals("assesi", ignoreCase = true)
 
-    val namaAsesor = "Yusma Yeni"
-    val namaAsesi = "Rahma"
-    val tanggalAsesmen = "19 Agustus 2025"
-    val skemaSertifikasi = "Okupasi Junior Custom Made"
-    val noSkema = "SKM.TBS.OJCM/LSP.SMKN24/2023"
+    val deleteState by assesmentAsesiViewModel.deleteState.collectAsState()
+    var showSuccessDeleteDialog by remember { mutableStateOf(false) }
+    var showFailedDeleteDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.getAk04Questions()
@@ -88,6 +87,17 @@ fun FRAK04(
         if (savedReason.isNotEmpty()) {
             reasonText = TextFieldValue(savedReason)
         }
+    }
+
+    LaunchedEffect(deleteState) {
+        deleteState?.let {
+            if (it) {
+                showSuccessDeleteDialog = true
+            } else {
+                showFailedDeleteDialog = true
+            }
+        }
+        assesmentAsesiViewModel.clearState()
     }
 
     // Cek apakah form sudah disubmit ke server
@@ -345,6 +355,34 @@ fun FRAK04(
                 )
             )
         }
+    }
+
+    if (showSuccessDeleteDialog){
+        StatusDialog(
+            text = "Berhasil Menerima Banding, Asesi dapat mendaftar ulang pada assesment",
+            type = TypeDialog.Success,
+            onClick = {
+                showSuccessDeleteDialog = false
+                backToDetailEvent()
+            },
+            onDismiss = {
+                showSuccessDialog = false
+            }
+        )
+    }
+
+    if (showFailedDeleteDialog){
+        StatusDialog(
+            text = "Gagal Menerima Banding, coba kembali",
+            type = TypeDialog.Success,
+            onClick = {
+                showFailedDeleteDialog = false
+                backToDetailEvent()
+            },
+            onDismiss = {
+                showFailedDeleteDialog = false
+            }
+        )
     }
 }
 

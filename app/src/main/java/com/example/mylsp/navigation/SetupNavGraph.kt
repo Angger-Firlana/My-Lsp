@@ -378,7 +378,12 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             showBottomBar(false)
             FRAK04(
                 viewModel = ak04ViewModel,
+                assesmentAsesiViewModel = assesmentAsesiViewModel,
                 nextForm = {
+                    navController.popBackStack()
+                },
+                backToDetailEvent = {
+                    navController.popBackStack()
                     navController.popBackStack()
                 }
             )

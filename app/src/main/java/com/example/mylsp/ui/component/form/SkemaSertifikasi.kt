@@ -97,7 +97,7 @@ fun SkemaSertifikasi(
                 Text(skema?.nomor_skema?: "nomor skema", fontSize = 12.sp, fontFamily = AppFont.Poppins,maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(assesment?.tuk?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins, maxLines = 1, overflow = TextOverflow.Ellipsis)
                  Text(assesment?.assesor?.nama_lengkap?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(assesmentAsesi?.assesi?.nama_lengkap?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(assesmentAsesi?.asesi?.nama_lengkap?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins, maxLines = 1, overflow = TextOverflow.Ellipsis)
                Text(assesment?.tanggal_assesment?: "", fontSize = 12.sp, fontFamily = AppFont.Poppins, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
 

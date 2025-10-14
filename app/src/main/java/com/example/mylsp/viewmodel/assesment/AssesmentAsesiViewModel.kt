@@ -29,6 +29,9 @@ class AssesmentAsesiViewModel(application: Application):AndroidViewModel(applica
     private val _state = MutableStateFlow<Boolean?>(null)
     val state = _state.asStateFlow()
 
+    private val _deleteState = MutableStateFlow<Boolean?>(null)
+    val deleteState = _deleteState.asStateFlow()
+
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
 
@@ -108,10 +111,22 @@ class AssesmentAsesiViewModel(application: Application):AndroidViewModel(applica
     }
 
     fun deleteAssesmentAsesi(id:Int){
-
+        viewModelScope.launch {
+            val result = repository.deleteAssesmentAsesi(id)
+            result.fold(
+                onSuccess = {
+                    _deleteState.value = true
+                },
+                onFailure = {
+                    _deleteState.value = false
+                }
+            )
+        }
     }
 
     fun clearState(){
         _state.value = null
+        _deleteState.value = null
+        _message.value = ""
     }
 }
