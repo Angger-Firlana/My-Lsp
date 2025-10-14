@@ -25,13 +25,16 @@ import com.example.mylsp.util.AppFont
 import com.example.mylsp.data.local.assesment.Ak04SubmissionManager
 import com.example.mylsp.data.local.assesment.AssesmentAsesiManager
 import com.example.mylsp.data.local.user.UserManager
+import com.example.mylsp.ui.component.MyLspButton
 import com.example.mylsp.ui.component.dialog.StatusDialog
+import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
 import com.example.mylsp.viewmodel.assesment.ak.Ak04ViewModel
 
 @Composable
 fun FRAK04(
     modifier: Modifier = Modifier,
     viewModel: Ak04ViewModel,
+    assesmentAsesiViewModel:AssesmentAsesiViewModel,
     nextForm: () -> Unit
 ) {
     val context = LocalContext.current
@@ -328,6 +331,20 @@ fun FRAK04(
         }
 
         Spacer(Modifier.height(24.dp))
+
+        if(isFormFilled && !isAsesi){
+            MyLspButton(
+                onClick = {
+                    assesmentAsesiViewModel.deleteAssesmentAsesi(assesmentAsesiId)
+                },
+                text = "Terima Banding",
+                modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        }
     }
 }
 

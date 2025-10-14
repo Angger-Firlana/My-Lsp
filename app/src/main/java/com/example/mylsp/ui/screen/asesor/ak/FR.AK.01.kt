@@ -57,7 +57,8 @@ import com.example.mylsp.viewmodel.AK01ViewModel
 fun FRAK01(
     modifier: Modifier = Modifier,
     aK01ViewModel: AK01ViewModel,
-    nextForm: () -> Unit
+    nextForm: () -> Unit,
+    ajuBanding: () -> Unit
 ) {
     val context = LocalContext.current
     val loading by aK01ViewModel.loading.collectAsState()
@@ -110,7 +111,8 @@ fun FRAK01(
                     onApprove = {
                         aK01ViewModel.approveAk01(submission.data.first().id)
                         nextForm()
-                    }
+                    },
+                    ajuBanding
                 )
             } else {
                 EmptyFormView(
@@ -137,7 +139,8 @@ fun FRAK01(
 private fun ExistingSubmissionView(
     submissionData: AK01,
     loading: Boolean,
-    onApprove: () -> Unit
+    onApprove: () -> Unit,
+    ajuBanding: () -> Unit
 ) {
     Column {
         Card(
@@ -216,6 +219,9 @@ private fun ExistingSubmissionView(
             loading = loading,
             onApprove = onApprove
         )
+        ActionButtonAjuBandingSection {
+            ajuBanding()
+        }
     }
 }
 
@@ -308,6 +314,31 @@ private fun SummarySection(title: String, content: String, color: Color) {
             }
         }
     }
+}
+
+@Composable
+private fun ActionButtonAjuBandingSection(
+    onClick: () -> Unit
+) {
+    val context = LocalContext.current
+    val userManager = UserManager(context)
+    val userRole = userManager.getUserRole()
+
+    Button(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        )
+    ) {
+        Text(
+            text = "Aju Banding",
+            fontSize = 14.sp,
+            fontFamily = AppFont.Poppins,
+            fontWeight = FontWeight.Bold
+        )
+    }
+
 }
 
 @Composable

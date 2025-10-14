@@ -107,6 +107,10 @@ class AssesmentAsesiViewModel(application: Application):AndroidViewModel(applica
         }
     }
 
+    fun deleteAssesmentAsesi(id:Int){
+
+    }
+
     fun clearState(){
         _state.value = null
     }

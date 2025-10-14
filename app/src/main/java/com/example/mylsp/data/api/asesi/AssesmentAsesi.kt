@@ -43,6 +43,11 @@ data class DataPatchStatusReponse(
     val assesi: Asesi
 )
 
+data class DeleteAssesmentAsesiResponse(
+    val success: Boolean,
+    val message: String
+)
+
 data class PostAssesmentAsesiResponse(
     val success: Boolean,
     val message: String,

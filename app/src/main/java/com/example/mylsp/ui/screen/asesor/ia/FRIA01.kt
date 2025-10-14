@@ -44,7 +44,8 @@ fun FRIA01(
     assesmentViewModel: AssesmentViewModel,
     ia01ViewModel: IA01ViewModel,
     apL02ViewModel: APL02ViewModel,
-    nextForm: () -> Unit
+    nextForm: () -> Unit,
+    ajuBanding: () -> Unit
 ) {
     val context = LocalContext.current
     val asesiManager = AsesiManager(context)
@@ -212,6 +213,26 @@ fun FRIA01(
                     ) {
                         Text(
                             text = "Setujui",
+                            fontFamily = AppFont.Poppins,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 14.sp
+                        )
+                    }
+
+                    Button(
+                        onClick = {
+                            ajuBanding()
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiary
+                        )
+                    ) {
+                        Text(
+                            text = "Aju Banding",
                             fontFamily = AppFont.Poppins,
                             fontWeight = FontWeight.Medium,
                             fontSize = 14.sp

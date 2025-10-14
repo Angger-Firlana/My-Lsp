@@ -346,13 +346,22 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             FRAK01(
                 aK01ViewModel = ak01ViewModel,
                 nextForm = {
-                if (role == "assesi"){
-                    navController.navigate(Screen.ListFormScreen.route)
+                    if (role == "assesi"){
+                        navController.navigate(Screen.ListFormScreen.route)
 
-                }else if(role == "assesor"){
-                    navController.popBackStack()
+                    }else if(role == "assesor"){
+                        navController.popBackStack()
+                    }
+                },
+                ajuBanding = {
+                    navController.navigate(Screen.Ak04.route){
+                        popUpTo(Screen.Ak01.route){
+                            inclusive = true
+                        }
+                    }
                 }
-            })
+            )
+
         }
         composable(Screen.Ak03.route){
             showTopBar(false)
@@ -390,6 +399,11 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
                 ia01ViewModel= iA01ViewModel,
                 nextForm = {
                     navController.popBackStack()
+                },
+                ajuBanding = {
+                    navController.navigate(Screen.Ak04.route){
+                        popUpTo(Screen.Ia01.route){inclusive = true}
+                    }
                 }
             )
         }

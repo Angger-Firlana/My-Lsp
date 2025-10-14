@@ -14,6 +14,7 @@ import com.example.mylsp.data.model.api.Skemas
 import com.example.mylsp.model.api.SubmissionGroup
 import com.example.mylsp.model.api.User
 import com.example.mylsp.data.api.asesi.AssesmentAsesiResponse
+import com.example.mylsp.data.api.asesi.DeleteAssesmentAsesiResponse
 import com.example.mylsp.data.api.asesi.PatchStatusReq
 import com.example.mylsp.data.api.asesi.PatchStatusResponse
 import com.example.mylsp.data.api.asesi.PostAssesmentAsesiReq
@@ -51,6 +52,7 @@ import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
@@ -172,6 +174,12 @@ interface APIService {
         @Path("id") id: Int,
         @Body request: PatchStatusReq
     ):Response<PatchStatusResponse>
+
+    @DELETE("asesi/assesment-asesi/{id}")
+    suspend fun deleteAssesmentAsesi(
+        @Header("Accept") accept: String= "application/json",
+        @Path("id") id:Int
+    ):Response<DeleteAssesmentAsesiResponse>
 
     //APL02
     @GET("apl02/{id}")
