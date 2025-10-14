@@ -2,6 +2,10 @@ package com.example.mylsp.data.repository.auth
 
 import android.content.Context
 import android.util.Log
+import com.example.mylsp.data.model.api.Apl01
+import com.example.mylsp.data.model.api.AsesiRequest
+import com.example.mylsp.data.model.api.AsesiResponse
+import com.example.mylsp.data.model.api.CreateAsesiResponse
 import com.example.mylsp.data.remote.api.APIClient
 import com.example.mylsp.model.api.*
 import kotlinx.coroutines.Dispatchers

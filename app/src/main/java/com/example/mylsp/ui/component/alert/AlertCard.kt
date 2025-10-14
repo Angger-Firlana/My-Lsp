@@ -16,7 +16,7 @@ import com.example.mylsp.common.enums.TypeAlert
 import com.example.mylsp.util.AppFont
 
 @Composable
-fun AlertCard(message: String, type: TypeAlert) {
+fun AlertCard(message: String, type: TypeAlert, modifier:Modifier = Modifier) {
     val bgColor = when (type) {
         TypeAlert.Info -> Color(0xFFDCFCE7)
         TypeAlert.Warning -> Color(0xFFFEF3C7)
@@ -29,7 +29,7 @@ fun AlertCard(message: String, type: TypeAlert) {
     }
 
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         color = bgColor
     ) {

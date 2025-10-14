@@ -16,7 +16,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.mylsp.common.enums.TypeAlert
 import com.example.mylsp.data.api.assesment.DataApl02
 import com.example.mylsp.data.api.assesment.ElemenAPL02
@@ -27,7 +32,7 @@ import com.example.mylsp.data.api.assesment.UnitGetResponse
 import com.example.mylsp.ui.component.form.HeaderForm
 import com.example.mylsp.ui.component.LoadingScreen
 import com.example.mylsp.ui.component.form.SkemaSertifikasi
-import com.example.mylsp.model.api.Attachment
+import com.example.mylsp.data.model.api.Attachment
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.data.local.assesment.AssesmentAsesiManager
 import com.example.mylsp.data.local.assesment.JawabanManager
@@ -46,24 +51,68 @@ fun APL02(
     apl01ViewModel: APL01ViewModel,
     userManager: UserManager,
     apL02ViewModel: APL02ViewModel,
-    nextForm: () -> Unit
+    nextForm: () -> Unit,
+    ajuBanding: ()-> Unit
 ) {
     val context = LocalContext.current
     val asesiManager = AsesiManager(context)
     val assesmentAsesiManager = AssesmentAsesiManager(context)
     val jawabanManager = remember { JawabanManager() }
+
+    // Collect states
     val apl02 by apL02ViewModel.apl02.collectAsState()
-    val apl02Submission by apL02ViewModel.apl02Submission.collectAsState()
+    val apl02Submissions by apL02ViewModel.apl02Submission.collectAsState()
     val message by apL02ViewModel.message.collectAsState()
     val state by apL02ViewModel.state.collectAsState()
     val apl01Data by apl01ViewModel.formData.collectAsState()
+    val isLoadingSubmission by apL02ViewModel.isLoadingSubmission.collectAsState()
 
-    // State untuk dialog
+    var isReadOnly by remember { mutableStateOf(false) }
     var showSuccessDialog by remember { mutableStateOf(false) }
+    var cachedSubmission by remember { mutableStateOf<GetAPL02Response?>(null) }
 
-    // Debug submission data sesuai structure yang benar
-    LaunchedEffect(apl02Submission) {
-        apl02Submission?.let { submission ->
+    // OPSI 1: Detect screen lifecycle - reload when screen is focused
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
+    DisposableEffect(lifecycle) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    Log.d("APL02_MAIN", "Screen resumed - reloading data")
+                    apL02ViewModel.getAPL02(id)
+                    apL02ViewModel.getSubmissionByAsesi(asesiManager.getId())
+                }
+                else -> {}
+            }
+        }
+        lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycle.removeObserver(observer)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if(userManager.getUserRole() == "asesi" || userManager.getUserRole() == "assesi") {
+            assesmentAsesiViewModel.updateStatusAssesmentAsesi(
+                assesmentAsesiManager.getAssesmentId(),
+                "APL-02"
+            )
+        }
+    }
+
+    // Monitor loading state
+    LaunchedEffect(isLoadingSubmission) {
+        if (isLoadingSubmission) {
+            Log.d("APL02_MAIN", "Loading submission data...")
+        } else {
+            Log.d("APL02_MAIN", "Submission loading finished. Data: ${apl02Submissions?.data?.size ?: 0} units")
+        }
+    }
+
+    // Debug submission data
+    LaunchedEffect(apl02Submissions) {
+        apl02Submissions?.let { submission ->
             Log.d("APL02_MAIN", "=== APL02 SUBMISSION DATA ===")
             Log.d("APL02_MAIN", "Status: ${submission.status}")
             Log.d("APL02_MAIN", "Message: ${submission.message}")
@@ -88,31 +137,23 @@ fun APL02(
                     }
                 }
             }
+
+            val isAssesi = userManager.getUserRole() == "assesi"
+            val hasSubmission = submission.data.isNotEmpty() &&
+                    submission.data.any { it.details.isNotEmpty() }
+            isReadOnly = isAssesi && hasSubmission
+            cachedSubmission = submission
+
+            Log.d("APL02_MAIN", "isReadOnly updated: $isReadOnly")
         } ?: run {
             Log.d("APL02_MAIN", "No submission data found")
+            if (cachedSubmission != null) {
+                Log.d("APL02_MAIN", "Using cached submission data")
+                isReadOnly = true
+            } else {
+                isReadOnly = false
+            }
         }
-    }
-
-    LaunchedEffect(Unit) {
-        if(userManager.getUserRole() == "asesi" || userManager.getUserRole() == "assesi")
-        assesmentAsesiViewModel.updateStatusAssesmentAsesi(assesmentAsesiManager.getAssesmentId(), "APL-02")
-    }
-
-    // Check if form is already submitted and can't be edited
-    val isReadOnly = remember(apl02Submission) {
-        apl02Submission?.let { submission ->
-            // Form is read-only if it's already submitted and user is assesi
-            val isAssesi = userManager.getUserRole() == "assesi"
-            val hasSubmission = submission.data.isNotEmpty() && submission.data.any { it.details.isNotEmpty() }
-            Log.d("APL02_MAIN", "IsReadOnly calculation - IsAssesi: $isAssesi, HasSubmission: $hasSubmission")
-            isAssesi && hasSubmission
-        } ?: false
-    }
-
-    LaunchedEffect(Unit) {
-        Log.d("APL02_MAIN", "Loading APL02 data and submission...")
-        apL02ViewModel.getAPL02(id)
-        apL02ViewModel.getSubmissionByAsesi(asesiManager.getId())
     }
 
     LaunchedEffect(state) {
@@ -155,18 +196,54 @@ fun APL02(
                     title = "FR.APL.02.ASESMEN MANDIRI"
                 )
 
-                // Show submission status if exists - ambil dari data pertama
-                apl02Submission?.data?.firstOrNull()?.let { firstSubmission ->
-                    SubmissionStatusCard(firstSubmission, userManager.getUserRole()!!)
-                }
-
                 SkemaSertifikasi()
+
                 if (message.isNotEmpty()) {
                     AlertCard(
                         message,
-                        TypeAlert.Error
+                        TypeAlert.Error,
+                        Modifier.padding(horizontal = 16.dp)
                     )
                 }
+
+                // Show loading indicator
+                if (isLoadingSubmission) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                }
+
+                // Display submission status
+                (apl02Submissions ?: cachedSubmission)?.data?.firstOrNull()?.let { firstSubmission ->
+                    SubmissionStatusCard(firstSubmission, userManager.getUserRole()!!)
+
+                    if(firstSubmission.ttd_assesor == "rejected") {
+                        AlertCard(
+                            "APL 02 Ditolak oleh asesor, silahkan aju banding agar dapat melakukan asesmen ulang",
+                            type = TypeAlert.Error,
+                            Modifier.padding(horizontal = 16.dp)
+                        )
+
+                        Button(
+                            onClick = {
+                                ajuBanding()
+                            },
+                            modifier = Modifier.padding(8.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Text(
+                                "Aju Banding",
+                                fontFamily = AppFont.Poppins
+                            )
+                        }
+                    }
+                }
+
                 InstructionCard()
 
                 UnitsSection(
@@ -174,7 +251,7 @@ fun APL02(
                     data = data,
                     listAttachment = apl01Data?.attachments ?: emptyList(),
                     jawabanManager = jawabanManager,
-                    submission = apl02Submission,
+                    submission = apl02Submissions ?: cachedSubmission,
                     isReadOnly = isReadOnly
                 )
 
@@ -186,14 +263,16 @@ fun APL02(
                     titleButton = "Setuju",
                     role = userManager.getUserRole()!!
                 )
-
-
             }
         } ?: run {
             LoadingScreen()
         }
     }
 }
+
+// Imports yang perlu ditambah:
+
+
 
 @Composable
 private fun SuccessDialog(
@@ -326,7 +405,8 @@ private fun UnitCompetensiSection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(vertical = 8.dp, horizontal = 16.dp
+            ),
         horizontalAlignment = Alignment.Start
     ) {
         Text(
@@ -875,7 +955,7 @@ private fun SubmitButton(
                     )
                 )
             },
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
@@ -893,10 +973,10 @@ private fun SubmitButton(
                     )
                 )
             },
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp),
+                .padding(horizontal = 16.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Red
             )

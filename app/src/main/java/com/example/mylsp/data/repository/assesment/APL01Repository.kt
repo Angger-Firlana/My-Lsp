@@ -2,8 +2,8 @@ package com.example.mylsp.data.repository.assesment
 
 import android.content.Context
 import android.util.Log
+import com.example.mylsp.data.model.api.Apl01
 import com.example.mylsp.data.remote.api.APIClient
-import com.example.mylsp.model.api.Apl01
 
 class APL01Repository(private val context: Context) {
 

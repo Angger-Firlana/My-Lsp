@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class APL02ViewModel(application: Application):AndroidViewModel(application) {
+class APL02ViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = APL02Repository(application)
 
     private val _apl02 = MutableStateFlow<DataApl02?>(null)
@@ -27,66 +27,120 @@ class APL02ViewModel(application: Application):AndroidViewModel(application) {
 
     private val _message = MutableStateFlow("")
     val message = _message.asStateFlow()
-    fun getAPL02(idSchemas:Int){
+
+    // Flag untuk track jika sedang loading submission
+    private val _isLoadingSubmission = MutableStateFlow(false)
+    val isLoadingSubmission = _isLoadingSubmission.asStateFlow()
+
+    fun getAPL02(idSchemas: Int) {
         viewModelScope.launch {
-            val result = repository.getApl02(idSchemas)
-            result.fold(
-                onSuccess = { body ->
-                    _apl02.value = body.data
-                    _message.value = "Apl 02 Berhasil diambil"
-                },
-                onFailure = { error ->
-                    _message.value = error.message?:"Unknown Error"
-                }
-            )
+            try {
+                val result = repository.getApl02(idSchemas)
+                result.fold(
+                    onSuccess = { body ->
+                        _apl02.value = body.data
+                        Log.d("APL02_VM", "getAPL02 Success: ${body.data}")
+                    },
+                    onFailure = { error ->
+                        _message.value = error.message ?: "Unknown Error"
+                        Log.e("APL02_VM", "getAPL02 Error: ${error.message}")
+                    }
+                )
+            } catch (e: Exception) {
+                _message.value = e.message ?: "Unknown Error"
+                Log.e("APL02_VM", "getAPL02 Exception: ${e.message}")
+            }
         }
     }
 
-    fun sendApl02(){
+    fun sendApl02() {
         viewModelScope.launch {
-            val result = repository.sendSubmission(Util.jawabanApl02.value)
-            result.fold(
-                onSuccess = {
-                    _state.value = true
-                }, onFailure = {
-                    _state.value = false
-                    Log.e("Error APL 02", it.message?: "gajelas")
-                    _message.value = it.message?:"Unknown Error"
-                }
-            )
+            try {
+                val result = repository.sendSubmission(Util.jawabanApl02.value)
+                result.fold(
+                    onSuccess = {
+                        _state.value = true
+                        Log.d("APL02_VM", "sendApl02 Success")
+                    },
+                    onFailure = {
+                        _state.value = false
+                        Log.e("Error APL 02", it.message ?: "gajelas")
+                        _message.value = it.message ?: "Unknown Error"
+                    }
+                )
+            } catch (e: Exception) {
+                _state.value = false
+                Log.e("Error APL 02", e.message ?: "gajelas")
+                _message.value = e.message ?: "Unknown Error"
+            }
         }
     }
 
-    fun approveApl02(assesiId:Int, approveReq: PostApproveRequest){
+    fun approveApl02(assesiId: Int, approveReq: PostApproveRequest) {
         viewModelScope.launch {
-            val result = repository.approveApl02(assesiId, approveReq)
-            result.fold(
-                onSuccess = {
-                    _state.value = true
-                }, onFailure = {
-                    _state.value = false
-                    _message.value = it.message?:"Unknown Error"
-                    Log.e("Error Approve Apl02", it.message?: "gajelas")
-                }
-            )
+            try {
+                val result = repository.approveApl02(assesiId, approveReq)
+                result.fold(
+                    onSuccess = {
+                        _state.value = true
+                        Log.d("APL02_VM", "approveApl02 Success")
+                    },
+                    onFailure = {
+                        _state.value = false
+                        _message.value = it.message ?: "Unknown Error"
+                        Log.e("Error Approve Apl02", it.message ?: "gajelas")
+                    }
+                )
+            } catch (e: Exception) {
+                _state.value = false
+                _message.value = e.message ?: "Unknown Error"
+                Log.e("Error Approve Apl02", e.message ?: "gajelas")
+            }
         }
     }
 
-    fun getSubmissionByAsesi(asesiId:Int){
+    fun getSubmissionByAsesi(asesiId: Int) {
         viewModelScope.launch {
-            val result = repository.getSubmissionByAsesi(asesiId)
-            result.fold(
-                onSuccess = { body ->
-                    _apl02Submission.value = body
-                },
-                onFailure = {
-                    _message.value = it.message?:"Unknown Error"
-                }
-            )
+            try {
+                _isLoadingSubmission.value = true
+                Log.d("APL02_VM", "getSubmissionByAsesi: Loading submission for asesiId=$asesiId")
+
+                val result = repository.getSubmissionByAsesi(asesiId)
+                result.fold(
+                    onSuccess = { body ->
+                        // JANGAN set ke null, update state dengan data yang ada
+                        _apl02Submission.value = body
+                        Log.d("APL02_VM", "getSubmissionByAsesi Success: ${body?.data?.size} units")
+                    },
+                    onFailure = { error ->
+                        // PENTING: Jangan overwrite submission yang sudah ada!
+                        // Cukup log error dan set message
+                        _message.value = error.message ?: "Unknown Error"
+                        Log.e("APL02_VM", "getSubmissionByAsesi Error: ${error.message}")
+
+                        // Jika submission sudah ada, pertahankan
+                        if (_apl02Submission.value == null) {
+                            Log.d("APL02_VM", "No cached submission data")
+                        } else {
+                            Log.d("APL02_VM", "Using cached submission data")
+                        }
+                    }
+                )
+            } catch (e: Exception) {
+                _message.value = e.message ?: "Unknown Error"
+                Log.e("APL02_VM", "getSubmissionByAsesi Exception: ${e.message}")
+            } finally {
+                _isLoadingSubmission.value = false
+            }
         }
     }
 
-    fun resetState(){
+    fun resetState() {
         _state.value = null
+    }
+
+    fun clearSubmission() {
+        _apl02Submission.value = null
+        _message.value = ""
     }
 }

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import com.example.mylsp.model.api.Apl01
+import com.example.mylsp.data.model.api.Apl01
 import com.google.gson.Gson
 
 class AsesiManager(context: Context) {

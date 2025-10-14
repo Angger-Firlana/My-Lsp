@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.sp
 import com.example.mylsp.common.enums.TypeAlert
 import com.example.mylsp.common.enums.TypeDialog
 import com.example.mylsp.ui.component.LoadingScreen
-import com.example.mylsp.model.api.AsesiRequest
-import com.example.mylsp.model.api.AttachmentRequest
+import com.example.mylsp.data.model.api.AsesiRequest
+import com.example.mylsp.data.model.api.AttachmentRequest
 import com.example.mylsp.ui.component.alert.AlertCard
 import com.example.mylsp.ui.component.dialog.StatusDialog
 import com.example.mylsp.util.AppFont

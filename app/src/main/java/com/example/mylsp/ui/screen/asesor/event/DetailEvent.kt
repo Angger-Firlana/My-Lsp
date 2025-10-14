@@ -37,7 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mylsp.R
-import com.example.mylsp.model.api.Apl01
+import com.example.mylsp.data.model.api.Apl01
 import com.example.mylsp.data.api.asesi.AssesmentAsesi
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.data.local.assesment.AssesmentAsesiManager

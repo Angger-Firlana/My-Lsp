@@ -17,7 +17,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.mylsp.model.api.Apl01
+import com.example.mylsp.data.model.api.Apl01
 import com.example.mylsp.ui.screen.BarcodeScreen
 import com.example.mylsp.ui.screen.CongratsScreen
 import com.example.mylsp.ui.screen.ProfileScreen
@@ -285,6 +285,11 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
                 apL02ViewModel = apL02ViewModel,
                 nextForm = {
                     navController.popBackStack()
+                },
+                ajuBanding = {
+                    navController.navigate(Screen.Ak04.route){
+                        popUpTo(Screen.Apl02.route){inclusive = true}
+                    }
                 }
             )
         }

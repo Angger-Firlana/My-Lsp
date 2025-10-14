@@ -2,10 +2,6 @@ package com.example.mylsp.data.remote.api
 
 import com.example.mylsp.data.api.assesment.AK01SubmissionResponse
 import com.example.mylsp.data.api.assesment.Apl02
-import com.example.mylsp.model.api.Apl01
-import com.example.mylsp.model.api.AsesiResponse
-import com.example.mylsp.data.api.assesment.AssessmentResponse
-import com.example.mylsp.model.api.CreateAsesiResponse
 import com.example.mylsp.data.api.assesment.IA01Request
 import com.example.mylsp.data.api.assesment.IA01Response
 import com.example.mylsp.model.api.JurusanResponse
@@ -45,8 +41,13 @@ import com.example.mylsp.data.api.assesment.PostAK03Response
 import com.example.mylsp.data.api.assesment.PostAK04Response
 import com.example.mylsp.data.api.assesment.PostApproveRequest
 import com.example.mylsp.data.api.assesment.PostApproveResponse
+import com.example.mylsp.data.api.assesment.QuestionResponse
+import com.example.mylsp.data.model.api.Apl01
+import com.example.mylsp.data.model.api.AsesiResponse
+import com.example.mylsp.data.model.api.CreateAsesiResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -56,6 +57,7 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Streaming
 
 interface APIService {
     //Auth
@@ -305,8 +307,14 @@ interface APIService {
     suspend fun getDataAsesi():Response<Apl01>
 
     //Skema
-
     @GET("schema")
     suspend fun getListSkema():Response<com.example.mylsp.data.model.api.Skemas>
 
+    //Question
+    @GET("questionFiles/skema/{id}")
+    suspend fun getQuestionsBySkema(id:Int):Response<QuestionResponse>
+
+    @GET("questionFiles/{id}")
+    @Streaming
+    suspend fun downloadQuestion(@Path("id") id:Int):Response<ResponseBody>
 }

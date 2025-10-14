@@ -1,5 +1,8 @@
-package com.example.mylsp.model.api
+package com.example.mylsp.data.model.api
 
+import com.example.mylsp.model.api.Jurusan
+import com.example.mylsp.model.api.User
+import com.example.mylsp.model.api.UserDetail
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -17,7 +20,7 @@ data class Asesi(
     val email: String?,
     val kualifikasi_pendidikan: String?,
     val nama_institusi: String?,
-    val user:User,
+    val user: User,
     val jurusan: Jurusan
 )
 

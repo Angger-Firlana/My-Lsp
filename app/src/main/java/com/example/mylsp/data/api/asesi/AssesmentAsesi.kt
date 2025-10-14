@@ -1,8 +1,8 @@
 package com.example.mylsp.data.api.asesi
 
-import com.example.mylsp.model.api.Apl01
-import com.example.mylsp.model.api.Asesi
 import com.example.mylsp.data.api.assesment.AsesiData
+import com.example.mylsp.data.model.api.Apl01
+import com.example.mylsp.data.model.api.Asesi
 
 data class PostAssesmentAsesiReq(
     val assesment_id: Int,
@@ -22,7 +22,7 @@ data class AssesmentAsesi(
     val status: String,
     val created_at: String,
     val updated_at: String,
-    val asesi:Apl01
+    val asesi: Apl01
 )
 
 data class PatchStatusReq(

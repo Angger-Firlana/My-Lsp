@@ -48,6 +48,7 @@ dependencies {
     implementation("androidx.camera:camera-camera2:$camerax_version")
     implementation("androidx.camera:camera-lifecycle:$camerax_version")
     implementation("androidx.camera:camera-view:$camerax_version")
+    implementation ("com.google.accompanist:accompanist-swiperefresh:0.30.1")
 
     // Compose Material & Material 3
     implementation("androidx.compose.material:material:1.5.4")

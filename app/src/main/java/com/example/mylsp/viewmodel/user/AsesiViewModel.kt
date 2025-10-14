@@ -4,11 +4,9 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mylsp.model.api.Apl01
-import com.example.mylsp.model.api.Asesi
-import com.example.mylsp.model.api.AsesiRequest
-import com.example.mylsp.model.api.AsesiResponse
 import com.example.mylsp.data.local.user.UserManager
+import com.example.mylsp.data.model.api.Asesi
+import com.example.mylsp.data.model.api.AsesiRequest
 import com.example.mylsp.data.repository.auth.AsesiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
