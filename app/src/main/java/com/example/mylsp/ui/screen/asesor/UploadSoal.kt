@@ -1,163 +1,364 @@
 package com.example.mylsp.ui.screen.asesor
 
-import android.view.textclassifier.TextLinks
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mylsp.common.enums.TypeDialog
+import com.example.mylsp.data.api.assesment.Answer
+import com.example.mylsp.data.api.assesment.PostAnswerRequest
+import com.example.mylsp.data.api.assesment.Question
+import com.example.mylsp.data.local.assesment.AssesmentAsesiManager
+import com.example.mylsp.data.local.user.UserManager
+import com.example.mylsp.ui.component.dialog.StatusDialog
+import com.example.mylsp.ui.screen.asesi.uriToFile
 import com.example.mylsp.util.AppFont
+import com.example.mylsp.viewmodel.assesment.QuestionViewModel
 
 @Composable
-fun UploadSoal(modifier: Modifier = Modifier) {
+fun UploadSoal(
+    idSkema: Int,
+    questionViewModel: QuestionViewModel,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val assesmentAsesiManager = AssesmentAsesiManager(context)
+    val userManager = UserManager(context)
+    val assesmentAsesi = assesmentAsesiManager.getAssesmentAsesi()
+    val userRole = userManager.getUserRole()
+    val isAsesi = userRole == "asesi" || userRole == "assesi"
+
     var fileName by remember { mutableStateOf<String?>(null) }
+    val listAnswer by questionViewModel.listAnswer.collectAsState()
+    val questions by questionViewModel.listQuestion.collectAsState()
+    val state by questionViewModel.state.collectAsState()
+    var showSuccessDialog by remember { mutableStateOf(false) }
+    var showFailedDialog by remember { mutableStateOf(false) }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState())
+    LaunchedEffect(state) {
+        state?.let {
+            if (it) {
+                showSuccessDialog = true
+            } else {
+                showFailedDialog = true
+            }
+            questionViewModel.clearState()
+        }
+    }
+
+    val createDocumentLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/octet-stream")
+    ) { uri ->
+        if (uri != null) {
+            questionViewModel.downloadQuestionToUri(context, questionViewModel.currentDownloadId, uri)
+        }
+    }
+
+    val createDocumentAnswerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/octet-stream")
+    ) { uri ->
+        if (uri != null) {
+            questionViewModel.downloadAnswerToUri(context, questionViewModel.currentDownloadId, uri)
+        }
+    }
+
+    var selectedQuestionId by remember { mutableStateOf<Int?>(null) }
+
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            val file = uriToFile(it, context)
+            fileName = file.name
+            questionViewModel.uploadQuestion(
+                request = PostAnswerRequest(
+                    question_id = selectedQuestionId ?: 0,
+                    assesment_asesi_id = assesmentAsesi?.id ?: 0,
+                    files = file
+                )
+            )
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        questionViewModel.getQuestionBySkema(idSkema)
+        questionViewModel.getAnswer()
+    }
+
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    "Upload Soal",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    fontFamily = AppFont.Poppins
-                )
 
-                Spacer(modifier = Modifier.height(16.dp))
 
-                CardUploadSoal(
-                    fileName = fileName,
-                    onClick = {
-                        fileName = "Soal_Ujian_2024.docx"
+            // Upload Section
+            if(isAsesi){
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = "Upload Soal",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = AppFont.Poppins,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+                        if (questions.isNotEmpty()) {
+                            questions.forEach { question ->
+                                CardUploadSoal(question = question) {
+                                    selectedQuestionId = question.id
+                                    filePickerLauncher.launch("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                                }
+                            }
+                        } else {
+                            Text(
+                                text = "Tidak ada soal tersedia",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontFamily = AppFont.Poppins,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                        }
+
+                        Button(
+                            onClick = {},
+                            enabled = fileName != null,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "Simpan Soal",
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = AppFont.Poppins
+                            )
+                        }
                     }
-                )
+                }
+            }
 
-                Spacer(Modifier.height(8.dp))
 
-                ButtonSave(
-                    enabled = fileName != null,
-                    onClick = {}
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Column(modifier = Modifier.fillMaxWidth()) {
+            // Download Soal Section
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     Text(
-                        "Link Download Soal",
+                        text = "Link Pengunduhan Soal",
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        fontFamily = AppFont.Poppins
+                        fontFamily = AppFont.Poppins,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
-                    CardLinkDownloadSoal(
-                        link = "asdkgaskdhgasd",
-                        url = "kagusdjagsd"
+                    if (questions.isNotEmpty()) {
+                        questions.forEach { question ->
+                            CardLinkDownloadSoal(
+                                question = question,
+                                onDownloadClick = { q ->
+                                    questionViewModel.currentDownloadId = q.id
+                                    createDocumentLauncher.launch(q.file_path ?: "soal.docx")
+                                }
+                            )
+                        }
+                    } else {
+                        Text(
+                            text = "Tidak ada soal untuk diunduh",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontFamily = AppFont.Poppins,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    }
+                }
+            }
+
+            // Jawaban Asesi Section
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "Jawaban Asesi",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = AppFont.Poppins,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
+
+                    if (listAnswer.isNotEmpty()) {
+                        listAnswer.forEach { answer ->
+                            CardLinkDownloadJawaban(answer = answer) {
+                                questionViewModel.currentDownloadId = answer.question_id
+                                createDocumentAnswerLauncher.launch(answer.files)
+                            }
+                        }
+                    } else {
+                        Text(
+                            text = "Belum ada jawaban",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontFamily = AppFont.Poppins,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    }
                 }
             }
         }
     }
+
+    // Dialogs
+    if (showSuccessDialog) {
+        StatusDialog(
+            "Jawaban berhasil dikirim",
+            type = TypeDialog.Success,
+            onDismiss = { showSuccessDialog = false },
+            onClick = { showSuccessDialog = false }
+        )
+    }
+
+    if (showFailedDialog) {
+        StatusDialog(
+            "Jawaban gagal dikirim",
+            type = TypeDialog.Failed,
+            onDismiss = { showFailedDialog = false },
+            onClick = { showFailedDialog = false }
+        )
+    }
 }
 
 @Composable
-fun CardUploadSoal(fileName: String?, onClick: () -> Unit) {
+fun CardUploadSoal(question: Question, onClick: () -> Unit) {
+    val isUploaded = question.file_path != null
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isUploaded)
+                MaterialTheme.colorScheme.primary
+            else
+                MaterialTheme.colorScheme.surfaceVariant
+        ),
+        shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(48.dp)
                     .background(
-                        if (fileName != null) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-                        CircleShape
+                        color = if (isUploaded)
+                            MaterialTheme.colorScheme.onPrimary
+                        else
+                            MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                        shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = if (fileName != null) Icons.Default.Check else Icons.Default.AttachFile,
-                    contentDescription = null,
-                    tint = if (fileName != null) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp)
+                    imageVector = if (isUploaded) Icons.Default.Check else Icons.Default.AttachFile,
+                    contentDescription = if (isUploaded) "File uploaded" else "Attach file",
+                    tint = if (isUploaded)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(24.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
-
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = if (fileName != null) "File sudah terupload" else "Masukkan file word soal anda",
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp,
+                    text = if (isUploaded) "File sudah terupload" else "Masukkan file word soal anda",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = if (isUploaded) FontWeight.Medium else FontWeight.Normal,
                     fontFamily = AppFont.Poppins,
-                    color = if (fileName != null) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                    color = if (isUploaded)
+                        MaterialTheme.colorScheme.onPrimary
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                if (fileName != null) {
+                if (isUploaded) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = fileName,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 12.sp,
+                        text = question.file_path ?: "",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Normal,
                         fontFamily = AppFont.Poppins,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
                     )
                 }
             }
@@ -166,49 +367,82 @@ fun CardUploadSoal(fileName: String?, onClick: () -> Unit) {
 }
 
 @Composable
-fun CardLinkDownloadSoal(link: String, url: String) {
-    var uriHandler = LocalUriHandler.current
-
+fun CardLinkDownloadSoal(
+    question: Question,
+    onDownloadClick: (Question) -> Unit
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onDownloadClick(question) },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiary
+        ),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
-        Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Download,
+                contentDescription = "Download",
+                tint = MaterialTheme.colorScheme.onTertiary,
+                modifier = Modifier.size(20.dp)
+            )
+
             Text(
-                text = link,
+                text = question.file_path ?: "Soal",
+                style = MaterialTheme.typography.bodyMedium,
                 textDecoration = TextDecoration.Underline,
                 fontFamily = AppFont.Poppins,
-                modifier = Modifier
-                    .clickable(
-                        onClick = { uriHandler.openUri(url) }
-                    )
+                color = MaterialTheme.colorScheme.onTertiary,
+                modifier = Modifier.weight(1f)
             )
         }
     }
 }
 
 @Composable
-fun ButtonSave(modifier: Modifier = Modifier, enabled: Boolean = true, onClick: () -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = onClick,
-            enabled = enabled,
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                disabledBackgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-                disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-            ),
-            shape = RoundedCornerShape(12.dp)
+fun CardLinkDownloadJawaban(
+    answer: Answer,
+    onDownloadClick: (Answer) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onDownloadClick(answer) },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiary
+        ),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            Icon(
+                imageVector = Icons.Default.Download,
+                contentDescription = "Download",
+                tint = MaterialTheme.colorScheme.onTertiary,
+                modifier = Modifier.size(20.dp)
+            )
+
             Text(
-                "Simpan Soal",
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp,
-                fontFamily = AppFont.Poppins
+                text = answer.files,
+                style = MaterialTheme.typography.bodyMedium,
+                textDecoration = TextDecoration.Underline,
+                fontFamily = AppFont.Poppins,
+                color = MaterialTheme.colorScheme.onTertiary,
+                modifier = Modifier.weight(1f)
             )
         }
     }

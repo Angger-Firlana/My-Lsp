@@ -374,7 +374,7 @@ fun FRAK04(
     if (showFailedDeleteDialog){
         StatusDialog(
             text = "Gagal Menerima Banding, coba kembali",
-            type = TypeDialog.Success,
+            type = TypeDialog.Failed,
             onClick = {
                 showFailedDeleteDialog = false
                 backToDetailEvent()

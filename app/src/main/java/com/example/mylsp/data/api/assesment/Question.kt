@@ -12,3 +12,4 @@ data class QuestionResponse(
     val message:String,
     val data:List<Question>
 )
+

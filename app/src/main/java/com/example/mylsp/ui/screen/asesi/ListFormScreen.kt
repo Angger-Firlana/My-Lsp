@@ -175,7 +175,18 @@ fun ListFormScreen(
             // null jika belum (form ini optional)
             approved = if (ak04Submission != null) true else null,
             route = Screen.Ak04.route
+        ),
+        ApprovalItem(
+            code = "Soal Soal",
+            title = "Pengerjaan Soal",
+            nis = "NIS: ${asesi?.no_ktp ?: "N/A"}",
+            // APPROVED jika asesi sudah submit banding
+            // null jika belum (form ini optional)
+            approved = if (ak04Submission != null) true else null,
+            route = Screen.UploadSoal.createRoute(id = assesment?.schema?.id ?: 0)
         )
+
+
     )
 
     // Background with gradient

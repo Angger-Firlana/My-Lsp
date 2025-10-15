@@ -70,5 +70,7 @@ sealed class Screen(val route: String) {
     data object Congrats: Screen("congrats")
     data object KelengkapanDataAsesor: Screen("kelengkapanDataAsesor")
 
-    data object UploadSoal: Screen("upload_soal")
+    data object UploadSoal: Screen("upload_soal/{idSkema}"){
+        fun createRoute(id:Int) = "upload_soal/$id"
+    }
 }

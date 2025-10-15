@@ -246,17 +246,19 @@ fun AsesiFormScreen(
         uri?.let {
             if (currentUploadIndex >= 0) {
                 val file = uriToFile(it, context)
-                val requestFile = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-                val part = MultipartBody.Part.createFormData(
-                    "${fileUploads[currentUploadIndex].name.lowercase().replace(" ", "_")}[]",
-                    file.name,
-                    requestFile
-                )
+                val requestFile = file?.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+                val part = requestFile?.let { it1 ->
+                    MultipartBody.Part.createFormData(
+                        "${fileUploads[currentUploadIndex].name.lowercase().replace(" ", "_")}[]",
+                        file.name,
+                        it1
+                    )
+                }
 
                 fileUploads = fileUploads.toMutableList().apply {
                     this[currentUploadIndex] = this[currentUploadIndex].copy(
                         file = part,
-                        fileName = file.name
+                        fileName = file?.name
                     )
                 }
             }

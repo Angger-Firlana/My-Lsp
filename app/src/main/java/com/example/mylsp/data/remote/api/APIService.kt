@@ -34,12 +34,14 @@ import com.example.mylsp.data.api.assesment.GetAK04QuestionResponse
 import com.example.mylsp.data.api.assesment.GetAK04Response
 import com.example.mylsp.data.api.assesment.GetAPL02Response
 import com.example.mylsp.data.api.assesment.GetAk05Response
+import com.example.mylsp.data.api.assesment.GetAnswerResponse
 import com.example.mylsp.data.api.assesment.GetAssesmentResponse
 import com.example.mylsp.data.api.assesment.IA01GetResponse
 import com.example.mylsp.data.api.assesment.KomponenResponse
 import com.example.mylsp.data.api.assesment.PostAK03Request
 import com.example.mylsp.data.api.assesment.PostAK03Response
 import com.example.mylsp.data.api.assesment.PostAK04Response
+import com.example.mylsp.data.api.assesment.PostAnswerResponse
 import com.example.mylsp.data.api.assesment.PostApproveIa01Response
 import com.example.mylsp.data.api.assesment.PostApproveRequest
 import com.example.mylsp.data.api.assesment.PostApproveResponse
@@ -326,9 +328,27 @@ interface APIService {
 
     //Question
     @GET("questionFiles/skema/{id}")
-    suspend fun getQuestionsBySkema(id:Int):Response<QuestionResponse>
+    suspend fun getQuestionsBySkema(@Path("id")id:Int):Response<QuestionResponse>
+
+    @Multipart
+    @POST("answers/upload")
+    suspend fun postAnswerQuestion(
+        @Header("Accept") accept: String = "application/json",
+        @Part("question_id") question_id: RequestBody,
+        @Part("assesment_asesi_id") assesment_asesi_id: RequestBody,
+        @Part files: MultipartBody.Part
+    ): Response<PostAnswerResponse>
+
+    @GET("answers")
+    suspend fun getAllAnswer(
+        @Header("Accept") accept:String = "application/json"
+    ):Response<GetAnswerResponse>
 
     @GET("questionFiles/{id}")
     @Streaming
     suspend fun downloadQuestion(@Path("id") id:Int):Response<ResponseBody>
+
+    @GET("answers/{id}")
+    @Streaming
+    suspend fun downloadAnswer(@Path("id") id:Int):Response<ResponseBody>
 }

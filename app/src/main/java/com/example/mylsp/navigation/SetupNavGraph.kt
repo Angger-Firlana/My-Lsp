@@ -62,6 +62,7 @@ import com.example.mylsp.viewmodel.assesment.ak.Ak04ViewModel
 import com.example.mylsp.viewmodel.assesment.AssesmentAsesiViewModel
 import com.example.mylsp.viewmodel.assesment.IA01ViewModel
 import com.example.mylsp.viewmodel.assesment.KomponenViewModel
+import com.example.mylsp.viewmodel.assesment.QuestionViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -121,6 +122,10 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
     )
     val ak04ViewModel: Ak04ViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
+    )
+
+    val questionViewModel: QuestionViewModel = viewModel(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(context.applicationContext as Application)
     )
 
@@ -540,7 +545,11 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         composable(Screen.UploadSoal.route) {
             showTopBar(true)
             showBottomBar(false)
-            UploadSoal()
+            val id = it.arguments?.getString("idSkema")?: "0"
+            UploadSoal(
+                idSkema = id.toInt(),
+                questionViewModel = questionViewModel
+            )
         }
     }
 }
