@@ -1,5 +1,6 @@
 package com.example.mylsp.ui.screen.asesor
 
+import android.view.textclassifier.TextLinks
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -33,7 +34,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mylsp.util.AppFont
@@ -72,7 +75,7 @@ fun UploadSoal(modifier: Modifier = Modifier) {
                 CardUploadSoal(
                     fileName = fileName,
                     onClick = {
-                        fileName = "Soal_Ujian_2024.pdf"
+                        fileName = "Soal_Ujian_2024.docx"
                     }
                 )
 
@@ -82,6 +85,22 @@ fun UploadSoal(modifier: Modifier = Modifier) {
                     enabled = fileName != null,
                     onClick = {}
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        "Link Download Soal",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
+                        fontFamily = AppFont.Poppins
+                    )
+
+                    CardLinkDownloadSoal(
+                        link = "asdkgaskdhgasd",
+                        url = "kagusdjagsd"
+                    )
+                }
             }
         }
     }
@@ -147,6 +166,30 @@ fun CardUploadSoal(fileName: String?, onClick: () -> Unit) {
 }
 
 @Composable
+fun CardLinkDownloadSoal(link: String, url: String) {
+    var uriHandler = LocalUriHandler.current
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+            Text(
+                text = link,
+                textDecoration = TextDecoration.Underline,
+                fontFamily = AppFont.Poppins,
+                modifier = Modifier
+                    .clickable(
+                        onClick = { uriHandler.openUri(url) }
+                    )
+            )
+        }
+    }
+}
+
+@Composable
 fun ButtonSave(modifier: Modifier = Modifier, enabled: Boolean = true, onClick: () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth()) {
         Button(
@@ -163,7 +206,7 @@ fun ButtonSave(modifier: Modifier = Modifier, enabled: Boolean = true, onClick: 
         ) {
             Text(
                 "Simpan Soal",
-                fontWeight = FontWeight.Normal,
+                fontWeight = FontWeight.SemiBold,
                 fontSize = 14.sp,
                 fontFamily = AppFont.Poppins
             )
