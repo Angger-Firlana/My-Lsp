@@ -6,6 +6,8 @@ import com.example.mylsp.data.remote.api.APIClient
 import com.example.mylsp.data.api.assesment.Ak02Request
 import com.example.mylsp.data.api.assesment.Ak02Response
 import com.example.mylsp.data.api.assesment.Ak02GetResponse
+import retrofit2.HttpException
+import java.io.IOException
 
 class AK02Repository(private val context: Context) {
 
@@ -58,20 +60,33 @@ class AK02Repository(private val context: Context) {
     }
 
     suspend fun patchTtdAsesi(submissionId: Int): Result<Ak02Response> {
-        return try{
+        return try {
             val response = api.updateStatusAsesi(id = submissionId)
-            if (response.isSuccessful){
+
+            if (response.isSuccessful) {
                 val body = response.body()
-                if (body != null){
+                if (body != null) {
                     Result.success(body)
-                }else{
-                    Result.failure(Exception("Response body is null"))
+                } else {
+                    Log.e("AK02Repository", "Response body is null")
+                    Result.failure(Exception("Server returned empty response body"))
                 }
-            }else{
-                Result.failure(Exception("Request failed: ${response.errorBody()}"))
+            } else {
+                val errorMessage = response.errorBody()?.string() ?: "Unknown server error"
+                Log.e("AK02Repository", "HTTP ${response.code()}: $errorMessage")
+                Result.failure(Exception("Request failed with code ${response.code()}: $errorMessage"))
             }
-        }catch (e:Exception){
-            Result.failure(e)
+
+        } catch (e: HttpException) {
+            Log.e("AK02Repository", "HTTP Exception: ${e.code()} - ${e.message()}")
+            Result.failure(Exception("HTTP error ${e.code()}: ${e.message()}"))
+        } catch (e: IOException) {
+            Log.e("AK02Repository", "Network error: ${e.message}")
+            Result.failure(Exception("Network error, please check your internet connection"))
+        } catch (e: Exception) {
+            Log.e("AK02Repository", "Unexpected error: ${e.localizedMessage}")
+            Result.failure(Exception("Unexpected error: ${e.localizedMessage}"))
         }
     }
+
 }

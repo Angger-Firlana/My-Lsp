@@ -98,6 +98,15 @@ fun ApprovedUnapprovedScreen(
     }
 
     val items = listOf(
+        ApprovalItem(
+            code = "Soal Soal",
+            title = "Pengerjaan Soal",
+            nis = "NIS: ${assesmentAsesi?.asesi?.no_ktp ?: "N/A"}",
+            // APPROVED jika asesi sudah submit banding
+            // null jika belum (form ini optional)
+            approved = if (ak04Submission != null) true else null,
+            route = Screen.UploadSoal.createRoute(id = assesment?.schema?.id ?: 0)
+        ),
         ApprovalItem("FR.APL.02", "ASESMEN MANDIRI", "NIS: 8880", apl02Submission?.data?.get(0)?.ttd_assesor == "approved", Screen.Apl02.createRoute(assesment?.schema?.id?: 0)),
         ApprovalItem("FR.IA.01.CL", "CEKLIST OBSERVASI AKTIVITAS DI TEMPAT KERJA/SIMULASI", "NIS: 8880", if (ia01Submission!= null) true else null, Screen.Ia01.createRoute(assesment?.schema?.id?: 0)),
         ApprovalItem(

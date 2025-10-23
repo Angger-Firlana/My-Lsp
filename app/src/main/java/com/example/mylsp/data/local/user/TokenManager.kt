@@ -1,6 +1,7 @@
 package com.example.mylsp.data.local.user
 
 import android.content.Context
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import androidx.core.content.edit
@@ -22,6 +23,7 @@ class TokenManager(context:Context) {
     }
 
     fun getToken(): String? {
+        Log.d("Token", sharedPrefs.getString("token", null).toString())
         return sharedPrefs.getString("token", null)
     }
 

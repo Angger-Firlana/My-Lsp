@@ -51,7 +51,7 @@ import java.io.FileOutputStream
 data class FileUpload(
     val name: String,
     val description: String,
-    var file: MultipartBody.Part? = null,
+    var file: File? = null,
     var fileName: String? = null
 )
 
@@ -246,19 +246,11 @@ fun AsesiFormScreen(
         uri?.let {
             if (currentUploadIndex >= 0) {
                 val file = uriToFile(it, context)
-                val requestFile = file?.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-                val part = requestFile?.let { it1 ->
-                    MultipartBody.Part.createFormData(
-                        "${fileUploads[currentUploadIndex].name.lowercase().replace(" ", "_")}[]",
-                        file.name,
-                        it1
-                    )
-                }
 
                 fileUploads = fileUploads.toMutableList().apply {
                     this[currentUploadIndex] = this[currentUploadIndex].copy(
-                        file = part,
-                        fileName = file?.name
+                        file = file,
+                        fileName = file.name
                     )
                 }
             }
@@ -490,7 +482,7 @@ fun AsesiFormScreen(
                                         fu.file?.let { filePart ->
                                             AttachmentRequest(
                                                 file = filePart,
-                                                description = fu.name.toRequestBody("text/plain".toMediaTypeOrNull())
+                                                description = fu.name
                                             )
                                         }
                                     }
@@ -830,7 +822,7 @@ fun AsesiFormScreen(
                                 fu.file?.let { filePart ->
                                     AttachmentRequest(
                                         file = filePart,
-                                        description = fu.name.toRequestBody("text/plain".toMediaTypeOrNull())
+                                        description = fu.name
                                     )
                                 }
                             }

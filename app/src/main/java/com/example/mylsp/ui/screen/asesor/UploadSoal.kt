@@ -252,7 +252,8 @@ fun UploadSoal(
                     )
 
                     if (listAnswer.isNotEmpty()) {
-                        listAnswer.forEach { answer ->
+                        val listAnswerAsesi = listAnswer.filter { it.assesment_asesi_id == assesmentAsesi?.id }
+                        listAnswerAsesi.forEach { answer ->
                             CardLinkDownloadJawaban(answer = answer) {
                                 questionViewModel.currentDownloadId = answer.question_id
                                 createDocumentAnswerLauncher.launch(answer.files)

@@ -239,7 +239,7 @@ interface APIService {
         @Path("id") id:Int
     ):Response<Ak02GetResponse>
 
-    @POST("user/assesment/formak02/{id}")
+    @PATCH("user/assesment/formak02/{id}")
     suspend fun updateStatusAsesi(
         @Header("Accept") accept: String = "application/json",
         @Path("id") id: Int,
@@ -301,7 +301,7 @@ interface APIService {
         @Path("id") id: Int
     ):Response<com.example.mylsp.data.api.assesment.IA01GetResponse>
 
-    @POST("/approvement/assesment/formia01/{id}")
+    @POST("approvement/assesment/formia01/{id}")
     suspend fun postApproveIa01ByAsesi(
         @Header("Accept") accept: String = "application/json",
         @Path("id") id: Int

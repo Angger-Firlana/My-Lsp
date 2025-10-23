@@ -6,6 +6,7 @@ import com.example.mylsp.model.api.UserDetail
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import java.io.File
 
 data class Asesi(
     val id: Int,
@@ -112,8 +113,8 @@ data class SertificationData(
 
 
 data class AttachmentRequest(
-    val file: MultipartBody.Part,
-    val description: RequestBody
+    val file: File,
+    val description: String
 )
 
 

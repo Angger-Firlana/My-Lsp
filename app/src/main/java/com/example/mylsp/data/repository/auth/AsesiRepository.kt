@@ -1,6 +1,7 @@
 package com.example.mylsp.data.repository.auth
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import com.example.mylsp.data.model.api.Apl01
 import com.example.mylsp.data.model.api.AsesiRequest
@@ -8,16 +9,20 @@ import com.example.mylsp.data.model.api.AsesiResponse
 import com.example.mylsp.data.model.api.CreateAsesiResponse
 import com.example.mylsp.data.remote.api.APIClient
 import com.example.mylsp.model.api.*
+import com.example.mylsp.ui.screen.asesi.uriToFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
+import java.io.File
 import java.io.IOException
 
 class AsesiRepository(context: Context) {
+    val context = context
     private val api = APIClient.getClient(context)
     private val TAG = "AsesiRepository"
 
@@ -27,7 +32,7 @@ class AsesiRepository(context: Context) {
                 Log.d(TAG, "==[CREATE DATA ASESIS]==")
                 Log.d(TAG, "Input Data: $asesiRequest")
 
-                val (textParts, fileParts) = asesiRequest.toMultipart()
+                val (textParts, fileParts) = asesiRequest.toMultipart(this@AsesiRepository.context)
                 Log.d(TAG, "Prepared text parts (${textParts.size}): ${textParts.keys}")
                 Log.d(TAG, "Prepared file parts: ${fileParts.size}")
 
@@ -87,7 +92,7 @@ class AsesiRepository(context: Context) {
                 Log.d(TAG, "==[UPDATE DATA ASESIS]== id=$id")
                 Log.d(TAG, "Input Data: $asesiRequest")
 
-                val (textParts, fileParts) = asesiRequest.toMultipart()
+                val (textParts, fileParts) = asesiRequest.toMultipart(context)
                 Log.d(TAG, "Prepared text parts (${textParts.size}): ${textParts.keys}")
                 Log.d(TAG, "Prepared file parts: ${fileParts.size}")
 
@@ -173,29 +178,29 @@ class AsesiRepository(context: Context) {
     }
 }
 
-fun AsesiRequest.toMultipart(): Pair<Map<String, RequestBody>, List<MultipartBody.Part>> {
+fun AsesiRequest.toMultipart(context: Context): Pair<Map<String, RequestBody>, List<MultipartBody.Part>> {
     val textParts = mutableMapOf<String, RequestBody>()
     val TAG = "AsesiRequest.toMultipart"
 
     fun addText(name: String, value: String?) {
         if (!value.isNullOrBlank()) {
             textParts[name] = value.toRequestBody("text/plain".toMediaTypeOrNull())
-            Log.d(TAG, "Added text part: $name = $value")
+            Log.d(TAG, "✅ Added text part: $name = $value")
         } else {
-            Log.w(TAG, "Skipped null/blank field: $name")
+            Log.w(TAG, "⚠️ Skipped null/blank field: $name")
         }
     }
 
     fun addInt(name: String, value: Int?) {
         if (value != null) {
             textParts[name] = value.toString().toRequestBody("text/plain".toMediaTypeOrNull())
-            Log.d(TAG, "Added int part: $name = $value")
+            Log.d(TAG, "✅ Added int part: $name = $value")
         } else {
-            Log.w(TAG, "Skipped null Int field: $name")
+            Log.w(TAG, "⚠️ Skipped null Int field: $name")
         }
     }
 
-    // Semua field aman null
+    // Tambahkan semua text field
     addText("nama_lengkap", nama_lengkap)
     addText("nik", nik)
     addText("tgl_lahir", tgl_lahir)
@@ -223,32 +228,47 @@ fun AsesiRequest.toMultipart(): Pair<Map<String, RequestBody>, List<MultipartBod
 
     attachments?.forEachIndexed { index, part ->
         try {
+            // ✅ Pastikan file beneran File, bukan Uri
+            val file = if (part.file is Uri) {
+                uriToFile(part.file as Uri, context)
+            } else {
+                part.file as File
+            }
+
+            // ✅ Gunakan MIME type PDF biar sesuai backend
+            val requestBody = file.asRequestBody("application/pdf".toMediaTypeOrNull())
+
+            // ✅ Pakai nama file aslinya, bukan "file_index"
             multipartList.add(
                 MultipartBody.Part.createFormData(
                     "attachments[$index][file]",
-                    "file_${index}",
-                    part.file.body
+                    file.name,
+                    requestBody
                 )
             )
-            multipartList.add(
-                MultipartBody.Part.createFormData(
-                    "attachments[$index][description]",
-                    part.description.toString()
+
+            // ✅ Field tambahan
+                multipartList.add(
+                    MultipartBody.Part.createFormData("attachments[$index][description]",part.description )
                 )
-            )
+
+
             multipartList.add(
                 MultipartBody.Part.createFormData(
                     "attachments[$index][nama_dokumen]",
-                    part.description.toString()
+                    file.name
                 )
             )
+
+            Log.d(TAG, "✅ Added attachment $index: ${file.name}")
         } catch (e: Exception) {
             Log.e(TAG, "❌ Error adding attachment $index: ${e.message}")
         }
     }
 
-    Log.d(TAG, "Final textParts count: ${textParts.size}")
-    Log.d(TAG, "Final multipartList count: ${multipartList.size}")
+    Log.d(TAG, "✅ Total textParts: ${textParts.size}")
+    Log.d(TAG, "✅ Total multipartList: ${multipartList.size}")
 
     return textParts to multipartList
 }
+

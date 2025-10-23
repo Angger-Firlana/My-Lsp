@@ -15,6 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,9 +28,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mylsp.common.enums.TypeDialog
 import com.example.mylsp.navigation.Screen
 import com.example.mylsp.util.AppFont
 import com.example.mylsp.data.local.user.AsesiManager
+import com.example.mylsp.ui.component.dialog.StatusDialog
 import com.example.mylsp.viewmodel.AK01ViewModel
 import com.example.mylsp.viewmodel.assesment.apl.APL02ViewModel
 import com.example.mylsp.viewmodel.AssesmentViewModel
@@ -44,7 +49,8 @@ data class ApprovalItem(
     val title: String,
     val nis: String,
     val approved: Boolean?, // true=Approved, false=Unapproved aktif, null=belum
-    val route: String
+    val route: String,
+    val enabled: Boolean
 )
 
 @Composable
@@ -75,6 +81,7 @@ fun ListFormScreen(
     val ak04Submission by ak04ViewModel.submissions.collectAsState()
     val ak05Submission by ak05ViewModel.submission.collectAsState()
     val ia01Submission by ia01ViewModel.submissions.collectAsState()
+    var showDialogError by remember { mutableStateOf(false) }
     // Gradient full-bleed
     val bgGradient = Brush.verticalGradient(
         colors = listOf(
@@ -113,7 +120,8 @@ fun ListFormScreen(
             nis = "NIS: ${asesi?.no_ktp ?: "N/A"}",
             // APPROVED jika asesor sudah approve
             approved = apl02Submission?.data?.get(0)?.ttd_assesor == "approved",
-            route = Screen.Apl02.createRoute(assesment?.schema?.id ?: 0)
+            route = Screen.Apl02.createRoute(assesment?.schema?.id ?: 0),
+            enabled = true
         ),
         ApprovalItem(
             code = "FR.AK.01",
@@ -134,14 +142,16 @@ fun ListFormScreen(
             } else {
                 null
             },
-            route = Screen.Ak01.createRoute("asesi")
+            route = Screen.Ak01.createRoute("asesi"),
+            enabled = true
         ),
         ApprovalItem(
             "FR.IA.01.CL",
             "CEKLIST OBSERVASI AKTIVITAS DI TEMPAT KERJA/SIMULASI",
             "NIS: 8880",
             if (ia01Submission != null) true else null,
-            Screen.Ia01.createRoute(assesment?.schema?.id ?: 0)
+            Screen.Ia01.createRoute(assesment?.schema?.id ?: 0),
+            enabled = true
         ),
         ApprovalItem(
             code = "FR.AK.02",
@@ -156,7 +166,8 @@ fun ListFormScreen(
                 ak02Submission?.ttd_asesi == "sudah" && ak02Submission?.ttd_asesor == "belum" -> false
                 else -> null
             },
-            route = Screen.Ak02.createRoute(assesment?.schema?.id ?: 0)
+            route = Screen.Ak02.createRoute(assesment?.schema?.id ?: 0),
+            enabled = true
         ),
         ApprovalItem(
             code = "FR.AK.03",
@@ -165,7 +176,8 @@ fun ListFormScreen(
             // APPROVED jika asesor sudah isi (read-only untuk asesi)
             // null jika belum ada
             approved = if (ak03Submission != null) true else null,
-            route = Screen.Ak03.route
+            route = Screen.Ak03.route,
+            enabled = true
         ),
         ApprovalItem(
             code = "FR.AK.04",
@@ -174,7 +186,10 @@ fun ListFormScreen(
             // APPROVED jika asesi sudah submit banding
             // null jika belum (form ini optional)
             approved = if (ak04Submission != null) true else null,
-            route = Screen.Ak04.route
+            route = Screen.Ak04.route,
+            enabled = if(ak05Submission != null){
+                ak05Submission?.data?.get(0)?.keputusan == "bk"
+            }else {false}
         ),
         ApprovalItem(
             code = "Soal Soal",
@@ -183,76 +198,93 @@ fun ListFormScreen(
             // APPROVED jika asesi sudah submit banding
             // null jika belum (form ini optional)
             approved = if (ak04Submission != null) true else null,
-            route = Screen.UploadSoal.createRoute(id = assesment?.schema?.id ?: 0)
+            route = Screen.UploadSoal.createRoute(id = assesment?.schema?.id ?: 0),
+            enabled = true
         )
 
 
     )
 
+
     // Background with gradient
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(bgGradient)
-            .statusBarsPadding()
-            .then(modifier)
-    ) {
-        // Header
+    Box(
+        modifier = Modifier.fillMaxSize(),
+
+    ){
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp, bottom = 12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize()
+                .background(bgGradient)
+                .statusBarsPadding()
+                .then(modifier)
         ) {
-            Text(
-                text = asesi?.nama_lengkap ?: "Asesi",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                fontFamily = AppFont.Poppins,
-                color = Color.White
-            )
-            Spacer(Modifier.height(12.dp))
-            Divider(
-                modifier = Modifier.padding(horizontal = 24.dp),
-                color = Color.White.copy(alpha = 0.30f),
-                thickness = 1.dp
-            )
-        }
-
-        // List scrollable
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(items) { item ->
-                ApprovalCard(item, navigateToForm = { navigateToForm(item.route) })
+            // Header
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp, bottom = 12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = asesi?.nama_lengkap ?: "Asesi",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = AppFont.Poppins,
+                    color = Color.White
+                )
+                Spacer(Modifier.height(12.dp))
+                Divider(
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    color = Color.White.copy(alpha = 0.30f),
+                    thickness = 1.dp
+                )
             }
 
-            // Button untuk batal uji sertifikasi
-            item {
-                Spacer(Modifier.height(8.dp))
-                Button(
-                    onClick = {
-                        navigateToForm(Screen.AssessmentList.route)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFE53935)
-                    )
-                ) {
-                    Text(
-                        text = "Batal Melakukan Uji Sertifikasi Kompetensi?",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = AppFont.Poppins
-                    )
+            // List scrollable
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 32.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(items) { item ->
+                    ApprovalCard(item, navigateToForm = { navigateToForm(item.route) }, showDialogError = {showDialogError = it})
+                }
+
+                // Button untuk batal uji sertifikasi
+                item {
+                    Spacer(Modifier.height(8.dp))
+                    Button(
+                        onClick = {
+                            navigateToForm(Screen.AssessmentList.route)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFE53935)
+                        )
+                    ) {
+                        Text(
+                            text = "Batal Melakukan Uji Sertifikasi Kompetensi?",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = AppFont.Poppins
+                        )
+                    }
                 }
             }
         }
+    }
+
+
+    if(showDialogError){
+        StatusDialog(
+            "Kamu tidak dapat membuka form ini, karena kamu belum menyelesaikan bagian sebelumnya",
+            type = TypeDialog.Failed,
+            onDismiss = { showDialogError = false },
+            onClick = {showDialogError = false}
+        )
     }
 }
 
@@ -260,7 +292,7 @@ fun ListFormScreen(
 // CARD & PILL
 // -----------------------------------------
 @Composable
-private fun ApprovalCard(item: ApprovalItem, navigateToForm: () -> Unit) {
+private fun ApprovalCard(item: ApprovalItem, navigateToForm: () -> Unit, showDialogError: (Boolean) -> Unit) {
     val shape = RoundedCornerShape(12.dp)
 
     val approvedActive = Color(0xFF4CAF50)
@@ -269,7 +301,12 @@ private fun ApprovalCard(item: ApprovalItem, navigateToForm: () -> Unit) {
 
     Surface(
         onClick = {
-            navigateToForm()
+            if(item.enabled){
+                navigateToForm()
+            }else{
+                showDialogError(true)
+            }
+
         },
         modifier = Modifier
             .fillMaxWidth()

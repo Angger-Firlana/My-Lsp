@@ -78,7 +78,7 @@ fun FRIA01(
 
     LaunchedEffect(Unit) {
         apL02ViewModel.getAPL02(idAssesment)
-        ia01ViewModel.getIA01ByAsesi(asesiManager.getId())
+        ia01ViewModel.getIA01ByAsesi(assesmentAsesiId)
         Log.d("IA01InScreen", ia01SubmissionData.toString())
     }
 

@@ -62,7 +62,7 @@ fun APL02(
     // Collect states
     val apl02 by apL02ViewModel.apl02.collectAsState()
     val apl02Submissions by apL02ViewModel.apl02Submission.collectAsState()
-    val message by apL02ViewModel.message.collectAsState()
+    val message = ""
     val state by apL02ViewModel.state.collectAsState()
     val apl01Data by apl01ViewModel.formData.collectAsState()
     val isLoadingSubmission by apL02ViewModel.isLoadingSubmission.collectAsState()

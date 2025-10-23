@@ -7,6 +7,8 @@ import com.example.mylsp.data.api.assesment.IA01GetResponse
 import com.example.mylsp.data.api.assesment.IA01Request
 import com.example.mylsp.data.api.assesment.IA01Response
 import com.example.mylsp.data.api.assesment.PostApproveIa01Response
+import retrofit2.HttpException
+import java.io.IOException
 
 class Ia01Repository(context: Context) {
     private val api = APIClient.getClient(context)
@@ -52,6 +54,7 @@ class Ia01Repository(context: Context) {
 
     suspend fun postApproveAsesi(id:Int):Result<PostApproveIa01Response>{
         return try{
+            Log.d("Ia01Repository", "ID: $id")
             val response = api.postApproveIa01ByAsesi(id = id)
             if(response.isSuccessful){
                 val body = response.body()
@@ -61,9 +64,18 @@ class Ia01Repository(context: Context) {
                     Result.failure(Exception("Response body is null"))
                 }
             }else{
+                Log.e("Ia01Repository", response.errorBody()?.string() ?: "Unknown Error")
                 Result.failure(Exception(response.errorBody()?.string() ?: "Unknown Error"))
             }
-        }catch (e:Exception){
+        }catch (e:HttpException){
+            Log.e("Ia01Repository", e.toString())
+            Result.failure(e)
+        }catch (e:IOException){
+            Log.e("Ia01Repository", e.toString())
+            Result.failure(e)
+        }
+        catch (e:Exception){
+            Log.e("Ia01Repository", e.toString())
             Result.failure(e)
         }
     }
