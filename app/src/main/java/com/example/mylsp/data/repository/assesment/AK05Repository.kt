@@ -5,6 +5,8 @@ import com.example.mylsp.data.remote.api.APIClient
 import com.example.mylsp.data.api.assesment.Ak05SubmissionRequest
 import com.example.mylsp.data.api.assesment.Ak05SubmissionResponse
 import com.example.mylsp.data.api.assesment.GetAk05Response
+import retrofit2.HttpException
+import java.io.IOException
 
 class Ak05Repository(private val context: Context) {
     private val api = APIClient.getClient(context)
@@ -31,18 +33,31 @@ class Ak05Repository(private val context: Context) {
     suspend fun getSubmission(id: Int): Result<GetAk05Response> {
         return try {
             val response = api.getAk05(id = id)
+
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null) {
                     Result.success(body)
                 } else {
-                    Result.failure(Exception("Response body is null"))
+                    Result.failure(Exception("Empty response body"))
                 }
             } else {
-                Result.failure(Exception("Request failed with code ${response.code()}"))
+                val errorBody = response.errorBody()?.string()
+                val message = "HTTP ${response.code()} - ${response.message()}${if (!errorBody.isNullOrEmpty()) ": $errorBody" else ""}"
+                Result.failure(Exception(message))
             }
+
+        } catch (e: IOException) {
+            // Network issues, e.g., no internet, timeout
+            Result.failure(Exception("Network error: ${e.localizedMessage ?: "unknown"}", e))
+        } catch (e: HttpException) {
+            // Unexpected non-2xx responses not caught by isSuccessful
+            Result.failure(Exception("HTTP exception: ${e.code()} ${e.message()}", e))
+        
         } catch (e: Exception) {
-            Result.failure(e)
+            // Fallback for any other kind of exception
+            Result.failure(Exception("Unexpected error: ${e.localizedMessage}", e))
         }
     }
+
 }

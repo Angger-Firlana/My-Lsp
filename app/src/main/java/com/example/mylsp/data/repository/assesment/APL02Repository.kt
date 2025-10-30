@@ -57,12 +57,10 @@ class APL02Repository(context: Context) {
             val response = api.getApl02ByAsesi(id = asesiId)
             if (response.isSuccessful) {
                 val body = response.body()
-                Log.d("APL02_Submission", body.toString())
                 // Return success even if body is null (no submission found)
                 Result.success(body)
             } else {
                 // Handle different HTTP status codes
-                Log.e("APL02_Error", response.errorBody().toString())
                 when (response.code()) {
                     404 -> {
                         // No submission found - this is normal, return success with null
@@ -75,7 +73,6 @@ class APL02Repository(context: Context) {
                 }
             }
         } catch (e: Exception) {
-            Log.e("APL02_Error", e.message.toString())
             Result.failure(e)
         }
     }

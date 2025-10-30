@@ -258,6 +258,8 @@ fun UploadSoal(
                                 questionViewModel.currentDownloadId = answer.question_id
                                 createDocumentAnswerLauncher.launch(answer.files)
                             }
+
+
                         }
                     } else {
                         Text(
@@ -404,6 +406,29 @@ fun CardLinkDownloadSoal(
                 color = MaterialTheme.colorScheme.onTertiary,
                 modifier = Modifier.weight(1f)
             )
+        }
+    }
+}
+
+@Composable
+fun CardNilaiJawaban(checked:Boolean, onChecked: (Boolean) -> Unit, onValueChanged:(String) -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiary
+        ),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+
         }
     }
 }

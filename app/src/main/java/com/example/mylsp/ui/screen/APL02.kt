@@ -78,7 +78,6 @@ fun APL02(
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_RESUME -> {
-                    Log.d("APL02_MAIN", "Screen resumed - reloading data")
                     apL02ViewModel.getAPL02(id)
                     apL02ViewModel.getSubmissionByAsesi(asesiManager.getId())
                 }
@@ -101,54 +100,17 @@ fun APL02(
         }
     }
 
-    // Monitor loading state
-    LaunchedEffect(isLoadingSubmission) {
-        if (isLoadingSubmission) {
-            Log.d("APL02_MAIN", "Loading submission data...")
-        } else {
-            Log.d("APL02_MAIN", "Submission loading finished. Data: ${apl02Submissions?.data?.size ?: 0} units")
-        }
-    }
-
     // Debug submission data
     LaunchedEffect(apl02Submissions) {
         apl02Submissions?.let { submission ->
-            Log.d("APL02_MAIN", "=== APL02 SUBMISSION DATA ===")
-            Log.d("APL02_MAIN", "Status: ${submission.status}")
-            Log.d("APL02_MAIN", "Message: ${submission.message}")
-            Log.d("APL02_MAIN", "Data Count: ${submission.data.size}")
-
-            submission.data.forEachIndexed { unitIndex, unitResponse ->
-                Log.d("APL02_MAIN", "Unit Response $unitIndex:")
-                Log.d("APL02_MAIN", "  ID: ${unitResponse.id}")
-                Log.d("APL02_MAIN", "  Submission Date: ${unitResponse.submission_date}")
-                Log.d("APL02_MAIN", "  Details Count: ${unitResponse.details.size}")
-
-                unitResponse.details.forEachIndexed { detailIndex, detail ->
-                    Log.d("APL02_MAIN", "  Detail $detailIndex:")
-                    Log.d("APL02_MAIN", "    Unit Ke: ${detail.unit_ke}")
-                    Log.d("APL02_MAIN", "    Kode Unit: ${detail.kode_unit}")
-                    Log.d("APL02_MAIN", "    Elemen ID: ${detail.elemen_id}")
-                    Log.d("APL02_MAIN", "    Kompetensinitas: ${detail.kompetensinitas}")
-                    Log.d("APL02_MAIN", "    Attachments Count: ${detail.attachments.size}")
-
-                    detail.attachments.forEachIndexed { attIndex, attachment ->
-                        Log.d("APL02_MAIN", "      Attachment $attIndex: ${attachment.bukti.nama_dokumen}")
-                    }
-                }
-            }
-
             val isAssesi = userManager.getUserRole() == "assesi"
             val hasSubmission = submission.data.isNotEmpty() &&
                     submission.data.any { it.details.isNotEmpty() }
             isReadOnly = isAssesi && hasSubmission
             cachedSubmission = submission
 
-            Log.d("APL02_MAIN", "isReadOnly updated: $isReadOnly")
         } ?: run {
-            Log.d("APL02_MAIN", "No submission data found")
             if (cachedSubmission != null) {
-                Log.d("APL02_MAIN", "Using cached submission data")
                 isReadOnly = true
             } else {
                 isReadOnly = false
@@ -159,7 +121,6 @@ fun APL02(
     LaunchedEffect(state) {
         state?.let { success ->
             if (success) {
-                Log.d("APL02_MAIN", "Form submitted successfully, showing dialog")
                 showSuccessDialog = true
             }
         }
@@ -217,7 +178,6 @@ fun APL02(
 
                 // Display submission status
                 (apl02Submissions ?: cachedSubmission)?.data?.firstOrNull()?.let { firstSubmission ->
-                    SubmissionStatusCard(firstSubmission, userManager.getUserRole()!!)
 
                     if(firstSubmission.ttd_assesor == "rejected") {
                         AlertCard(
@@ -241,6 +201,12 @@ fun APL02(
                                 fontFamily = AppFont.Poppins
                             )
                         }
+                    }else{
+                        AlertCard(
+                            "APL 02 diapproved asesor silahkan lanjut",
+                            type = TypeAlert.Info,
+                            Modifier.padding(8.dp)
+                        )
                     }
                 }
 

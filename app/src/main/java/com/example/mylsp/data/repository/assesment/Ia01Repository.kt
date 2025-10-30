@@ -44,10 +44,13 @@ class Ia01Repository(context: Context) {
                     Result.failure(Exception("Response body IA01 is null"))
                 }
             } else {
+
                 val errorBody = response.errorBody()?.string() ?: "Unknown Error"
+                Log.e("Ia01Repository", errorBody)
                 Result.failure(Exception(errorBody))
             }
         } catch (e: Exception) {
+            Log.e("IA01Repository", e.message.toString())
             Result.failure(e)
         }
     }
@@ -64,18 +67,15 @@ class Ia01Repository(context: Context) {
                     Result.failure(Exception("Response body is null"))
                 }
             }else{
-                Log.e("Ia01Repository", response.errorBody()?.string() ?: "Unknown Error")
+
                 Result.failure(Exception(response.errorBody()?.string() ?: "Unknown Error"))
             }
         }catch (e:HttpException){
-            Log.e("Ia01Repository", e.toString())
             Result.failure(e)
         }catch (e:IOException){
-            Log.e("Ia01Repository", e.toString())
             Result.failure(e)
         }
         catch (e:Exception){
-            Log.e("Ia01Repository", e.toString())
             Result.failure(e)
         }
     }

@@ -35,12 +35,10 @@ class IA01ViewModel(application: Application) : AndroidViewModel(application) {
                 onSuccess = {
                     _state.value = true
                     _message.value = it.message
-                    Log.d("IA01ViewModel", "Success: ${it.message}")
                 },
                 onFailure = {
                     _state.value = false
                     _message.value = it.message.toString()
-                    Log.e("IA01ViewModel", "Error: ${it.message}")
                 }
             )
         }
@@ -56,17 +54,14 @@ class IA01ViewModel(application: Application) : AndroidViewModel(application) {
                         // Jika ada multiple submissions, kamu bisa adjust logic di sini
                         _submissions.value = response.data[0]
                         _message.value = "Data berhasil diambil"
-                        Log.d("IA01ViewModel", "Loaded ${response.data[0].details.size} submissions")
                     } else {
                         _submissions.value = null
                         _message.value = "Tidak ada data submission"
-                        Log.d("IA01ViewModel", "No submissions found")
                     }
                 },
                 onFailure = { exception ->
                     _submissions.value = null
                     _message.value = exception.message ?: "Error mengambil data"
-                    Log.e("IA01ViewModel", "Error: ${exception.message}")
                 }
             )
         }

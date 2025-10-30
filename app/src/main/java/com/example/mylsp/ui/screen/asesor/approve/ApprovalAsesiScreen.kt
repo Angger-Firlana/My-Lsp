@@ -82,8 +82,8 @@ fun ApprovedUnapprovedScreen(
 
     LaunchedEffect(Unit) {
         Log.d("ApprovedUnapprovedScreen", assesment.toString())
-        assesmentViewModel.getAssesmentById(assesmentAsesi?.assesment_id?: 0)
-        apl02ViewModel.getSubmissionByAsesi(assesmentAsesi?.id?: 0)
+        assesmentViewModel.getAssesmentById(assesmentAsesi?.assesment_id?:0)
+        apl02ViewModel.getSubmissionByAsesi(assesmentAsesi?.assesi_id?: 0)
         ak04ViewModel.getAk04ByAsesi(assesmentAsesi?.id?: 0)
         ak01ViewModel.getSubmission(assesmentAsesi?.id?: 0)
         ak02ViewModel.getSubmission(assesmentAsesi?.id?:0)
@@ -95,6 +95,7 @@ fun ApprovedUnapprovedScreen(
     // Auto-refresh ketika ada perubahan data dari submission forms
     LaunchedEffect(apl02Submission, ak01Submission, ak02Submission, ak03Submission, ak05Submission, ia01Submission) {
         Log.d("ApprovedUnapprovedScreen", "Data updated - refreshing list")
+        Log.d("APL02Submission", apl02Submission.toString())
     }
 
     val items = listOf(

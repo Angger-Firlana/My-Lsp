@@ -30,7 +30,8 @@ data class IA01Detail(
     val elemen_id: Int,
     val kuk_id:Int,
     val skkni: String,
-    val teks_penilaian: String
+    val teks_penilaian: String,
+    val element: ElemenAPL02
 )
 
 // Unit level submission

@@ -2,6 +2,7 @@ package com.example.mylsp.navigation
 
 import android.app.Application
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -215,9 +216,6 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         composable(Screen.Ia06a.route){
             FRIA06A(navController = navController)
         }
-        composable(Screen.Ak05.route){
-            FRAK05(viewModel = aK05ViewModel, assesmentAsesiViewModel = assesmentAsesiViewModel)
-        }
         composable(Screen.KelengkapanDataAsesor.route) {
             KelengkapanDataAsesor(navController = navController)
         }
@@ -284,6 +282,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
             showTopBar(false)
             showBottomBar(false)
             val id = it.arguments?.getString("id")?: "0"
+            Log.d("APL02Id", id.toString())
             APL02(
                 id = id.toInt(),
                 assesmentAsesiViewModel = assesmentAsesiViewModel,
@@ -396,7 +395,7 @@ fun SetupNavGraph(modifier: Modifier, userManager: UserManager, navController: N
         composable(Screen.Ak05.route){
             showTopBar(false)
             showBottomBar(false)
-            FRAK05(viewModel = aK05ViewModel, assesmentAsesiViewModel = assesmentAsesiViewModel)
+            FRAK05(viewModel = aK05ViewModel, ia01ViewModel = iA01ViewModel, assesmentAsesiViewModel = assesmentAsesiViewModel, nextForm = {navController.popBackStack()})
         }
         composable(Screen.Ia01.route){
             showTopBar(false)
